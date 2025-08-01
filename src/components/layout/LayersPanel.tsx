@@ -2,7 +2,7 @@ import { useStore } from '@nanostores/react';
 import { canvasStore } from '@/stores/canvas';
 import { selectionStore, selectShape } from '@/stores/selection';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, Lock, Unlock } from 'lucide-react';
+import { Eye, Unlock } from 'lucide-react';
 
 export function LayersPanel() {
   const { shapes } = useStore(canvasStore);

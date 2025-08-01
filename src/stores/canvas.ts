@@ -1,5 +1,5 @@
 import { atom } from 'nanostores';
-import type { CanvasState, Shape, Artboard } from '../types/canvas';
+import type { CanvasState, Shape } from '../types/canvas';
 
 export const canvasStore = atom<CanvasState>({
   shapes: [],

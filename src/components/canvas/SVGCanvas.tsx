@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
 import { canvasStore, setZoom, setViewBox, addShape } from '@/stores/canvas';
 import { toolStore } from '@/stores/tools';
