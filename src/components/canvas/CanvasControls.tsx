@@ -3,7 +3,7 @@ import { canvasStore, transformStore } from '@/stores/canvas';
 import { selectionStore } from '@/stores/selection';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
+import { useControls } from 'react-zoom-pan-pinch';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -13,45 +13,35 @@ import {
   Home
 } from 'lucide-react';
 
-interface CanvasControlsProps {
-  transformRef: React.RefObject<ReactZoomPanPinchRef | null>;
-}
-
-export function CanvasControls({ transformRef }: CanvasControlsProps) {
-  const { shapes, artboards } = useStore(canvasStore);
+export function CanvasControls() {
+  const { shapes, frames } = useStore(canvasStore);
   const { scale } = useStore(transformStore);
   const { selectedIds } = useStore(selectionStore);
+  const { zoomIn, zoomOut, setTransform, instance } = useControls();
 
   const handleZoomChange = (value: number[]) => {
-    if (transformRef.current) {
-      const { state } = transformRef.current;
-      transformRef.current.setTransform(state.positionX, state.positionY, value[0] / 100);
-    }
+    setTransform(instance.transformState.positionX, instance.transformState.positionY, value[0] / 100);
   };
 
   const handleZoomIn = () => {
-    if (transformRef.current) {
-      transformRef.current.zoomIn(0.2);
-    }
+    zoomIn(0.2);
   };
 
   const handleZoomOut = () => {
-    if (transformRef.current) {
-      transformRef.current.zoomOut(0.2);
-    }
+    zoomOut(0.2);
   };
 
   const zoomToFit = () => {
-    if (!transformRef.current || artboards.length === 0) return;
+    if (frames.length === 0) return;
 
-    // Calculate bounding box of all artboards
+    // Calculate bounding box of all frames
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     
-    artboards.forEach(artboard => {
-      minX = Math.min(minX, artboard.x);
-      minY = Math.min(minY, artboard.y);
-      maxX = Math.max(maxX, artboard.x + artboard.width);
-      maxY = Math.max(maxY, artboard.y + artboard.height);
+    frames.forEach(frame => {
+      minX = Math.min(minX, frame.x);
+      minY = Math.min(minY, frame.y);
+      maxX = Math.max(maxX, frame.x + frame.width);
+      maxY = Math.max(maxY, frame.y + frame.height);
     });
 
     const padding = 50;
@@ -71,11 +61,11 @@ export function CanvasControls({ transformRef }: CanvasControlsProps) {
     const newX = containerWidth / 2 - centerX * newScale;
     const newY = containerHeight / 2 - centerY * newScale;
     
-    transformRef.current.setTransform(newX, newY, newScale);
+    setTransform(newX, newY, newScale);
   };
 
   const zoomToSelection = () => {
-    if (!transformRef.current || selectedIds.length === 0) return;
+    if (selectedIds.length === 0) return;
 
     const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));
     if (selectedShapes.length === 0) return;
@@ -107,30 +97,27 @@ export function CanvasControls({ transformRef }: CanvasControlsProps) {
     const newX = containerWidth / 2 - centerX * newScale;
     const newY = containerHeight / 2 - centerY * newScale;
     
-    transformRef.current.setTransform(newX, newY, newScale);
+    setTransform(newX, newY, newScale);
   };
 
   const zoomTo100 = () => {
-    if (transformRef.current) {
-      const { state } = transformRef.current;
-      transformRef.current.setTransform(state.positionX, state.positionY, 1);
-    }
+    setTransform(instance.transformState.positionX, instance.transformState.positionY, 1);
   };
 
   const centerView = () => {
-    if (!transformRef.current || artboards.length === 0) return;
+    if (frames.length === 0) return;
     
-    const mainArtboard = artboards[0];
+    const mainFrame = frames[0];
     const containerWidth = window.innerWidth;
     const containerHeight = window.innerHeight;
     
-    // Center the main artboard
-    const centerX = mainArtboard.x + mainArtboard.width / 2;
-    const centerY = mainArtboard.y + mainArtboard.height / 2;
+    // Center the main frame
+    const centerX = mainFrame.x + mainFrame.width / 2;
+    const centerY = mainFrame.y + mainFrame.height / 2;
     const newX = containerWidth / 2 - centerX;
     const newY = containerHeight / 2 - centerY;
     
-    transformRef.current.setTransform(newX, newY, 1);
+    setTransform(newX, newY, 1);
   };
 
   const zoomPercentage = Math.round(scale * 100);

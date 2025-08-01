@@ -20,7 +20,7 @@ export const validateProjectFile = (file: File): Promise<boolean> => {
         // Basic validation - check for required fields
         const isValid = data.id && data.name && data.canvas && 
                        Array.isArray(data.canvas.shapes) && 
-                       Array.isArray(data.canvas.artboards);
+                       Array.isArray(data.canvas.frames);
         
         resolve(isValid);
       } catch {

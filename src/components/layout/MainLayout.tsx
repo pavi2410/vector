@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { ToolPanel } from './ToolPanel';
-import { LayersPanel } from './LayersPanel';
-import { PropertiesPanel } from './PropertiesPanel';
-import { FilterPanel } from './FilterPanel';
-import { FileMenu } from './FileMenu';
-import { EditMenu } from './EditMenu';
-import { ViewMenu } from './ViewMenu';
-import { ObjectMenu } from './ObjectMenu';
-import { FilterMenu } from './FilterMenu';
-import { AppearanceMenuContent } from './AppearanceMenu';
-import { HelpMenu } from './HelpMenu';
-import { SVGCanvas } from '../canvas/SVGCanvas';
+import { ToolPanel } from '../panels/ToolPanel';
+import { LayersPanel } from '../panels/LayersPanel';
+import { PropertiesPanel } from '../panels/PropertiesPanel';
+import { FilterPanel } from '../panels/FilterPanel';
+import { FileMenu } from '../menus/FileMenu';
+import { EditMenu } from '../menus/EditMenu';
+import { ViewMenu } from '../menus/ViewMenu';
+import { ObjectMenu } from '../menus/ObjectMenu';
+import { FilterMenu } from '../menus/FilterMenu';
+import { AppearanceMenuContent } from '../menus/AppearanceMenu';
+import { HelpMenu } from '../menus/HelpMenu';
+import { SVGFrame } from '../canvas/SVGFrame';
 import { cn } from '@/lib/utils';
 import {
   Menubar,
@@ -72,7 +72,7 @@ export function MainLayout() {
           </div>
           
           <div className="flex-1 bg-background">
-            <SVGCanvas />
+            <SVGFrame />
           </div>
           
           {/* Filter Pipeline Panel */}

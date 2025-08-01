@@ -3,10 +3,10 @@ import type { CanvasState, Shape } from '../types/canvas';
 
 export const canvasStore = atom<CanvasState>({
   shapes: [],
-  artboards: [
+  frames: [
     {
-      id: 'artboard-1',
-      name: 'Artboard 1',
+      id: 'frame-1',
+      name: 'Frame 1',
       x: 0,
       y: 0,
       width: 1920,

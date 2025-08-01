@@ -13,7 +13,7 @@ export interface Shape {
   filters?: string[];
 }
 
-export interface Artboard {
+export interface Frame {
   id: string;
   name: string;
   x: number;
@@ -32,7 +32,7 @@ export interface ViewBox {
 
 export interface CanvasState {
   shapes: Shape[];
-  artboards: Artboard[];
+  frames: Frame[];
   viewBox: ViewBox;
   zoom: number;
 }

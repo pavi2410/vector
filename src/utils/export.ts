@@ -43,14 +43,14 @@ export const generateSVG = (
   canvasState: CanvasState,
   options: ExportOptions = { format: 'svg', includeBackground: true, selectedOnly: false }
 ): string => {
-  const { shapes, artboards, viewBox } = canvasState;
+  const { shapes, frames, viewBox } = canvasState;
   const { includeBackground, selectedOnly } = options;
   
-  // Use first artboard or fallback to viewBox
-  const artboard = artboards[0];
-  const width = artboard?.width || viewBox.width;
-  const height = artboard?.height || viewBox.height;
-  const bgColor = artboard?.backgroundColor || '#ffffff';
+  // Use first frame or fallback to viewBox
+  const frame = frames[0];
+  const width = frame?.width || viewBox.width;
+  const height = frame?.height || viewBox.height;
+  const bgColor = frame?.backgroundColor || '#ffffff';
   
   let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">`;
   
@@ -87,12 +87,12 @@ const createRasterCanvas = (
   
   if (!ctx) throw new Error('Could not create canvas context');
   
-  const { shapes, artboards } = canvasState;
+  const { shapes, frames } = canvasState;
   const { scale = 1, includeBackground = true } = options;
   
-  const artboard = artboards[0];
-  const width = (artboard?.width || 1920) * scale;
-  const height = (artboard?.height || 1080) * scale;
+  const frame = frames[0];
+  const width = (frame?.width || 1920) * scale;
+  const height = (frame?.height || 1080) * scale;
   
   canvas.width = width;
   canvas.height = height;
@@ -103,7 +103,7 @@ const createRasterCanvas = (
   
   // Add background
   if (includeBackground) {
-    ctx.fillStyle = artboard?.backgroundColor || '#ffffff';
+    ctx.fillStyle = frame?.backgroundColor || '#ffffff';
     ctx.fillRect(0, 0, width, height);
   }
   

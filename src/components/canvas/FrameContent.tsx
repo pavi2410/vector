@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
-import { canvasStore, setTransform, addShape } from '@/stores/canvas';
+import { TransformComponent } from 'react-zoom-pan-pinch';
+import { canvasStore, addShape } from '@/stores/canvas';
 import { toolStore } from '@/stores/tools';
 import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
 import { ShapeRenderer } from './ShapeRenderer';
@@ -10,21 +10,23 @@ import { CanvasControls } from './CanvasControls';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
 import type { Shape } from '@/types/canvas';
 
-export function SVGCanvas() {
+interface FrameContentProps {
+  isSpacePanning: boolean;
+  setIsSpacePanning: (active: boolean) => void;
+}
+
+export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContentProps) {
   const svgRef = useRef<SVGSVGElement>(null);
-  const transformRef = useRef<ReactZoomPanPinchRef | null>(null);
-  const [isSpacePanning, setIsSpacePanning] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
   const [currentShape, setCurrentShape] = useState<Shape | null>(null);
 
-  const { shapes, viewBox, zoom, artboards } = useStore(canvasStore);
+  const { shapes, viewBox, zoom, frames } = useStore(canvasStore);
   const { activeTool, toolSettings } = useStore(toolStore);
   const { selectedIds } = useStore(selectionStore);
 
-  // Initialize canvas keyboard shortcuts
+  // Initialize canvas keyboard shortcuts (now inside TransformWrapper)
   useCanvasShortcuts({
-    transformRef,
     onTogglePanMode: (active: boolean) => setIsSpacePanning(active)
   });
 
@@ -122,12 +124,6 @@ export function SVGCanvas() {
     }
   }, [isDrawing, currentShape]);
 
-  // Transform change handler
-  const handleTransformChange = useCallback((ref: ReactZoomPanPinchRef) => {
-    const { state } = ref;
-    setTransform(state.scale, state.positionX, state.positionY);
-  }, []);
-
   // Dynamic cursor based on current state
   const getCursor = () => {
     if (isSpacePanning) return 'cursor-grab';
@@ -136,111 +132,85 @@ export function SVGCanvas() {
   };
 
   return (
-    <div className="w-full h-full overflow-hidden relative bg-gray-50">
-      <TransformWrapper
-        ref={transformRef}
-        initialScale={1}
-        minScale={0.1}
-        maxScale={10}
-        limitToBounds={false}
-        centerOnInit={false}
-        wheel={{ 
-          step: 0.1,
-          wheelDisabled: false,
-          touchPadDisabled: false
-        }}
-        pinch={{ 
-          step: 5,
-          disabled: false 
-        }}
-        doubleClick={{ disabled: true }}
-        panning={{ 
-          disabled: activeTool !== 'select' && !isSpacePanning,
-          velocityDisabled: false,
-          lockAxisX: false,
-          lockAxisY: false
-        }}
-        onTransformed={handleTransformChange}
+    <>
+      <TransformComponent
+        wrapperClass="w-full h-full"
+        contentClass="w-full h-full"
       >
-        <TransformComponent
-          wrapperClass="w-full h-full"
-          contentClass="w-full h-full"
+        <svg
+          ref={svgRef}
+          className={`w-full h-full ${getCursor()}`}
+          viewBox="0 0 1920 1080"
+          preserveAspectRatio="xMidYMid meet"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
         >
-          <svg
-            ref={svgRef}
-            className={`w-full h-full ${getCursor()}`}
-            viewBox="0 0 1920 1080"
-            preserveAspectRatio="xMidYMid meet"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-          >
-        <defs>
-          {/* Grid pattern */}
-          <pattern
-            id="grid"
-            width="20"
-            height="20"
-            patternUnits="userSpaceOnUse"
-          >
-            <path
-              d="M 20 0 L 0 0 0 20"
-              fill="none"
-              stroke="#e5e7eb"
-              strokeWidth="0.5"
-            />
-          </pattern>
-        </defs>
+          <defs>
+            {/* Grid pattern */}
+            <pattern
+              id="grid"
+              width="20"
+              height="20"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 20 0 L 0 0 0 20"
+                fill="none"
+                stroke="#e5e7eb"
+                strokeWidth="0.5"
+              />
+            </pattern>
+          </defs>
 
-        {/* Grid background */}
-        <rect
-          x={viewBox.x}
-          y={viewBox.y}
-          width={viewBox.width / zoom}
-          height={viewBox.height / zoom}
-          fill="url(#grid)"
-        />
-
-        {/* Artboards */}
-        {artboards.map(artboard => (
+          {/* Grid background */}
           <rect
-            key={artboard.id}
-            x={artboard.x}
-            y={artboard.y}
-            width={artboard.width}
-            height={artboard.height}
-            fill={artboard.backgroundColor || '#ffffff'}
-            stroke="#d1d5db"
-            strokeWidth="1"
+            x={viewBox.x}
+            y={viewBox.y}
+            width={viewBox.width / zoom}
+            height={viewBox.height / zoom}
+            fill="url(#grid)"
           />
-        ))}
 
-        {/* Rendered shapes */}
-        {shapes.map(shape => (
-          <ShapeRenderer
-            key={shape.id}
-            shape={shape}
-            isSelected={selectedIds.includes(shape.id)}
-          />
-        ))}
+          {/* Frames */}
+          {frames.map(frame => (
+            <rect
+              key={frame.id}
+              x={frame.x}
+              y={frame.y}
+              width={frame.width}
+              height={frame.height}
+              fill={frame.backgroundColor || '#ffffff'}
+              stroke="#d1d5db"
+              strokeWidth="1"
+            />
+          ))}
 
-        {/* Current drawing shape */}
-        {currentShape && (
-          <ShapeRenderer
-            shape={currentShape}
-            isSelected={false}
-            isPreview={true}
-          />
-        )}
+          {/* Rendered shapes */}
+          {shapes.map(shape => (
+            <ShapeRenderer
+              key={shape.id}
+              shape={shape}
+              isSelected={selectedIds.includes(shape.id)}
+            />
+          ))}
 
-            {/* Selection overlay */}
-            <SelectionOverlay />
-          </svg>
-        </TransformComponent>
-      </TransformWrapper>
+          {/* Current drawing shape */}
+          {currentShape && (
+            <ShapeRenderer
+              shape={currentShape}
+              isSelected={false}
+              isPreview={true}
+            />
+          )}
+
+          {/* Selection overlay */}
+          <SelectionOverlay />
+        </svg>
+      </TransformComponent>
       
-      {/* Enhanced canvas controls */}
-      <CanvasControls transformRef={transformRef} />
-    </div>
+      {/* Enhanced canvas controls - now inside TransformWrapper */}
+      <CanvasControls />
+    </>
   );
 }
