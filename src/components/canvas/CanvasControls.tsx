@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/react';
-import { canvasStore, transformStore } from '@/stores/canvas';
+import { canvasStore } from '@/stores/canvas';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -14,11 +14,12 @@ import {
   Maximize2,
   Focus,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function CanvasControls() {
   const { frames } = useStore(canvasStore);
-  const { scale } = useStore(transformStore);
   const { zoomIn, zoomOut, centerView, instance } = useControls();
+  const [zoomPercentage, setZoomPercentage] = useState(100);
 
   const handleZoomIn = () => {
     zoomIn(0.2);
@@ -64,7 +65,12 @@ export function CanvasControls() {
     centerView(1);
   };
 
-  const zoomPercentage = Math.round(scale * 100);
+  useEffect(() => {
+    return instance.onChange(() => {
+      const scale = instance.transformState.scale;
+      setZoomPercentage(Math.round(scale * 100));
+    });
+  }, [instance]);
 
   return (
     <TooltipProvider>
