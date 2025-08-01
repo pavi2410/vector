@@ -1,18 +1,27 @@
 import { useEffect, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { canvasStore, transformStore } from '@/stores/canvas';
+import { canvasStore } from '@/stores/canvas';
 import { selectionStore } from '@/stores/selection';
+import { 
+  createNewProject, 
+  saveCurrentProject, 
+  hasUnsavedChanges, 
+  currentProjectStore 
+} from '@/stores/project';
 import { type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 
 interface KeyboardShortcutsOptions {
   transformRef?: React.RefObject<ReactZoomPanPinchRef | null>;
   onTogglePanMode?: (active: boolean) => void;
+  onNewProject?: () => void;
+  onSaveProject?: () => void;
+  onExportProject?: () => void;
 }
 
 export function useKeyboardShortcuts(options: KeyboardShortcutsOptions = {}) {
   const { shapes, artboards } = useStore(canvasStore);
-  const { scale } = useStore(transformStore);
   const { selectedIds } = useStore(selectionStore);
+  const currentProject = useStore(currentProjectStore);
   const { transformRef } = options;
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -26,6 +35,43 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions = {}) {
     }
 
     switch (key) {
+      // File operations
+      case 'n':
+        if (isModifierPressed) {
+          event.preventDefault();
+          if (options.onNewProject) {
+            options.onNewProject();
+          } else if (hasUnsavedChanges()) {
+            // Show unsaved changes warning
+            console.warn('Unsaved changes detected');
+          } else {
+            createNewProject();
+          }
+        }
+        break;
+      
+      case 's':
+        if (isModifierPressed && !shiftKey) {
+          event.preventDefault();
+          if (options.onSaveProject) {
+            options.onSaveProject();
+          } else if (currentProject) {
+            saveCurrentProject();
+          }
+        } else if (isModifierPressed && shiftKey) {
+          // Save As
+          event.preventDefault();
+          options.onSaveProject?.();
+        }
+        break;
+      
+      case 'e':
+        if (isModifierPressed) {
+          event.preventDefault();
+          options.onExportProject?.();
+        }
+        break;
+
       // Zoom shortcuts
       case '=':
       case '+':
@@ -184,7 +230,7 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions = {}) {
         }
         break;
     }
-  }, [transformRef, shapes, artboards, selectedIds, options]);
+  }, [transformRef, shapes, artboards, selectedIds, currentProject, options]);
 
   const handleKeyUp = useCallback((event: KeyboardEvent) => {
     if (event.key === ' ') {

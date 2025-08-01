@@ -3,6 +3,7 @@ import { ToolPanel } from './ToolPanel';
 import { LayersPanel } from './LayersPanel';
 import { PropertiesPanel } from './PropertiesPanel';
 import { FilterPanel } from './FilterPanel';
+import { FileMenu } from './FileMenu';
 import { HelpMenu } from './HelpMenu';
 import { SVGCanvas } from '../canvas/SVGCanvas';
 import { cn } from '@/lib/utils';
@@ -15,7 +16,7 @@ export function MainLayout() {
       {/* Menu Bar */}
       <div className="h-10 bg-muted border-b border-border flex items-center px-4 text-sm">
         <div className="flex space-x-4">
-          <span className="font-medium">File</span>
+          <FileMenu />
           <span className="font-medium">Edit</span>
           <span className="font-medium">View</span>
           <span className="font-medium">Object</span>

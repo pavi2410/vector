@@ -31,8 +31,6 @@ export function SVGCanvas() {
   const getMousePosition = useCallback((event: React.MouseEvent) => {
     if (!svgRef.current) return { x: 0, y: 0 };
     
-    const rect = svgRef.current.getBoundingClientRect();
-    
     // Convert screen coordinates to SVG coordinates using SVG's built-in methods
     const point = svgRef.current.createSVGPoint();
     point.x = event.clientX;
