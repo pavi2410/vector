@@ -134,13 +134,13 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   return (
     <>
       <TransformComponent
-        wrapperClass="w-full h-full"
-        contentClass="w-full h-full"
+        wrapperClass="w-full! h-full! bg-muted"
+        // contentClass="w-full! h-full!"
       >
         <svg
           ref={svgRef}
           className={`w-full h-full ${getCursor()}`}
-          viewBox="0 0 1920 1080"
+          viewBox="0 0 512 512"
           preserveAspectRatio="xMidYMid meet"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}

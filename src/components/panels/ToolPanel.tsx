@@ -2,6 +2,12 @@ import { useStore } from '@nanostores/react';
 import { toolStore, setActiveTool } from '@/stores/tools';
 import { cn } from '@/lib/utils';
 import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { 
   MousePointer2, 
   Square, 
   Circle, 
@@ -23,21 +29,28 @@ export function ToolPanel() {
   const { activeTool } = useStore(toolStore);
 
   return (
-    <div className="p-2 flex space-x-2 items-center">
-      {tools.map(({ id, icon: Icon, label }) => (
-        <button
-          key={id}
-          onClick={() => setActiveTool(id)}
-          className={cn(
-            "w-12 h-12 flex items-center justify-center rounded-md transition-colors",
-            "hover:bg-accent hover:text-accent-foreground",
-            activeTool === id && "bg-accent text-accent-foreground"
-          )}
-          title={label}
-        >
-          <Icon size={20} />
-        </button>
-      ))}
-    </div>
+    <TooltipProvider>
+      <div className="p-2 flex gap-2 items-center">
+        {tools.map(({ id, icon: Icon, label }) => (
+          <Tooltip key={id}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setActiveTool(id)}
+                className={cn(
+                  "size-8 flex items-center justify-center rounded-md transition-colors",
+                  "hover:bg-accent hover:text-accent-foreground",
+                  activeTool === id && "bg-accent text-accent-foreground"
+                )}
+              >
+                <Icon size={16} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{label}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 }

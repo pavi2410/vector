@@ -64,14 +64,14 @@ src/
 ├── components/
 │   ├── canvas/
 │   │   ├── SVGCanvas.tsx          # Main drawing surface with React 19 optimizations
-│   │   ├── CanvasControls.tsx     # Zoom, pan, grid controls
+│   │   ├── CanvasControls.tsx     # Bottom-centered zoom, pan, grid controls
 │   │   ├── SelectionOverlay.tsx   # Selection handles and bounding boxes
 │   │   └── ShapeRenderer.tsx      # Individual shape rendering
 │   ├── panels/
-│   │   ├── ToolPanel.tsx          # Left sidebar with drawing tools
-│   │   ├── LayersPanel.tsx        # Right sidebar layer management
-│   │   ├── PropertiesPanel.tsx    # Right sidebar properties editor
-│   │   └── FilterPanel.tsx        # Bottom panel filter pipeline editor
+│   │   ├── ToolPanel.tsx          # Floating overlay panel with drawing tools
+│   │   ├── LayersPanel.tsx        # Left resizable panel for layer management
+│   │   ├── PropertiesPanel.tsx    # Right resizable panel for properties editor
+│   │   └── FilterPanel.tsx        # Bottom collapsible panel for filter pipeline editor
 │   ├── tools/
 │   │   ├── SelectTool.tsx         # Selection and transformation
 │   │   ├── ShapeTools.tsx         # Rectangle, circle, polygon tools
@@ -274,18 +274,19 @@ export function BlurNode({ data, id }: NodeProps) {
 ┌─────────────────────────────────────────────────────────────────┐
 │ Menu Bar: File | Edit | View | Object | Filter | Help           │
 ├─────┬─────────────────────────────────────────────────┬─────────┤
-│Tool │                                                 │ Layers  │
-│Panel│                Canvas Area                      │ Panel   │
-│     │                                                 │         │
-│ 🔲  │  ┌─────────────────────────────────────────────┐│ 👁Layer │
-│ ⭕  │  │                                             ││ 👁Layer │
-│ ✏️  │  │            SVG Canvas                       ││ 👁Layer │
-│ 🎨  │  │         (Pan, Zoom, Grid)                   ││         │
-│ 📝  │  │                                             │├─────────┤
-│     │  │                                             ││Properties│
-│     │  └─────────────────────────────────────────────┘│Panel    │
-│     │                                                 │         │
-├─────┴─────────────────────────────────────────────────┴─────────┤
+│Layers│                                                 │Properties│
+│Panel │                Canvas Area                      │ Panel   │
+│(Resiz│ ┌─────────┐                                     │(Resizable)
+│able) │ │🔲⭕✏️🎨📝│ ┌─────────────────────────────────┐ │ 👁Layer │
+│ 👁Lay│ │ Tools   │ │                                 │ │ 👁Layer │
+│ 👁Lay│ │(Floating│ │            SVG Canvas           │ │ 👁Layer │
+│ 👁Lay│ └─────────┘ │         (Pan, Zoom, Grid)       │ │         │
+│      │             │                                 │ ├─────────┤
+│      │             │      ┌─────────────────────┐    │ │Properties│
+│      │             │      │  Canvas Controls    │    │ │Panel    │
+│      │             │      │ (Bottom-Centered)   │    │ │         │
+│      │             └─────────────────────────────────┘ │         │
+├──────┴─────────────────────────────────────────────────┴─────────┤
 │                Filter Pipeline Editor                           │
 │  (React Flow - Expandable/Collapsible)                        │
 │  ┌─────┐    ┌──────┐    ┌─────────────┐    ┌─────────┐        │
@@ -297,6 +298,8 @@ export function BlurNode({ data, id }: NodeProps) {
 ### Design Principles
 - **Clean Interface**: Minimal UI that focuses on content creation
 - **Contextual Panels**: Properties change based on selected elements
+- **Resizable Layout**: Users can adjust panel widths to fit their workflow
+- **Floating Tools**: Tool panel overlays canvas to maximize drawing space
 - **Responsive Design**: Collapsible panels for different screen sizes
 - **Keyboard Shortcuts**: Power user shortcuts for all major functions
 - **Dark/Light Theme**: System preference detection with manual override
