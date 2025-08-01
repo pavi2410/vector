@@ -3,6 +3,7 @@ import { ToolPanel } from './ToolPanel';
 import { LayersPanel } from './LayersPanel';
 import { PropertiesPanel } from './PropertiesPanel';
 import { FilterPanel } from './FilterPanel';
+import { HelpMenu } from './HelpMenu';
 import { SVGCanvas } from '../canvas/SVGCanvas';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +20,7 @@ export function MainLayout() {
           <span className="font-medium">View</span>
           <span className="font-medium">Object</span>
           <span className="font-medium">Filter</span>
-          <span className="font-medium">Help</span>
+          <HelpMenu />
         </div>
       </div>
 
