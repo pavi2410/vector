@@ -8,6 +8,7 @@ import { ObjectMenu } from '../menus/ObjectMenu';
 import { FilterMenu } from '../menus/FilterMenu';
 import { AppearanceMenuContent } from '../menus/AppearanceMenu';
 import { HelpMenu } from '../menus/HelpMenu';
+import { InlineEditableFileName } from '../ui/InlineEditableFileName';
 import {
   Menubar,
   MenubarMenu,
@@ -24,8 +25,8 @@ export function MainLayout() {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Menu Bar */}
-      <div className="h-10 bg-muted border-b border-border flex items-center px-4 text-sm">
-        <Menubar>
+      <div className="h-10 border-b border-border flex items-center px-4 text-sm">
+        <Menubar className="border-0 shadow-none p-0">
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <FileMenu />
@@ -55,31 +56,34 @@ export function MainLayout() {
             <HelpMenu />
           </MenubarMenu>
         </Menubar>
+
+        {/* Centered File Name */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <InlineEditableFileName />
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
-          {/* Left Panel - Layers */}
-          <ResizablePanel defaultSize={15} minSize={15} maxSize={30} className="bg-muted">
-            <LayersPanel />
-          </ResizablePanel>
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* Left Panel - Layers */}
+        <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+          <LayersPanel />
+        </ResizablePanel>
 
-          <ResizableHandle withHandle />
+        <ResizableHandle withHandle />
 
-          {/* Canvas Area */}
-          <ResizablePanel defaultSize={60} minSize={30}>
-            <CanvasArea />
-          </ResizablePanel>
+        {/* Canvas Area */}
+        <ResizablePanel defaultSize={60} minSize={30}>
+          <CanvasArea />
+        </ResizablePanel>
 
-          <ResizableHandle withHandle />
+        <ResizableHandle withHandle />
 
-          {/* Right Panel - Properties */}
-          <ResizablePanel defaultSize={15} minSize={15} maxSize={30} className="bg-muted">
-            <PropertiesPanel />
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      </div>
+        {/* Right Panel - Properties */}
+        <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+          <PropertiesPanel />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
