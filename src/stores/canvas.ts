@@ -18,6 +18,13 @@ export const canvasStore = atom<CanvasState>({
   zoom: 1
 });
 
+// Transform state for react-zoom-pan-pinch integration
+export const transformStore = atom({
+  scale: 1,
+  positionX: 0,
+  positionY: 0
+});
+
 export const addShape = (shape: Shape) => {
   const current = canvasStore.get();
   canvasStore.set({
@@ -59,3 +66,22 @@ export const setViewBox = (x: number, y: number, width: number, height: number) 
     viewBox: { x, y, width, height }
   });
 };
+
+// Transform actions for react-zoom-pan-pinch integration
+export const setTransform = (scale: number, positionX: number, positionY: number) => {
+  transformStore.set({ scale, positionX, positionY });
+  
+  // Sync with legacy zoom state for backward compatibility
+  const current = canvasStore.get();
+  canvasStore.set({
+    ...current,
+    zoom: scale,
+    viewBox: {
+      ...current.viewBox,
+      x: -positionX / scale,
+      y: -positionY / scale
+    }
+  });
+};
+
+export const getTransform = () => transformStore.get();
