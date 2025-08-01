@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+} from '@/components/ui/menubar';
 import { 
   Keyboard, 
   FileText, 
@@ -30,50 +28,33 @@ export function HelpMenu() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="font-medium hover:text-foreground transition-colors outline-none">
-          Help
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuItem 
-            onClick={() => setShowShortcuts(true)}
-            className="cursor-pointer"
-          >
-            <Keyboard className="mr-2 h-4 w-4" />
-            Keyboard Shortcuts
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem 
-            onClick={handleDocumentation}
-            className="cursor-pointer"
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Documentation
-            <ExternalLink className="ml-auto h-3 w-3" />
-          </DropdownMenuItem>
-          
-          <DropdownMenuSeparator />
-          
-          <DropdownMenuItem 
-            onClick={handleReportIssue}
-            className="cursor-pointer"
-          >
-            <Bug className="mr-2 h-4 w-4" />
-            Report Issue
-            <ExternalLink className="ml-auto h-3 w-3" />
-          </DropdownMenuItem>
-          
-          <DropdownMenuSeparator />
-          
-          <DropdownMenuItem 
-            onClick={() => setShowAbout(true)}
-            className="cursor-pointer"
-          >
-            <Info className="mr-2 h-4 w-4" />
-            About Vector
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <MenubarContent align="start" className="w-56">
+        <MenubarItem onClick={() => setShowShortcuts(true)}>
+          <Keyboard className="mr-2 h-4 w-4" />
+          Keyboard Shortcuts
+        </MenubarItem>
+        
+        <MenubarItem onClick={handleDocumentation}>
+          <FileText className="mr-2 h-4 w-4" />
+          Documentation
+          <ExternalLink className="ml-auto h-3 w-3" />
+        </MenubarItem>
+        
+        <MenubarSeparator />
+        
+        <MenubarItem onClick={handleReportIssue}>
+          <Bug className="mr-2 h-4 w-4" />
+          Report Issue
+          <ExternalLink className="ml-auto h-3 w-3" />
+        </MenubarItem>
+        
+        <MenubarSeparator />
+        
+        <MenubarItem onClick={() => setShowAbout(true)}>
+          <Info className="mr-2 h-4 w-4" />
+          About Vector
+        </MenubarItem>
+      </MenubarContent>
 
       <KeyboardShortcuts 
         isOpen={showShortcuts} 

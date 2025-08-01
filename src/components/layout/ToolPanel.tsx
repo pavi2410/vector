@@ -23,7 +23,7 @@ export function ToolPanel() {
   const { activeTool } = useStore(toolStore);
 
   return (
-    <div className="p-2 space-y-2">
+    <div className="p-2 flex space-x-2 items-center">
       {tools.map(({ id, icon: Icon, label }) => (
         <button
           key={id}

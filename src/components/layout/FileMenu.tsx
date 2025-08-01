@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarShortcut,
+} from '@/components/ui/menubar';
 import { Dialog } from '@/components/ui/dialog';
 import { NewProjectDialog } from '../modals/NewProjectDialog';
 import { SaveProjectDialog } from '../modals/SaveProjectDialog';
@@ -93,85 +92,80 @@ export function FileMenu() {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="px-3 py-1 text-sm font-medium hover:bg-muted rounded transition-colors">
-          File
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
-          <DropdownMenuItem onClick={handleNewProject}>
-            <FileText className="w-4 h-4 mr-2" />
-            New Project
-            <span className="ml-auto text-xs text-muted-foreground">⌘N</span>
-          </DropdownMenuItem>
-          
-          <DropdownMenuItem onClick={() => console.log('Open project')}>
-            <FolderOpen className="w-4 h-4 mr-2" />
-            Open Project
-            <span className="ml-auto text-xs text-muted-foreground">⌘O</span>
-          </DropdownMenuItem>
+      <MenubarContent align="start" className="w-56">
+        <MenubarItem onClick={handleNewProject}>
+          <FileText className="w-4 h-4 mr-2" />
+          New Project
+          <MenubarShortcut>⌘N</MenubarShortcut>
+        </MenubarItem>
+        
+        <MenubarItem onClick={() => console.log('Open project')}>
+          <FolderOpen className="w-4 h-4 mr-2" />
+          Open Project
+          <MenubarShortcut>⌘O</MenubarShortcut>
+        </MenubarItem>
 
-          {recentFiles.length > 0 && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <History className="w-4 h-4 mr-2" />
-                Recent Files
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-64">
-                {recentFiles.slice(0, 8).map((file) => (
-                  <DropdownMenuItem 
-                    key={file.id}
-                    onClick={() => handleOpenRecent(file.id)}
-                    className="flex flex-col items-start py-2"
-                  >
-                    <span className="font-medium truncate w-full">{file.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(file.lastOpened)}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={clearRecentFiles}
-                  className="text-muted-foreground"
+        {recentFiles.length > 0 && (
+          <MenubarSub>
+            <MenubarSubTrigger>
+              <History className="w-4 h-4 mr-2" />
+              Recent Files
+            </MenubarSubTrigger>
+            <MenubarSubContent className="w-64">
+              {recentFiles.slice(0, 8).map((file) => (
+                <MenubarItem 
+                  key={file.id}
+                  onClick={() => handleOpenRecent(file.id)}
+                  className="flex flex-col items-start py-2"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Clear Recent Files
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          )}
+                  <span className="font-medium truncate w-full">{file.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatDate(file.lastOpened)}
+                  </span>
+                </MenubarItem>
+              ))}
+              <MenubarSeparator />
+              <MenubarItem 
+                onClick={clearRecentFiles}
+                className="text-muted-foreground"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clear Recent Files
+              </MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
+        )}
 
-          <DropdownMenuSeparator />
+        <MenubarSeparator />
 
-          <DropdownMenuItem 
-            onClick={handleSave}
-            disabled={!currentProject && !hasUnsavedChanges()}
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Save
-            <span className="ml-auto text-xs text-muted-foreground">⌘S</span>
-          </DropdownMenuItem>
+        <MenubarItem 
+          onClick={handleSave}
+          disabled={!currentProject && !hasUnsavedChanges()}
+        >
+          <Save className="w-4 h-4 mr-2" />
+          Save
+          <MenubarShortcut>⌘S</MenubarShortcut>
+        </MenubarItem>
 
-          <DropdownMenuItem onClick={handleSaveAs}>
-            <Save className="w-4 h-4 mr-2" />
-            Save As...
-            <span className="ml-auto text-xs text-muted-foreground">⌘⇧S</span>
-          </DropdownMenuItem>
+        <MenubarItem onClick={handleSaveAs}>
+          <Save className="w-4 h-4 mr-2" />
+          Save As...
+          <MenubarShortcut>⌘⇧S</MenubarShortcut>
+        </MenubarItem>
 
-          <DropdownMenuSeparator />
+        <MenubarSeparator />
 
-          <DropdownMenuItem onClick={handleImport}>
-            <Upload className="w-4 h-4 mr-2" />
-            Import
-          </DropdownMenuItem>
+        <MenubarItem onClick={handleImport}>
+          <Upload className="w-4 h-4 mr-2" />
+          Import
+        </MenubarItem>
 
-          <DropdownMenuItem onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            Export
-            <span className="ml-auto text-xs text-muted-foreground">⌘E</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <MenubarItem onClick={handleExport}>
+          <Download className="w-4 h-4 mr-2" />
+          Export
+          <MenubarShortcut>⌘E</MenubarShortcut>
+        </MenubarItem>
+      </MenubarContent>
 
       <Dialog open={newProjectOpen} onOpenChange={setNewProjectOpen}>
         <NewProjectDialog 

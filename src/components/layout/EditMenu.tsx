@@ -1,10 +1,9 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarShortcut,
+} from '@/components/ui/menubar';
 import { 
   Undo2, 
   Redo2, 
@@ -50,65 +49,60 @@ export function EditMenu() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="px-3 py-1 text-sm font-medium hover:bg-muted rounded transition-colors">
-        Edit
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
-        <DropdownMenuItem onClick={handleUndo}>
-          <Undo2 className="w-4 h-4 mr-2" />
-          Undo
-          <span className="ml-auto text-xs text-muted-foreground">⌘Z</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem onClick={handleRedo}>
-          <Redo2 className="w-4 h-4 mr-2" />
-          Redo
-          <span className="ml-auto text-xs text-muted-foreground">⌘⇧Z</span>
-        </DropdownMenuItem>
+    <MenubarContent align="start" className="w-56">
+      <MenubarItem onClick={handleUndo}>
+        <Undo2 className="w-4 h-4 mr-2" />
+        Undo
+        <MenubarShortcut>⌘Z</MenubarShortcut>
+      </MenubarItem>
+      
+      <MenubarItem onClick={handleRedo}>
+        <Redo2 className="w-4 h-4 mr-2" />
+        Redo
+        <MenubarShortcut>⌘⇧Z</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuItem onClick={handleCut}>
-          <Scissors className="w-4 h-4 mr-2" />
-          Cut
-          <span className="ml-auto text-xs text-muted-foreground">⌘X</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleCut}>
+        <Scissors className="w-4 h-4 mr-2" />
+        Cut
+        <MenubarShortcut>⌘X</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuItem onClick={handleCopy}>
-          <Copy className="w-4 h-4 mr-2" />
-          Copy
-          <span className="ml-auto text-xs text-muted-foreground">⌘C</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleCopy}>
+        <Copy className="w-4 h-4 mr-2" />
+        Copy
+        <MenubarShortcut>⌘C</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuItem onClick={handlePaste}>
-          <Clipboard className="w-4 h-4 mr-2" />
-          Paste
-          <span className="ml-auto text-xs text-muted-foreground">⌘V</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handlePaste}>
+        <Clipboard className="w-4 h-4 mr-2" />
+        Paste
+        <MenubarShortcut>⌘V</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuItem onClick={handleDelete}>
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete
-          <span className="ml-auto text-xs text-muted-foreground">Del</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleDelete}>
+        <Trash2 className="w-4 h-4 mr-2" />
+        Delete
+        <MenubarShortcut>Del</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuItem onClick={handleDuplicate}>
-          <Square className="w-4 h-4 mr-2" />
-          Duplicate
-          <span className="ml-auto text-xs text-muted-foreground">⌘D</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleDuplicate}>
+        <Square className="w-4 h-4 mr-2" />
+        Duplicate
+        <MenubarShortcut>⌘D</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuItem onClick={handleSelectAll}>
-          <MousePointer className="w-4 h-4 mr-2" />
-          Select All
-          <span className="ml-auto text-xs text-muted-foreground">⌘A</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      <MenubarItem onClick={handleSelectAll}>
+        <MousePointer className="w-4 h-4 mr-2" />
+        Select All
+        <MenubarShortcut>⌘A</MenubarShortcut>
+      </MenubarItem>
+    </MenubarContent>
   );
 }

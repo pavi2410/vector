@@ -1,11 +1,10 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarCheckboxItem,
+  MenubarShortcut,
+} from '@/components/ui/menubar';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -45,81 +44,76 @@ export function ViewMenu() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="px-3 py-1 text-sm font-medium hover:bg-muted rounded transition-colors">
-        View
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-56">
-        <DropdownMenuItem onClick={handleZoomIn}>
-          <ZoomIn className="w-4 h-4 mr-2" />
-          Zoom In
-          <span className="ml-auto text-xs text-muted-foreground">⌘+</span>
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem onClick={handleZoomOut}>
-          <ZoomOut className="w-4 h-4 mr-2" />
-          Zoom Out
-          <span className="ml-auto text-xs text-muted-foreground">⌘-</span>
-        </DropdownMenuItem>
+    <MenubarContent align="start" className="w-56">
+      <MenubarItem onClick={handleZoomIn}>
+        <ZoomIn className="w-4 h-4 mr-2" />
+        Zoom In
+        <MenubarShortcut>⌘+</MenubarShortcut>
+      </MenubarItem>
+      
+      <MenubarItem onClick={handleZoomOut}>
+        <ZoomOut className="w-4 h-4 mr-2" />
+        Zoom Out
+        <MenubarShortcut>⌘-</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuItem onClick={handleZoomToFit}>
-          <Maximize className="w-4 h-4 mr-2" />
-          Zoom to Fit
-          <span className="ml-auto text-xs text-muted-foreground">⌘0</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleZoomToFit}>
+        <Maximize className="w-4 h-4 mr-2" />
+        Zoom to Fit
+        <MenubarShortcut>⌘0</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuItem onClick={handleActualSize}>
-          <Eye className="w-4 h-4 mr-2" />
-          Actual Size
-          <span className="ml-auto text-xs text-muted-foreground">⌘1</span>
-        </DropdownMenuItem>
+      <MenubarItem onClick={handleActualSize}>
+        <Eye className="w-4 h-4 mr-2" />
+        Actual Size
+        <MenubarShortcut>⌘1</MenubarShortcut>
+      </MenubarItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuCheckboxItem
-          checked={showGrid}
-          onCheckedChange={setShowGrid}
-        >
-          <Grid3X3 className="w-4 h-4 mr-2" />
-          Show Grid
-          <span className="ml-auto text-xs text-muted-foreground">⌘;</span>
-        </DropdownMenuCheckboxItem>
+      <MenubarCheckboxItem
+        checked={showGrid}
+        onCheckedChange={setShowGrid}
+      >
+        <Grid3X3 className="w-4 h-4 mr-2" />
+        Show Grid
+        <MenubarShortcut>⌘;</MenubarShortcut>
+      </MenubarCheckboxItem>
 
-        <DropdownMenuCheckboxItem
-          checked={showRulers}
-          onCheckedChange={setShowRulers}
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Show Rulers
-          <span className="ml-auto text-xs text-muted-foreground">⌘R</span>
-        </DropdownMenuCheckboxItem>
+      <MenubarCheckboxItem
+        checked={showRulers}
+        onCheckedChange={setShowRulers}
+      >
+        <Settings className="w-4 h-4 mr-2" />
+        Show Rulers
+        <MenubarShortcut>⌘R</MenubarShortcut>
+      </MenubarCheckboxItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuCheckboxItem
-          checked={showLayers}
-          onCheckedChange={setShowLayers}
-        >
-          <Layers className="w-4 h-4 mr-2" />
-          Layers Panel
-        </DropdownMenuCheckboxItem>
+      <MenubarCheckboxItem
+        checked={showLayers}
+        onCheckedChange={setShowLayers}
+      >
+        <Layers className="w-4 h-4 mr-2" />
+        Layers Panel
+      </MenubarCheckboxItem>
 
-        <DropdownMenuCheckboxItem
-          checked={showProperties}
-          onCheckedChange={setShowProperties}
-        >
-          <Palette className="w-4 h-4 mr-2" />
-          Properties Panel
-        </DropdownMenuCheckboxItem>
+      <MenubarCheckboxItem
+        checked={showProperties}
+        onCheckedChange={setShowProperties}
+      >
+        <Palette className="w-4 h-4 mr-2" />
+        Properties Panel
+      </MenubarCheckboxItem>
 
-        <DropdownMenuSeparator />
+      <MenubarSeparator />
 
-        <DropdownMenuItem onClick={handleFullscreen}>
-          <Maximize className="w-4 h-4 mr-2" />
-          Enter Fullscreen
-          <span className="ml-auto text-xs text-muted-foreground">F11</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      <MenubarItem onClick={handleFullscreen}>
+        <Maximize className="w-4 h-4 mr-2" />
+        Enter Fullscreen
+        <MenubarShortcut>F11</MenubarShortcut>
+      </MenubarItem>
+    </MenubarContent>
   );
 }
