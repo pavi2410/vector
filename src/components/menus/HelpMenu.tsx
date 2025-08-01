@@ -19,7 +19,7 @@ export function HelpMenu() {
   const [showAbout, setShowAbout] = useState(false);
 
   const handleDocumentation = () => {
-    window.open('https://github.com/pavi2410/vector', '_blank');
+    window.open('https://github.com/pavi2410/vector/blob/main/USER_GUIDE.md', '_blank');
   };
 
   const handleReportIssue = () => {
