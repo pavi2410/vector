@@ -19,6 +19,45 @@ Vector is a Figma-inspired SVG editor that brings professional-grade filter capa
 
 ## Architecture
 
+### Rendering Architecture Decision
+
+**SVG-Based Rendering**: Vector uses native SVG rendering instead of Canvas for the following reasons:
+
+- **Native Filter Support**: SVG filters (`<defs><filter>`) work natively without conversion or polyfills
+- **Vector Precision**: True scalable vectors with no pixelation at any zoom level
+- **DOM Integration**: Direct manipulation with React components and native event handlers
+- **Accessibility**: Full screen reader support and semantic markup compatibility
+- **Export Simplicity**: Direct SVG output without complex canvas-to-SVG conversion
+- **Filter Pipeline Integration**: Perfect match with React Flow - generates actual SVG filter definitions
+
+```tsx
+// Main canvas component renders actual SVG
+<svg viewBox="0 0 1920 1080" className="canvas">
+  <defs>
+    {/* Filter definitions generated from React Flow pipeline */}
+    <filter id="blur-shadow-pipeline">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feDropShadow dx="2" dy="4" result="shadow"/>
+      <feComposite in="blur" in2="shadow" operator="over"/>
+    </filter>
+  </defs>
+  
+  {/* Rendered shapes with applied filters */}
+  {shapes.map(shape => (
+    <ShapeComponent 
+      key={shape.id} 
+      shape={shape}
+      filter={getAppliedFilter(shape.id)}
+    />
+  ))}
+</svg>
+```
+
+**Trade-offs Considered**:
+- **Performance**: SVG can be slower with hundreds of complex shapes, but React 19's concurrent features mitigate this
+- **Complexity**: More complex coordinate transforms, but better integration with web standards
+- **Filter Compatibility**: Perfect match - React Flow nodes directly generate SVG filter primitives
+
 ### Component Structure
 ```
 src/
