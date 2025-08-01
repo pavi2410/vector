@@ -3,9 +3,10 @@ import { useStore } from '@nanostores/react';
 import { TransformComponent } from 'react-zoom-pan-pinch';
 import { canvasStore, addShape } from '@/stores/canvas';
 import { toolStore } from '@/stores/tools';
-import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
+import { selectionStore, selectShape, selectFrame, clearSelection } from '@/stores/selection';
 import { ShapeRenderer } from './ShapeRenderer';
 import { SelectionOverlay } from './SelectionOverlay';
+import { FrameSelectionOverlay } from './FrameSelectionOverlay';
 import { CanvasControls } from './CanvasControls';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
 import type { Shape } from '@/types/canvas';
@@ -58,6 +59,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
     }
 
     if (activeTool === 'select') {
+      // Check for clicked shapes first (shapes are rendered on top of frames)
       const clickedShape = shapes.find(shape => 
         position.x >= shape.x && 
         position.x <= shape.x + shape.width &&
@@ -68,7 +70,19 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       if (clickedShape) {
         selectShape(clickedShape.id, event.shiftKey);
       } else {
-        clearSelection();
+        // Check for clicked frames
+        const clickedFrame = frames.find(frame => 
+          position.x >= frame.x && 
+          position.x <= frame.x + frame.width &&
+          position.y >= frame.y && 
+          position.y <= frame.y + frame.height
+        );
+        
+        if (clickedFrame) {
+          selectFrame(clickedFrame.id, event.shiftKey);
+        } else {
+          clearSelection();
+        }
       }
     } else if (['rectangle', 'circle', 'line'].includes(activeTool)) {
       setIsDrawing(true);
@@ -204,8 +218,9 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
             />
           )}
 
-          {/* Selection overlay */}
+          {/* Selection overlays */}
           <SelectionOverlay />
+          <FrameSelectionOverlay />
         </svg>
       </TransformComponent>
       

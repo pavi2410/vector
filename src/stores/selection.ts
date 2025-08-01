@@ -3,11 +3,13 @@ import type { TransformHandle } from '../types/tools';
 
 export interface SelectionState {
   selectedIds: string[];
+  selectedFrameIds: string[];
   transformHandle: TransformHandle | null;
 }
 
 export const selectionStore = atom<SelectionState>({
   selectedIds: [],
+  selectedFrameIds: [],
   transformHandle: null
 });
 
@@ -39,8 +41,28 @@ export const selectMultiple = (ids: string[]) => {
 export const clearSelection = () => {
   selectionStore.set({
     selectedIds: [],
+    selectedFrameIds: [],
     transformHandle: null
   });
+};
+
+export const selectFrame = (id: string, addToSelection = false) => {
+  const current = selectionStore.get();
+  if (addToSelection) {
+    selectionStore.set({
+      ...current,
+      selectedFrameIds: current.selectedFrameIds.includes(id) 
+        ? current.selectedFrameIds.filter(selectedId => selectedId !== id)
+        : [...current.selectedFrameIds, id],
+      selectedIds: [] // Clear shape selection when selecting frames
+    });
+  } else {
+    selectionStore.set({
+      ...current,
+      selectedFrameIds: [id],
+      selectedIds: [] // Clear shape selection when selecting frames
+    });
+  }
 };
 
 export const setTransformHandle = (handle: TransformHandle | null) => {

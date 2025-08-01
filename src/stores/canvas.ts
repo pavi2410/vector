@@ -1,5 +1,5 @@
 import { atom } from 'nanostores';
-import type { CanvasState, Shape } from '../types/canvas';
+import type { CanvasState, Shape, Frame } from '../types/canvas';
 
 export const canvasStore = atom<CanvasState>({
   shapes: [],
@@ -57,6 +57,32 @@ export const setViewBox = (x: number, y: number, width: number, height: number) 
   canvasStore.set({
     ...current,
     viewBox: { x, y, width, height }
+  });
+};
+
+export const updateFrame = (id: string, updates: Partial<Omit<Frame, 'id'>>) => {
+  const current = canvasStore.get();
+  canvasStore.set({
+    ...current,
+    frames: current.frames.map(frame => 
+      frame.id === id ? { ...frame, ...updates } : frame
+    )
+  });
+};
+
+export const addFrame = (frame: Frame) => {
+  const current = canvasStore.get();
+  canvasStore.set({
+    ...current,
+    frames: [...current.frames, frame]
+  });
+};
+
+export const removeFrame = (id: string) => {
+  const current = canvasStore.get();
+  canvasStore.set({
+    ...current,
+    frames: current.frames.filter(frame => frame.id !== id)
   });
 };
 
