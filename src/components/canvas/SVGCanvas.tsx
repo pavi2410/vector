@@ -7,7 +7,7 @@ import { selectionStore, selectShape, clearSelection } from '@/stores/selection'
 import { ShapeRenderer } from './ShapeRenderer';
 import { SelectionOverlay } from './SelectionOverlay';
 import { CanvasControls } from './CanvasControls';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
 import type { Shape } from '@/types/canvas';
 
 export function SVGCanvas() {
@@ -22,8 +22,8 @@ export function SVGCanvas() {
   const { activeTool, toolSettings } = useStore(toolStore);
   const { selectedIds } = useStore(selectionStore);
 
-  // Initialize keyboard shortcuts with transform ref
-  useKeyboardShortcuts({
+  // Initialize canvas keyboard shortcuts
+  useCanvasShortcuts({
     transformRef,
     onTogglePanMode: (active: boolean) => setIsSpacePanning(active)
   });

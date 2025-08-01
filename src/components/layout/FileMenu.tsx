@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
+import { useFileShortcuts } from '@/hooks/useFileShortcuts';
 import {
   MenubarContent,
   MenubarItem,
@@ -60,6 +61,13 @@ export function FileMenu() {
   const handleExport = () => {
     setExportDialogOpen(true);
   };
+  
+  // Connect file shortcuts to dialog handlers
+  useFileShortcuts({
+    onNewProject: handleNewProject,
+    onSaveProject: handleSaveAs,
+    onExportProject: handleExport
+  });
 
   const handleOpenRecent = (fileId: string) => {
     // TODO: Implement open recent file
