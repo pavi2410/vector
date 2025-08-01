@@ -4,6 +4,10 @@ import { LayersPanel } from './LayersPanel';
 import { PropertiesPanel } from './PropertiesPanel';
 import { FilterPanel } from './FilterPanel';
 import { FileMenu } from './FileMenu';
+import { EditMenu } from './EditMenu';
+import { ViewMenu } from './ViewMenu';
+import { ObjectMenu } from './ObjectMenu';
+import { FilterMenu } from './FilterMenu';
 import { HelpMenu } from './HelpMenu';
 import { SVGCanvas } from '../canvas/SVGCanvas';
 import { cn } from '@/lib/utils';
@@ -17,10 +21,10 @@ export function MainLayout() {
       <div className="h-10 bg-muted border-b border-border flex items-center px-4 text-sm">
         <div className="flex space-x-4">
           <FileMenu />
-          <span className="font-medium">Edit</span>
-          <span className="font-medium">View</span>
-          <span className="font-medium">Object</span>
-          <span className="font-medium">Filter</span>
+          <EditMenu />
+          <ViewMenu />
+          <ObjectMenu />
+          <FilterMenu />
           <HelpMenu />
         </div>
       </div>
