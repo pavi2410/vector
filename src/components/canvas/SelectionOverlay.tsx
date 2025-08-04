@@ -79,34 +79,54 @@ export function SelectionOverlay() {
       // Calculate scale and offset based on resize handle
       switch (resizeHandle) {
         case 'nw':
-          scaleX = (originalWidth - deltaX) / originalWidth;
-          scaleY = (originalHeight - deltaY) / originalHeight;
-          offsetX = deltaX;
-          offsetY = deltaY;
+          // Diagonal handle - maintain aspect ratio
+          const nwScale = Math.max(
+            (originalWidth - deltaX) / originalWidth,
+            (originalHeight - deltaY) / originalHeight
+          );
+          scaleX = nwScale;
+          scaleY = nwScale;
+          offsetX = originalWidth - (originalWidth * nwScale);
+          offsetY = originalHeight - (originalHeight * nwScale);
           break;
         case 'n':
           scaleY = (originalHeight - deltaY) / originalHeight;
           offsetY = deltaY;
           break;
         case 'ne':
-          scaleX = (originalWidth + deltaX) / originalWidth;
-          scaleY = (originalHeight - deltaY) / originalHeight;
-          offsetY = deltaY;
+          // Diagonal handle - maintain aspect ratio
+          const neScale = Math.max(
+            (originalWidth + deltaX) / originalWidth,
+            (originalHeight - deltaY) / originalHeight
+          );
+          scaleX = neScale;
+          scaleY = neScale;
+          offsetY = originalHeight - (originalHeight * neScale);
           break;
         case 'e':
           scaleX = (originalWidth + deltaX) / originalWidth;
           break;
         case 'se':
-          scaleX = (originalWidth + deltaX) / originalWidth;
-          scaleY = (originalHeight + deltaY) / originalHeight;
+          // Diagonal handle - maintain aspect ratio
+          const seScale = Math.max(
+            (originalWidth + deltaX) / originalWidth,
+            (originalHeight + deltaY) / originalHeight
+          );
+          scaleX = seScale;
+          scaleY = seScale;
           break;
         case 's':
           scaleY = (originalHeight + deltaY) / originalHeight;
           break;
         case 'sw':
-          scaleX = (originalWidth - deltaX) / originalWidth;
-          scaleY = (originalHeight + deltaY) / originalHeight;
-          offsetX = deltaX;
+          // Diagonal handle - maintain aspect ratio
+          const swScale = Math.max(
+            (originalWidth - deltaX) / originalWidth,
+            (originalHeight + deltaY) / originalHeight
+          );
+          scaleX = swScale;
+          scaleY = swScale;
+          offsetX = originalWidth - (originalWidth * swScale);
           break;
         case 'w':
           scaleX = (originalWidth - deltaX) / originalWidth;
