@@ -26,6 +26,14 @@ export const addShape = (shape: Shape) => {
   });
 };
 
+export const addShapes = (shapes: Shape[]) => {
+  const current = canvasStore.get();
+  canvasStore.set({
+    ...current,
+    shapes: [...current.shapes, ...shapes]
+  });
+};
+
 export const updateShape = (id: string, updates: Partial<Shape>) => {
   const current = canvasStore.get();
   canvasStore.set({

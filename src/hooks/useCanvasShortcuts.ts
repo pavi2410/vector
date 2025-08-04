@@ -1,7 +1,8 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useStore } from '@nanostores/react';
-import { canvasStore, removeShape } from '@/stores/canvas';
-import { selectionStore, clearSelection } from '@/stores/selection';
+import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
+import { selectionStore, clearSelection, selectMultiple } from '@/stores/selection';
+import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
 import { useControls } from 'react-zoom-pan-pinch';
 
 interface CanvasShortcutsOptions {
@@ -11,7 +12,10 @@ interface CanvasShortcutsOptions {
 export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   const { shapes, frames } = useStore(canvasStore);
   const { selectedIds } = useStore(selectionStore);
+  const { shapes: clipboardShapes } = useStore(clipboardStore);
   const { zoomIn, zoomOut, setTransform, instance } = useControls();
+
+  const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));
 
   // Cmd+Plus / Ctrl+Plus - Zoom In
   useHotkeys('ctrl+=, cmd+=, ctrl+plus, cmd+plus', (event) => {
@@ -35,6 +39,52 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
     if (selectedIds.length > 0) {
       selectedIds.forEach(id => removeShape(id));
       clearSelection();
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+C / Ctrl+C - Copy Selected Shapes
+  useHotkeys('ctrl+c, cmd+c', (event) => {
+    event.preventDefault();
+    if (selectedShapes.length > 0) {
+      copyShapesToClipboard(selectedShapes);
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+X / Ctrl+X - Cut Selected Shapes
+  useHotkeys('ctrl+x, cmd+x', (event) => {
+    event.preventDefault();
+    if (selectedShapes.length > 0) {
+      copyShapesToClipboard(selectedShapes);
+      selectedIds.forEach(id => removeShape(id));
+      clearSelection();
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+V / Ctrl+V - Paste Shapes
+  useHotkeys('ctrl+v, cmd+v', (event) => {
+    event.preventDefault();
+    if (clipboardShapes.length > 0) {
+      // Generate new IDs for pasted shapes and offset their position
+      const offset = 20; // Offset pasted shapes by 20px
+      const pastedShapes = clipboardShapes.map((shape, index) => ({
+        ...shape,
+        id: `${shape.type}-${Date.now()}-${index}`,
+        x: shape.x + offset,
+        y: shape.y + offset,
+      }));
+      
+      // Add pasted shapes to canvas
+      addShapes(pastedShapes);
+      
+      // Select the pasted shapes
+      const pastedIds = pastedShapes.map(shape => shape.id);
+      selectMultiple(pastedIds);
     }
   }, {
     enableOnFormTags: false,
