@@ -103,59 +103,77 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
     // Stop propagation to prevent transform wrapper interference
     event.stopPropagation();
     
-    let width = Math.abs(position.x - startPoint.x);
-    let height = Math.abs(position.y - startPoint.y);
-    
-    // Apply constraint for perfect squares/circles when Shift is held
-    if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
-      const size = Math.max(width, height);
-      width = size;
-      height = size;
-    }
-    
-    const x = Math.min(startPoint.x, position.x);
-    const y = Math.min(startPoint.y, position.y);
-    
-    // Adjust position for perfect squares/circles to maintain center point
-    let finalX = x;
-    let finalY = y;
-    
-    if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
-      const centerX = startPoint.x;
-      const centerY = startPoint.y;
-      const size = Math.max(width, height);
+    // Handle line tool differently from rectangles and circles
+    if (currentShape.type === 'line') {
+      // For lines, store the end point directly in width and height
+      setCurrentShape({
+        ...currentShape,
+        x: startPoint.x,
+        y: startPoint.y,
+        width: position.x - startPoint.x,
+        height: position.y - startPoint.y
+      });
+    } else {
+      // Rectangle and circle logic
+      let width = Math.abs(position.x - startPoint.x);
+      let height = Math.abs(position.y - startPoint.y);
       
-      if (position.x >= startPoint.x && position.y >= startPoint.y) {
-        // Bottom-right quadrant
-        finalX = centerX;
-        finalY = centerY;
-      } else if (position.x < startPoint.x && position.y >= startPoint.y) {
-        // Bottom-left quadrant
-        finalX = centerX - size;
-        finalY = centerY;
-      } else if (position.x < startPoint.x && position.y < startPoint.y) {
-        // Top-left quadrant
-        finalX = centerX - size;
-        finalY = centerY - size;
-      } else {
-        // Top-right quadrant
-        finalX = centerX;
-        finalY = centerY - size;
+      // Apply constraint for perfect squares/circles when Shift is held
+      if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
+        const size = Math.max(width, height);
+        width = size;
+        height = size;
       }
+      
+      const x = Math.min(startPoint.x, position.x);
+      const y = Math.min(startPoint.y, position.y);
+      
+      // Adjust position for perfect squares/circles to maintain center point
+      let finalX = x;
+      let finalY = y;
+      
+      if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
+        const centerX = startPoint.x;
+        const centerY = startPoint.y;
+        const size = Math.max(width, height);
+        
+        if (position.x >= startPoint.x && position.y >= startPoint.y) {
+          // Bottom-right quadrant
+          finalX = centerX;
+          finalY = centerY;
+        } else if (position.x < startPoint.x && position.y >= startPoint.y) {
+          // Bottom-left quadrant
+          finalX = centerX - size;
+          finalY = centerY;
+        } else if (position.x < startPoint.x && position.y < startPoint.y) {
+          // Top-left quadrant
+          finalX = centerX - size;
+          finalY = centerY - size;
+        } else {
+          // Top-right quadrant
+          finalX = centerX;
+          finalY = centerY - size;
+        }
+      }
+      
+      setCurrentShape({
+        ...currentShape,
+        x: finalX,
+        y: finalY,
+        width,
+        height
+      });
     }
-    
-    setCurrentShape({
-      ...currentShape,
-      x: finalX,
-      y: finalY,
-      width,
-      height
-    });
   }, [isDrawing, startPoint, currentShape, getMousePosition]);
 
   const handleMouseUp = useCallback(() => {
     if (isDrawing && currentShape) {
-      if (currentShape.width > 5 && currentShape.height > 5) {
+      // For lines, check if there's any movement; for other shapes, check minimum size
+      const shouldAdd = currentShape.type === 'line' 
+        ? Math.abs(currentShape.width) > 2 || Math.abs(currentShape.height) > 2
+        : currentShape.width > 5 && currentShape.height > 5;
+        
+      if (shouldAdd) {
         addShape(currentShape);
         selectShape(currentShape.id);
       }
