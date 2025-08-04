@@ -9,12 +9,12 @@ export const canvasStore = atom<CanvasState>({
       name: 'Frame 1',
       x: 0,
       y: 0,
-      width: 1920,
-      height: 1080,
+      width: 512,
+      height: 512,
       backgroundColor: '#ffffff'
     }
   ],
-  viewBox: { x: 0, y: 0, width: 1920, height: 1080 },
+  viewBox: { x: 0, y: 0, width: 512, height: 512 },
   zoom: 1
 });
 

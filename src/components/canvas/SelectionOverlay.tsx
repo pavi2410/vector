@@ -172,7 +172,7 @@ export function SelectionOverlay() {
   const width = maxX - minX;
   const height = maxY - minY;
 
-  const handleSize = 12 / scale; // Adjust handle size based on zoom level
+  const handleSize = 8 / scale; // Adjust handle size based on zoom level
   const handles = [
     { id: 'nw', x: minX - handleSize / 2, y: minY - handleSize / 2, cursor: 'nw-resize' },
     { id: 'n', x: minX + width / 2 - handleSize / 2, y: minY - handleSize / 2, cursor: 'n-resize' },

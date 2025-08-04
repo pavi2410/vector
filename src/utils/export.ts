@@ -91,9 +91,9 @@ const createRasterCanvas = (
   const { scale = 1, includeBackground = true } = options;
   
   const frame = frames[0];
-  const width = (frame?.width || 1920) * scale;
-  const height = (frame?.height || 1080) * scale;
-  
+  const width = (frame?.width || 512) * scale;
+  const height = (frame?.height || 512) * scale;
+
   canvas.width = width;
   canvas.height = height;
   

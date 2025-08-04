@@ -2,7 +2,7 @@ import { useStore } from '@nanostores/react';
 import { canvasStore, updateFrame } from '@/stores/canvas';
 import { selectionStore } from '@/stores/selection';
 import { useTransformContext } from 'react-zoom-pan-pinch';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 export function FrameSelectionOverlay() {
   const { frames } = useStore(canvasStore);
@@ -30,7 +30,7 @@ export function FrameSelectionOverlay() {
     setInitialFrame({ x: frame.x, y: frame.y, width: frame.width, height: frame.height });
   }, [frame]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || !dragStart || !resizeHandle || !initialFrame) return;
 
     const deltaX = (e.clientX - dragStart.x) / scale;
@@ -111,6 +111,19 @@ export function FrameSelectionOverlay() {
     setInitialFrame(null);
   }, []);
 
+  // Add global event listeners when dragging
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   // Early return after all hooks are called
   if (selectedFrameIds.length === 0 || !frame) return null;
 
@@ -127,11 +140,7 @@ export function FrameSelectionOverlay() {
   ];
 
   return (
-    <g 
-      className="frame-selection-overlay"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    >
+    <g className="frame-selection-overlay">
       {/* Selection rectangle */}
       <rect
         x={frame.x}

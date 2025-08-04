@@ -4,10 +4,11 @@ import { cn } from '@/lib/utils';
 interface ShapeRendererProps {
   shape: Shape;
   isSelected: boolean;
+  isHovered?: boolean;
   isPreview?: boolean;
 }
 
-export function ShapeRenderer({ shape, isSelected, isPreview = false }: ShapeRendererProps) {
+export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview = false }: ShapeRendererProps) {
   const commonProps = {
     fill: shape.fill || 'transparent',
     stroke: shape.stroke || '#000000',
@@ -15,7 +16,8 @@ export function ShapeRenderer({ shape, isSelected, isPreview = false }: ShapeRen
     opacity: shape.opacity || 1,
     className: cn(
       isPreview && "pointer-events-none opacity-70",
-      isSelected && "stroke-blue-500"
+      isSelected && "stroke-blue-500",
+      isHovered && !isSelected && "stroke-blue-300 stroke-2"
     )
   };
 

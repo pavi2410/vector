@@ -1,13 +1,17 @@
 import { useRef, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { TransformComponent } from 'react-zoom-pan-pinch';
+import { TransformComponent, useTransformContext } from 'react-zoom-pan-pinch';
 import { canvasStore, addShape } from '@/stores/canvas';
 import { toolStore } from '@/stores/tools';
-import { selectionStore, selectShape, selectFrame, clearSelection } from '@/stores/selection';
+import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
+import { hoverStore } from '@/stores/hover';
+import { setMousePosition } from '@/stores/mouse';
 import { ShapeRenderer } from './ShapeRenderer';
+import { InteractiveShape } from './InteractiveShape';
 import { SelectionOverlay } from './SelectionOverlay';
 import { FrameSelectionOverlay } from './FrameSelectionOverlay';
 import { CanvasControls } from './CanvasControls';
+import { DebugInfo } from './DebugInfo';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
 import type { Shape } from '@/types/canvas';
 
@@ -22,9 +26,13 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
   const [currentShape, setCurrentShape] = useState<Shape | null>(null);
 
-  const { shapes, viewBox, zoom, frames } = useStore(canvasStore);
+  const { shapes, viewBox, frames } = useStore(canvasStore);
   const { activeTool, toolSettings } = useStore(toolStore);
   const { selectedIds } = useStore(selectionStore);
+  const { hoveredId } = useStore(hoverStore);
+  const { transformState } = useTransformContext();
+
+  const scale = transformState.scale;
 
   // Initialize canvas keyboard shortcuts (now inside TransformWrapper)
   useCanvasShortcuts({
@@ -34,16 +42,15 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const getMousePosition = useCallback((event: React.MouseEvent) => {
     if (!svgRef.current) return { x: 0, y: 0 };
     
-    // Convert screen coordinates to SVG coordinates using SVG's built-in methods
-    const point = svgRef.current.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
+    // Get the SVG element's bounding rect
+    const svgRect = svgRef.current.getBoundingClientRect();
     
-    // Transform point through the SVG's transformation matrix
-    const svgPoint = point.matrixTransform(svgRef.current.getScreenCTM()?.inverse());
-    
-    return { x: svgPoint.x, y: svgPoint.y };
-  }, []);
+    // Convert screen coordinates to SVG coordinates accounting for zoom and pan
+    const x = (event.clientX - svgRect.left) / scale;
+    const y = (event.clientY - svgRect.top) / scale;
+
+    return { x, y };
+  }, [scale]);
 
   const handleMouseDown = useCallback((event: React.MouseEvent) => {
     const position = getMousePosition(event);
@@ -53,38 +60,17 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       return;
     }
     
-    // Prevent default to stop transform wrapper from handling drawing interactions
-    if (activeTool !== 'select') {
-      event.stopPropagation();
-    }
-
+    // For select tool, only handle background clicks (shape clicks are handled by InteractiveShape)
     if (activeTool === 'select') {
-      // Check for clicked shapes first (shapes are rendered on top of frames)
-      const clickedShape = shapes.find(shape => 
-        position.x >= shape.x && 
-        position.x <= shape.x + shape.width &&
-        position.y >= shape.y && 
-        position.y <= shape.y + shape.height
-      );
-      
-      if (clickedShape) {
-        selectShape(clickedShape.id, event.shiftKey);
-      } else {
-        // Check for clicked frames
-        const clickedFrame = frames.find(frame => 
-          position.x >= frame.x && 
-          position.x <= frame.x + frame.width &&
-          position.y >= frame.y && 
-          position.y <= frame.y + frame.height
-        );
-        
-        if (clickedFrame) {
-          selectFrame(clickedFrame.id, event.shiftKey);
-        } else {
-          clearSelection();
-        }
-      }
-    } else if (['rectangle', 'circle', 'line'].includes(activeTool)) {
+      // Only clear selection on background clicks
+      clearSelection();
+      return;
+    }
+    
+    // Prevent default to stop transform wrapper from handling drawing interactions
+    event.stopPropagation();
+
+    if (['rectangle', 'circle', 'line'].includes(activeTool)) {
       setIsDrawing(true);
       setStartPoint(position);
       
@@ -103,15 +89,18 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       
       setCurrentShape(newShape);
     }
-  }, [activeTool, shapes, toolSettings, getMousePosition, isSpacePanning]);
+  }, [activeTool, toolSettings, getMousePosition, isSpacePanning]);
 
   const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    // Always update mouse position for debug info
+    const position = getMousePosition(event);
+    setMousePosition(position.x, position.y, event.clientX, event.clientY);
+    
     if (!isDrawing || !startPoint || !currentShape) return;
     
     // Stop propagation to prevent transform wrapper interference
     event.stopPropagation();
     
-    const position = getMousePosition(event);
     const width = Math.abs(position.x - startPoint.x);
     const height = Math.abs(position.y - startPoint.y);
     const x = Math.min(startPoint.x, position.x);
@@ -153,7 +142,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       >
         <svg
           ref={svgRef}
-          className={`w-full h-full ${getCursor()}`}
+          className={`w-[512px] h-[512px] ${getCursor()}`}
           viewBox="0 0 512 512"
           preserveAspectRatio="xMidYMid meet"
           onMouseDown={handleMouseDown}
@@ -181,8 +170,8 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
           <rect
             x={viewBox.x}
             y={viewBox.y}
-            width={viewBox.width / zoom}
-            height={viewBox.height / zoom}
+            width={viewBox.width / scale}
+            height={viewBox.height / scale}
             fill="url(#grid)"
           />
 
@@ -195,17 +184,18 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
               width={frame.width}
               height={frame.height}
               fill={frame.backgroundColor || '#ffffff'}
-              stroke="#d1d5db"
-              strokeWidth="1"
+              stroke="none"
+              strokeWidth="0"
             />
           ))}
 
           {/* Rendered shapes */}
           {shapes.map(shape => (
-            <ShapeRenderer
+            <InteractiveShape
               key={shape.id}
               shape={shape}
               isSelected={selectedIds.includes(shape.id)}
+              isHovered={hoveredId === shape.id}
             />
           ))}
 
@@ -223,6 +213,9 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
           <FrameSelectionOverlay />
         </svg>
       </TransformComponent>
+      
+      {/* Debug info panel */}
+      <DebugInfo />
       
       {/* Enhanced canvas controls - now inside TransformWrapper */}
       <CanvasControls />

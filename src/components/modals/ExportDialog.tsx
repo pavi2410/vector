@@ -70,7 +70,7 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
 
   const exportSVG = async () => {
     // Create SVG content from canvas
-    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
       <!-- TODO: Implement actual SVG generation -->
       <rect width="100%" height="100%" fill="${exportOptions.includeBackground ? '#ffffff' : 'none'}"/>
     </svg>`;
@@ -85,9 +85,9 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
     
     if (!ctx) return;
     
-    canvas.width = 1920 * exportOptions.scale!;
-    canvas.height = 1080 * exportOptions.scale!;
-    
+    canvas.width = 512 * exportOptions.scale!;
+    canvas.height = 512 * exportOptions.scale!;
+
     if (exportOptions.includeBackground) {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -114,10 +114,10 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
     const ctx = canvas.getContext('2d');
     
     if (!ctx) return;
-    
-    canvas.width = 1920 * exportOptions.scale!;
-    canvas.height = 1080 * exportOptions.scale!;
-    
+
+    canvas.width = 512 * exportOptions.scale!;
+    canvas.height = 512 * exportOptions.scale!;
+
     // JPEG always needs a background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);

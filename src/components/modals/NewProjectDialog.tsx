@@ -30,8 +30,8 @@ const PRESET_SIZES = [
 export function NewProjectDialog({ onClose }: NewProjectDialogProps) {
   const [projectName, setProjectName] = useState('');
   const [selectedPreset, setSelectedPreset] = useState(0);
-  const [customWidth, setCustomWidth] = useState(1920);
-  const [customHeight, setCustomHeight] = useState(1080);
+  const [customWidth, setCustomWidth] = useState(512);
+  const [customHeight, setCustomHeight] = useState(512);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
   const handleCreate = () => {
@@ -65,8 +65,8 @@ export function NewProjectDialog({ onClose }: NewProjectDialogProps) {
   const resetForm = () => {
     setProjectName('');
     setSelectedPreset(0);
-    setCustomWidth(1920);
-    setCustomHeight(1080);
+    setCustomWidth(512);
+    setCustomHeight(512);
     setShowUnsavedWarning(false);
   };
 

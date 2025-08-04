@@ -20,12 +20,14 @@ export const selectShape = (id: string, addToSelection = false) => {
       ...current,
       selectedIds: current.selectedIds.includes(id) 
         ? current.selectedIds.filter(selectedId => selectedId !== id)
-        : [...current.selectedIds, id]
+        : [...current.selectedIds, id],
+      selectedFrameIds: [] // Clear frame selection when selecting shapes
     });
   } else {
     selectionStore.set({
       ...current,
-      selectedIds: [id]
+      selectedIds: [id],
+      selectedFrameIds: [] // Clear frame selection when selecting shapes
     });
   }
 };
@@ -34,7 +36,8 @@ export const selectMultiple = (ids: string[]) => {
   const current = selectionStore.get();
   selectionStore.set({
     ...current,
-    selectedIds: ids
+    selectedIds: ids,
+    selectedFrameIds: [] // Clear frame selection when selecting shapes
   });
 };
 
