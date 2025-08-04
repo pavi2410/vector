@@ -3,6 +3,7 @@ import { useStore } from '@nanostores/react';
 import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
 import { selectionStore, clearSelection, selectMultiple } from '@/stores/selection';
 import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
+import { setActiveTool } from '@/stores/tools';
 import { useControls } from 'react-zoom-pan-pinch';
 
 interface CanvasShortcutsOptions {
@@ -40,6 +41,15 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
       selectedIds.forEach(id => removeShape(id));
       clearSelection();
     }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Escape - Clear Selection and Switch to Select Tool
+  useHotkeys('escape', (event) => {
+    event.preventDefault();
+    clearSelection();
+    setActiveTool('select');
   }, {
     enableOnFormTags: false,
   });
