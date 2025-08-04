@@ -8,6 +8,7 @@ import { ObjectMenu } from '../menus/ObjectMenu';
 import { FilterMenu } from '../menus/FilterMenu';
 import { AppearanceMenuContent } from '../menus/AppearanceMenu';
 import { HelpMenu } from '../menus/HelpMenu';
+import { DebugMenu } from '../menus/DebugMenu';
 import { InlineEditableFileName } from '../ui/InlineEditableFileName';
 import {
   Menubar,
@@ -55,6 +56,12 @@ export function MainLayout() {
             <MenubarTrigger>Help</MenubarTrigger>
             <HelpMenu />
           </MenubarMenu>
+          {import.meta.env.DEV && (
+            <MenubarMenu>
+              <MenubarTrigger>Debug</MenubarTrigger>
+              <DebugMenu />
+            </MenubarMenu>
+          )}
         </Menubar>
 
         {/* Centered File Name */}

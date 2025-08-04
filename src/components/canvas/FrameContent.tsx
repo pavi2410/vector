@@ -6,6 +6,7 @@ import { toolStore } from '@/stores/tools';
 import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
 import { hoverStore } from '@/stores/hover';
 import { setMousePosition } from '@/stores/mouse';
+import { debugStore } from '@/stores/debug';
 import { ShapeRenderer } from './ShapeRenderer';
 import { InteractiveShape } from './InteractiveShape';
 import { SelectionOverlay } from './SelectionOverlay';
@@ -30,6 +31,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const { activeTool, toolSettings } = useStore(toolStore);
   const { selectedIds } = useStore(selectionStore);
   const { hoveredId } = useStore(hoverStore);
+  const { showDebugInfo } = useStore(debugStore);
   const { transformState } = useTransformContext();
 
   const scale = transformState.scale;
@@ -251,7 +253,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       </TransformComponent>
       
       {/* Debug info panel */}
-      <DebugInfo />
+      {showDebugInfo && <DebugInfo />}
       
       {/* Enhanced canvas controls - now inside TransformWrapper */}
       <CanvasControls />
