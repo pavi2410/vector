@@ -70,8 +70,9 @@ Located at the bottom center of the canvas:
 ### Creating Shapes
 1. Select the desired tool from the floating tool panel
 2. Click and drag on the canvas to create the shape
-3. Release to complete the shape creation
-4. The new shape is automatically selected for immediate editing
+3. **Hold Shift** while dragging to create perfect squares (rectangle tool) or perfect circles (circle tool)
+4. Release to complete the shape creation
+5. The new shape is automatically selected for immediate editing
 
 ## Selection and Transformation
 
@@ -83,6 +84,8 @@ Vector provides powerful selection and transformation capabilities similar to pr
 - **Blue Dashed Border**: Indicates selected elements
 - **Bounding Box**: Automatically calculated around single or multiple selections
 - **Zoom-Aware Display**: Selection indicators scale appropriately with zoom level
+- **Hover Highlighting**: Shapes highlight when you hover over them for better visual feedback
+- **Delete Button**: Red delete button appears on selected elements for quick removal
 
 #### Selection Methods
 - **Single Click**: Select individual shapes
@@ -93,7 +96,7 @@ Vector provides powerful selection and transformation capabilities similar to pr
 
 #### How to Move
 1. **Select elements** using the select tool
-2. **Click and drag** the selection rectangle (not the handles)
+2. **Click and drag anywhere inside the shape** (not just the selection handles or edges)
 3. **Visual feedback**: Cursor changes to "grab" when hovering, "grabbing" when dragging
 4. **Release** to complete the move
 
@@ -123,7 +126,7 @@ Selected elements display **8 resize handles**:
 - **Zoom Awareness**: Handle sizes adapt to current zoom level
 
 #### Handle Functions
-- **NW, NE, SE, SW (Corners)**: Proportional width/height scaling
+- **NW, NE, SE, SW (Corners)**: Proportional width/height scaling (maintains aspect ratio)
 - **N, S (Top/Bottom)**: Height-only scaling
 - **E, W (Left/Right)**: Width-only scaling
 
@@ -207,14 +210,15 @@ Vector's unique feature is the visual filter pipeline editor using node-based co
 - **Shift + Click**: Add to selection
 - **Ctrl/Cmd + A**: Select all
 - **Ctrl/Cmd + D**: Deselect all
+- **Escape**: Clear selection
 - **Delete/Backspace**: Delete selected elements
 
 ### Edit Operations
 - **Ctrl/Cmd + Z**: Undo
 - **Ctrl/Cmd + Shift + Z**: Redo
-- **Ctrl/Cmd + C**: Copy
-- **Ctrl/Cmd + V**: Paste
-- **Ctrl/Cmd + X**: Cut
+- **Ctrl/Cmd + C**: Copy selected elements
+- **Ctrl/Cmd + V**: Paste copied elements
+- **Ctrl/Cmd + X**: Cut selected elements
 
 ## Export Options
 
