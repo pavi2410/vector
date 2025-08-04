@@ -1,12 +1,26 @@
 import { useStore } from '@nanostores/react';
-import { canvasStore } from '@/stores/canvas';
-import { selectionStore, selectShape } from '@/stores/selection';
+import { canvasStore, removeShape } from '@/stores/canvas';
+import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
 import { cn } from '@/lib/utils';
-import { Eye, Unlock } from 'lucide-react';
+import { Eye, Unlock, Trash2, MoreVertical } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export function LayersPanel() {
   const { shapes } = useStore(canvasStore);
   const { selectedIds } = useStore(selectionStore);
+
+  const handleDeleteShape = (shapeId: string) => {
+    removeShape(shapeId);
+    // Clear selection if the deleted shape was selected
+    if (selectedIds.includes(shapeId)) {
+      clearSelection();
+    }
+  };
 
   return (
     <div className="p-4">
@@ -33,6 +47,28 @@ export function LayersPanel() {
               <button className="p-1 hover:bg-background rounded">
                 <Unlock size={12} />
               </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button 
+                    className="p-1 hover:bg-background rounded"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical size={12} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteShape(shape.id);
+                    }}
+                    variant="destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ))}

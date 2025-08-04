@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/react';
-import { canvasStore, updateShape } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
+import { canvasStore, updateShape, removeShape } from '@/stores/canvas';
+import { selectionStore, clearSelection } from '@/stores/selection';
 import { useTransformContext } from 'react-zoom-pan-pinch';
 import { useState, useCallback, useEffect } from 'react';
 
@@ -147,6 +147,11 @@ export function SelectionOverlay() {
     setInitialShapes([]);
   }, []);
 
+  const handleDeleteSelected = useCallback(() => {
+    selectedIds.forEach(id => removeShape(id));
+    clearSelection();
+  }, [selectedIds]);
+
   // Add global event listeners when dragging or moving
   useEffect(() => {
     if (isDragging || isMoving) {
@@ -199,6 +204,29 @@ export function SelectionOverlay() {
         style={{ cursor: isMoving ? 'grabbing' : 'grab' }}
         onMouseDown={handleMoveMouseDown}
       />
+
+      {/* Delete button */}
+      <g
+        className="delete-button"
+        transform={`translate(${maxX + 8 / scale}, ${minY - 8 / scale})`}
+        onClick={handleDeleteSelected}
+        style={{ cursor: 'pointer' }}
+      >
+        <circle
+          r={8 / scale}
+          fill="#ef4444"
+          stroke="#ffffff"
+          strokeWidth={1 / scale}
+          className="hover:fill-red-600"
+        />
+        {/* Trash icon as SVG path */}
+        <path
+          d={`M ${-3 / scale} ${-3 / scale} L ${3 / scale} ${-3 / scale} L ${3 / scale} ${3 / scale} L ${-3 / scale} ${3 / scale} Z M ${-1.5 / scale} ${-1.5 / scale} L ${-1.5 / scale} ${1.5 / scale} M ${0} ${-1.5 / scale} L ${0} ${1.5 / scale} M ${1.5 / scale} ${-1.5 / scale} L ${1.5 / scale} ${1.5 / scale}`}
+          stroke="white"
+          strokeWidth={0.5 / scale}
+          fill="none"
+        />
+      </g>
 
       {/* Transform handles */}
       {handles.map((handle) => (

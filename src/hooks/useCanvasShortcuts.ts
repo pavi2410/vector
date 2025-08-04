@@ -1,7 +1,7 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useStore } from '@nanostores/react';
-import { canvasStore } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
+import { canvasStore, removeShape } from '@/stores/canvas';
+import { selectionStore, clearSelection } from '@/stores/selection';
 import { useControls } from 'react-zoom-pan-pinch';
 
 interface CanvasShortcutsOptions {
@@ -25,6 +25,17 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   useHotkeys('ctrl+-, cmd+-', (event) => {
     event.preventDefault();
     zoomOut(0.2);
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Delete / Backspace - Delete Selected Shapes
+  useHotkeys('delete, backspace', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      selectedIds.forEach(id => removeShape(id));
+      clearSelection();
+    }
   }, {
     enableOnFormTags: false,
   });

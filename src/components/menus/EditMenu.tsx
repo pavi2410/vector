@@ -14,8 +14,13 @@ import {
   MousePointer,
   Square
 } from 'lucide-react';
+import { useStore } from '@nanostores/react';
+import { selectionStore, clearSelection } from '@/stores/selection';
+import { removeShape } from '@/stores/canvas';
 
 export function EditMenu() {
+  const { selectedIds } = useStore(selectionStore);
+  
   const handleUndo = () => {
     console.log('Undo action');
   };
@@ -37,7 +42,8 @@ export function EditMenu() {
   };
 
   const handleDelete = () => {
-    console.log('Delete action');
+    selectedIds.forEach(id => removeShape(id));
+    clearSelection();
   };
 
   const handleSelectAll = () => {
