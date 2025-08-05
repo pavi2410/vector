@@ -9,6 +9,7 @@ import {
 
 interface FileShortcutsOptions {
   onNewProject?: () => void;
+  onOpenProject?: () => void;
   onSaveProject?: () => void;
   onExportProject?: () => void;
 }
@@ -26,6 +27,14 @@ export function useFileShortcuts(options: FileShortcutsOptions = {}) {
     } else {
       createNewProject();
     }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+O / Ctrl+O - Open Project
+  useHotkeys('ctrl+o, cmd+o', (event) => {
+    event.preventDefault();
+    options.onOpenProject?.();
   }, {
     enableOnFormTags: false,
   });

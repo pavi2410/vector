@@ -14,24 +14,27 @@ import { Dialog } from '@/components/ui/dialog';
 import { NewProjectDialog } from '../modals/NewProjectDialog';
 import { SaveProjectDialog } from '../modals/SaveProjectDialog';
 import { ExportDialog } from '../modals/ExportDialog';
+import { OpenProjectDialog } from '../modals/OpenProjectDialog';
 import { 
   currentProjectStore, 
-  saveCurrentProject, 
-  hasUnsavedChanges 
+  hasUnsavedChanges,
+  recentFilesStore,
+  loadProjectFromLocalStorage,
+  saveProjectToLocalStorage,
+  isProjectSavedInLocalStorage
 } from '@/stores/project';
-import { recentFilesStore, clearRecentFiles } from '@/stores/recentFiles';
 import { 
   FileText, 
   FolderOpen, 
   Save, 
   Download, 
   Upload, 
-  History,
-  Trash2
+  History
 } from 'lucide-react';
 
 export function FileMenu() {
   const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [openProjectOpen, setOpenProjectOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   
@@ -47,15 +50,21 @@ export function FileMenu() {
   };
 
   const handleSave = () => {
-    if (currentProject) {
-      saveCurrentProject();
+    if (currentProject && isProjectSavedInLocalStorage(currentProject.id)) {
+      // Project exists in localStorage, save directly
+      saveProjectToLocalStorage();
     } else {
+      // New project or not in localStorage, open save dialog
       setSaveDialogOpen(true);
     }
   };
 
   const handleSaveAs = () => {
     setSaveDialogOpen(true);
+  };
+
+  const handleOpenProject = () => {
+    setOpenProjectOpen(true);
   };
 
   const handleExport = () => {
@@ -65,13 +74,13 @@ export function FileMenu() {
   // Connect file shortcuts to dialog handlers
   useFileShortcuts({
     onNewProject: handleNewProject,
+    onOpenProject: handleOpenProject,
     onSaveProject: handleSaveAs,
     onExportProject: handleExport
   });
 
   const handleOpenRecent = (fileId: string) => {
-    // TODO: Implement open recent file
-    console.log('Opening recent file:', fileId);
+    loadProjectFromLocalStorage(fileId);
   };
 
   const handleImport = () => {
@@ -107,7 +116,7 @@ export function FileMenu() {
           <MenubarShortcut>⌘N</MenubarShortcut>
         </MenubarItem>
         
-        <MenubarItem onClick={() => console.log('Open project')}>
+        <MenubarItem onClick={handleOpenProject}>
           <FolderOpen className="w-4 h-4 mr-2" />
           Open Project
           <MenubarShortcut>⌘O</MenubarShortcut>
@@ -132,14 +141,6 @@ export function FileMenu() {
                   </span>
                 </MenubarItem>
               ))}
-              <MenubarSeparator />
-              <MenubarItem 
-                onClick={clearRecentFiles}
-                className="text-muted-foreground"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clear Recent Files
-              </MenubarItem>
             </MenubarSubContent>
           </MenubarSub>
         )}
@@ -179,6 +180,13 @@ export function FileMenu() {
         <NewProjectDialog 
           isOpen={newProjectOpen}
           onClose={() => setNewProjectOpen(false)}
+        />
+      </Dialog>
+
+      <Dialog open={openProjectOpen} onOpenChange={setOpenProjectOpen}>
+        <OpenProjectDialog 
+          isOpen={openProjectOpen}
+          onClose={() => setOpenProjectOpen(false)}
         />
       </Dialog>
 

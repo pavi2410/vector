@@ -55,6 +55,7 @@ bun test --watch
 ## Claude AI Development Guidelines
 
 - Never run the dev server (bun run dev) by yourself. Ask me to test the web app by directing me what to test and expect. You may however run "bun run build" to check if there's any errors in the syntax or build time.
+- **Shadcn UI Workflow**: Install shadcn ui components using CLI whenever needed.
 
 ## Architecture Decision: SVG-Based Rendering
 

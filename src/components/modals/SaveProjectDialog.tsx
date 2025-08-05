@@ -14,9 +14,9 @@ import {
   currentProjectStore, 
   saveCurrentProject, 
   updateProjectName,
-  exportProjectData 
+  exportProjectData,
+  saveProjectToLocalStorage
 } from '@/stores/project';
-import { addToRecentFiles } from '@/stores/recentFiles';
 
 interface SaveProjectDialogProps {
   isOpen: boolean;
@@ -55,11 +55,7 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
 
-        // Add to recent files
-        addToRecentFiles({
-          id: savedProject.id,
-          name: savedProject.name
-        });
+        // Recent files will be automatically updated via computed store
 
         onClose();
       }
@@ -80,15 +76,11 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
         updateProjectName(projectName);
       }
 
-      // Save the project (this will trigger auto-save to localStorage)
-      const savedProject = saveCurrentProject();
+      // Save the project to localStorage with thumbnail generation
+      const savedProject = saveProjectToLocalStorage();
       
       if (savedProject) {
-        // Add to recent files
-        addToRecentFiles({
-          id: savedProject.id,
-          name: savedProject.name
-        });
+        // Recent files will be automatically updated via computed store
 
         onClose();
       }

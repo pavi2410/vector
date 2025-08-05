@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { createNewProject, hasUnsavedChanges } from '@/stores/project';
-import { addToRecentFiles } from '@/stores/recentFiles';
 
 interface NewProjectDialogProps {
   isOpen: boolean;
@@ -50,13 +49,9 @@ export function NewProjectDialog({ onClose }: NewProjectDialogProps) {
   const createProject = () => {
     const name = projectName.trim() || 'Untitled Project';
     
-    const project = createNewProject(name);
+    createNewProject(name);
     
-    // Add to recent files
-    addToRecentFiles({
-      id: project.id,
-      name: project.name
-    });
+    // Recent files will be automatically updated when project is saved to localStorage
 
     onClose();
     resetForm();

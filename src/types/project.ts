@@ -16,6 +16,7 @@ export interface Project {
   canvas: CanvasState;
   settings: ProjectSettings;
   version: string;
+  thumbnail?: string; // SVG data URL for project gallery
 }
 
 export interface RecentFile {

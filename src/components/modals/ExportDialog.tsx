@@ -13,7 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { currentProjectStore } from '@/stores/project';
+import { canvasStore } from '@/stores/canvas';
 import { selectionStore } from '@/stores/selection';
+import { exportCanvasToSVG } from '@/utils/svgExport';
 import type { ExportOptions } from '@/types/project';
 
 interface ExportDialogProps {
@@ -30,6 +32,7 @@ const EXPORT_FORMATS = [
 
 export function ExportDialog({ onClose }: ExportDialogProps) {
   const currentProject = useStore(currentProjectStore);
+  const canvas = useStore(canvasStore);
   const selection = useStore(selectionStore);
   
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
@@ -69,11 +72,12 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
   };
 
   const exportSVG = async () => {
-    // Create SVG content from canvas
-    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-      <!-- TODO: Implement actual SVG generation -->
-      <rect width="100%" height="100%" fill="${exportOptions.includeBackground ? '#ffffff' : 'none'}"/>
-    </svg>`;
+    // Generate SVG content from canvas using our utility
+    const svgContent = exportCanvasToSVG(canvas, {
+      includeBackground: exportOptions.includeBackground,
+      selectedOnly: exportOptions.selectedOnly,
+      selectedIds: selection.selectedIds
+    });
     
     downloadFile(svgContent, `${fileName}.svg`, 'image/svg+xml');
   };

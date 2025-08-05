@@ -6,7 +6,7 @@ export const toolStore = atom<ToolState>({
   toolSettings: {
     fill: '#3b82f6',
     stroke: '#1e40af',
-    strokeWidth: 2,
+    strokeWidth: 0,
     opacity: 1
   }
 });
