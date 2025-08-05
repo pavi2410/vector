@@ -105,13 +105,33 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
     
     // Handle line tool differently from rectangles and circles
     if (currentShape.type === 'line') {
+      let endX = position.x;
+      let endY = position.y;
+      
+      // Apply constraint for 45-degree angle snapping when Shift is held
+      if (event.shiftKey) {
+        const deltaX = position.x - startPoint.x;
+        const deltaY = position.y - startPoint.y;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Calculate angle from start point to current position
+        const angle = Math.atan2(deltaY, deltaX);
+        
+        // Snap to nearest 45-degree increment (8 directions)
+        const snapAngle = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
+        
+        // Calculate snapped end position
+        endX = startPoint.x + distance * Math.cos(snapAngle);
+        endY = startPoint.y + distance * Math.sin(snapAngle);
+      }
+      
       // For lines, store the end point directly in width and height
       setCurrentShape({
         ...currentShape,
         x: startPoint.x,
         y: startPoint.y,
-        width: position.x - startPoint.x,
-        height: position.y - startPoint.y
+        width: endX - startPoint.x,
+        height: endY - startPoint.y
       });
     } else {
       // Rectangle and circle logic
