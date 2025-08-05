@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { initializeTheme } from '@/stores/theme';
+import { initializeAppearance } from '@/stores/appearance';
 
 function App() {
   useEffect(() => {
-    initializeTheme();
+    initializeAppearance();
   }, []);
 
   return <MainLayout />

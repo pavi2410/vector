@@ -74,7 +74,7 @@ export function CanvasControls() {
 
   return (
     <TooltipProvider>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 bg-background border border-border rounded-md p-2 shadow-lg">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 bg-background border border-border rounded-md p-2 shadow-lg [[data-appearance=blur]_&]:backdrop-blur-md [[data-appearance=blur]_&]:bg-background/80">
         {/* Zoom Out */}
         <Tooltip>
           <TooltipTrigger asChild>
