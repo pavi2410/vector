@@ -5,6 +5,7 @@ import { toolStore, updateToolSettings } from '@/stores/tools';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { AlignmentSection } from './AlignmentSection';
 
 export function PropertiesPanel() {
   const { frame } = useStore(canvasStore);
@@ -12,15 +13,34 @@ export function PropertiesPanel() {
   const { selectedIds } = useStore(selectionStore);
   const { toolSettings } = useStore(toolStore);
 
+  const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));
   const selectedShape = selectedIds.length === 1 
     ? shapes.find(shape => shape.id === selectedIds[0])
     : null;
 
+  // Multi-selection view (2 or more shapes)
+  if (selectedShapes.length >= 2) {
+    return (
+      <div className="p-4">
+        <div className="text-sm font-medium mb-3">
+          {selectedShapes.length} shapes selected
+        </div>
+        <div className="space-y-4">
+          <AlignmentSection />
+        </div>
+      </div>
+    );
+  }
+
+  // Single selection view
   if (selectedShape) {
     return (
       <div className="p-4">
         <div className="text-sm font-medium mb-3">Properties</div>
         <div className="space-y-4">
+          {/* Alignment Controls */}
+          <AlignmentSection />
+          
           {/* Position */}
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -123,6 +143,7 @@ export function PropertiesPanel() {
     );
   }
 
+  // No selection - show tool settings
   return (
     <div className="p-4">
       <div className="text-sm font-medium mb-3">Tool Settings</div>

@@ -267,3 +267,4 @@ const updateShape = (id: string, updates: Partial<Shape>) => {
 ---
 
 This guide should be referenced for all development work on Vector. For detailed technical specifications, see [SPEC.md](./SPEC.md). For project roadmap and priorities, see [ROADMAP.md](./ROADMAP.md).
+- there is no "bun run typecheck" script available. "bun run build" does the type checking using tsc first before building out with vite.

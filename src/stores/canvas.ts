@@ -47,6 +47,22 @@ export const updateShape = (id: string, updates: Partial<Shape>) => {
   });
 };
 
+export const updateMultipleShapes = (updates: Array<{ id: string; updates: Partial<Shape> }>) => {
+  const current = canvasStore.get();
+  const updateMap = new Map(updates.map(({ id, updates }) => [id, updates]));
+  
+  canvasStore.set({
+    ...current,
+    frame: {
+      ...current.frame,
+      shapes: current.frame.shapes.map(shape => {
+        const shapeUpdates = updateMap.get(shape.id);
+        return shapeUpdates ? { ...shape, ...shapeUpdates } : shape;
+      })
+    }
+  });
+};
+
 export const removeShape = (id: string) => {
   const current = canvasStore.get();
   canvasStore.set({
