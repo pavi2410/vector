@@ -19,17 +19,20 @@ import {
   currentProjectStore, 
   hasUnsavedChanges,
   recentFilesStore,
+  loadProject,
   loadProjectFromLocalStorage,
   saveProjectToLocalStorage,
   isProjectSavedInLocalStorage
 } from '@/stores/project';
+import { EXAMPLE_PROJECTS, loadExampleProject } from '@/constants/exampleProjects';
 import { 
   FileText, 
   FolderOpen, 
   Save, 
   Download, 
   Upload, 
-  History
+  History,
+  BookOpen
 } from 'lucide-react';
 
 export function FileMenu() {
@@ -83,6 +86,17 @@ export function FileMenu() {
     loadProjectFromLocalStorage(fileId);
   };
 
+  const handleLoadExample = (projectId: string) => {
+    if (hasUnsavedChanges()) {
+      // TODO: Show unsaved changes dialog
+      console.warn('Unsaved changes detected');
+    }
+    const exampleProject = loadExampleProject(projectId);
+    if (exampleProject) {
+      loadProject(exampleProject);
+    }
+  };
+
   const handleImport = () => {
     // Create file input element
     const input = document.createElement('input');
@@ -121,6 +135,27 @@ export function FileMenu() {
           Open Project
           <MenubarShortcut>⌘O</MenubarShortcut>
         </MenubarItem>
+
+        <MenubarSub>
+          <MenubarSubTrigger>
+            <BookOpen className="w-4 h-4 mr-2" />
+            Load example
+          </MenubarSubTrigger>
+          <MenubarSubContent className="w-64">
+            {EXAMPLE_PROJECTS.map((project) => (
+              <MenubarItem 
+                key={project.id}
+                onClick={() => handleLoadExample(project.id)}
+                className="flex flex-col items-start py-2"
+              >
+                <span className="font-medium truncate w-full">{project.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  Example project template
+                </span>
+              </MenubarItem>
+            ))}
+          </MenubarSubContent>
+        </MenubarSub>
 
         {recentFiles.length > 0 && (
           <MenubarSub>
