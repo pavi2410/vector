@@ -7,6 +7,7 @@ import { selectionStore, selectShape, clearSelection } from '@/stores/selection'
 import { hoverStore } from '@/stores/hover';
 import { setMousePosition } from '@/stores/mouse';
 import { debugStore } from '@/stores/debug';
+import { projectSettingsStore } from '@/stores/project';
 import { ShapeRenderer } from './ShapeRenderer';
 import { InteractiveShape } from './InteractiveShape';
 import { SelectionOverlay } from './SelectionOverlay';
@@ -33,6 +34,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const { selectedIds } = useStore(selectionStore);
   const { hoveredId } = useStore(hoverStore);
   const { showDebugInfo } = useStore(debugStore);
+  const { gridSize } = useStore(projectSettingsStore);
   const { transformState } = useTransformContext();
   const { zoomIn, zoomOut, centerView, instance } = useControls();
 
@@ -269,12 +271,12 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
             {/* Grid pattern */}
             <pattern
               id="grid"
-              width="20"
-              height="20"
+              width={gridSize}
+              height={gridSize}
               patternUnits="userSpaceOnUse"
             >
               <path
-                d="M 20 0 L 0 0 0 20"
+                d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
                 fill="none"
                 stroke="#e5e7eb"
                 strokeWidth="0.5"
