@@ -21,7 +21,8 @@ import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
 
 export function EditMenu() {
   const { selectedIds } = useStore(selectionStore);
-  const { shapes } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { shapes: clipboardShapes } = useStore(clipboardStore);
   
   const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));

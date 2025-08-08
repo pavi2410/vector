@@ -43,14 +43,13 @@ export const generateSVG = (
   canvasState: CanvasState,
   options: ExportOptions = { format: 'svg', includeBackground: true, selectedOnly: false }
 ): string => {
-  const { shapes, frames, viewBox } = canvasState;
+  const { frame } = canvasState;
+  const { shapes } = frame;
   const { includeBackground, selectedOnly } = options;
   
-  // Use first frame or fallback to viewBox
-  const frame = frames[0];
-  const width = frame?.width || viewBox.width;
-  const height = frame?.height || viewBox.height;
-  const bgColor = frame?.backgroundColor || '#ffffff';
+  const width = frame.width;
+  const height = frame.height;
+  const bgColor = frame.backgroundColor || '#ffffff';
   
   let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">`;
   
@@ -87,12 +86,12 @@ const createRasterCanvas = (
   
   if (!ctx) throw new Error('Could not create canvas context');
   
-  const { shapes, frames } = canvasState;
+  const { frame } = canvasState;
+  const { shapes } = frame;
   const { scale = 1, includeBackground = true } = options;
   
-  const frame = frames[0];
-  const width = (frame?.width || 512) * scale;
-  const height = (frame?.height || 512) * scale;
+  const width = frame.width * scale;
+  const height = frame.height * scale;
 
   canvas.width = width;
   canvas.height = height;
@@ -103,7 +102,7 @@ const createRasterCanvas = (
   
   // Add background
   if (includeBackground) {
-    ctx.fillStyle = frame?.backgroundColor || '#ffffff';
+    ctx.fillStyle = frame.backgroundColor || '#ffffff';
     ctx.fillRect(0, 0, width, height);
   }
   

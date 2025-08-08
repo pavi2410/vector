@@ -29,7 +29,8 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
   const [currentShape, setCurrentShape] = useState<Shape | null>(null);
 
-  const { shapes, viewBox, frames } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { activeTool, toolSettings } = useStore(toolStore);
   const { selectedIds } = useStore(selectionStore);
   const { hoveredId } = useStore(hoverStore);
@@ -52,34 +53,22 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   useOnEvent('canvas:center', () => centerView(), [centerView]);
   
   useOnEvent('zoom:fit', () => {
-    const { frames } = canvasStore.get();
-    if (frames.length === 0) return;
-
-    // Calculate bounding box of all frames
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-    frames.forEach(frame => {
-      minX = Math.min(minX, frame.x);
-      minY = Math.min(minY, frame.y);
-      maxX = Math.max(maxX, frame.x + frame.width);
-      maxY = Math.max(maxY, frame.y + frame.height);
-    });
-
+    const { frame } = canvasStore.get();
     const padding = 50;
-    const boundsWidth = maxX - minX + padding * 2;
-    const boundsHeight = maxY - minY + padding * 2;
+    const boundsWidth = frame.width + padding * 2;
+    const boundsHeight = frame.height + padding * 2;
 
     const wrapper = instance.wrapperComponent?.getBoundingClientRect();
     if (!wrapper) return;
 
-    // Calculate scale to fit
+    // Calculate scale to fit frame
     const containerWidth = wrapper.width;
     const containerHeight = wrapper.height;
     const scaleX = containerWidth / boundsWidth;
     const scaleY = containerHeight / boundsHeight;
     const newScale = Math.min(scaleX, scaleY, 1);
 
-    // Center the content
+    // Center the frame
     centerView(1 / newScale);
   }, [centerView, instance]);
 
@@ -260,8 +249,10 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       >
         <svg
           ref={svgRef}
-          className={`w-[512px] h-[512px] ${getCursor()}`}
-          viewBox="0 0 512 512"
+          className={`${getCursor()}`}
+          width={frame.width}
+          height={frame.height}
+          viewBox={`0 0 ${frame.width} ${frame.height}`}
           preserveAspectRatio="xMidYMid meet"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -284,28 +275,24 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
             </pattern>
           </defs>
 
+          {/* Frame background */}
+          <rect
+            x={0}
+            y={0}
+            width={frame.width}
+            height={frame.height}
+            fill={frame.backgroundColor || '#ffffff'}
+            stroke="none"
+          />
+          
           {/* Grid background */}
           <rect
-            x={viewBox.x}
-            y={viewBox.y}
-            width={viewBox.width / scale}
-            height={viewBox.height / scale}
+            x={0}
+            y={0}
+            width={frame.width}
+            height={frame.height}
             fill="url(#grid)"
           />
-
-          {/* Frames */}
-          {frames.map(frame => (
-            <rect
-              key={frame.id}
-              x={frame.x}
-              y={frame.y}
-              width={frame.width}
-              height={frame.height}
-              fill={frame.backgroundColor || '#ffffff'}
-              stroke="none"
-              strokeWidth="0"
-            />
-          ))}
 
           {/* Rendered shapes */}
           {shapes.map(shape => (

@@ -16,23 +16,13 @@ export interface Shape {
 export interface Frame {
   id: string;
   name: string;
-  x: number;
-  y: number;
   width: number;
   height: number;
   backgroundColor?: string;
+  shapes: Shape[];
 }
 
-export interface ViewBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
 
 export interface CanvasState {
-  shapes: Shape[];
-  frames: Frame[];
-  viewBox: ViewBox;
-  zoom: number;
+  frame: Frame;
 }

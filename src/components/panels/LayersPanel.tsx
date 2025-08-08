@@ -11,7 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function LayersPanel() {
-  const { shapes } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { selectedIds } = useStore(selectionStore);
 
   const handleDeleteShape = (shapeId: string) => {

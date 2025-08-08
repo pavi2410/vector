@@ -5,7 +5,8 @@ import { useTransformContext } from 'react-zoom-pan-pinch';
 import { useState, useCallback, useEffect } from 'react';
 
 export function SelectionOverlay() {
-  const { shapes } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { selectedIds } = useStore(selectionStore);
   const { transformState } = useTransformContext();
   

@@ -52,7 +52,7 @@ function renderShapeToSVG(shape: Shape): string {
  * Generate SVG markup for a frame background
  */
 function renderFrameToSVG(frame: Frame): string {
-  return `<rect x="${frame.x}" y="${frame.y}" width="${frame.width}" height="${frame.height}" fill="${frame.backgroundColor || '#ffffff'}" stroke="none" />`;
+  return `<rect x="0" y="0" width="${frame.width}" height="${frame.height}" fill="${frame.backgroundColor || '#ffffff'}" stroke="none" />`;
 }
 
 /**
@@ -70,9 +70,9 @@ export function generateSVGFromCanvas(
   } = {}
 ): string {
   const {
-    width = 512,
-    height = 512,
-    viewBox = `0 0 ${canvas.viewBox.width} ${canvas.viewBox.height}`,
+    width = canvas.frame.width,
+    height = canvas.frame.height,
+    viewBox = `0 0 ${canvas.frame.width} ${canvas.frame.height}`,
     includeBackground = true,
     selectedOnly = false,
     selectedIds = []
@@ -80,12 +80,12 @@ export function generateSVGFromCanvas(
 
   // Filter shapes if selectedOnly is true
   const shapesToRender = selectedOnly 
-    ? canvas.shapes.filter(shape => selectedIds.includes(shape.id))
-    : canvas.shapes;
+    ? canvas.frame.shapes.filter(shape => selectedIds.includes(shape.id))
+    : canvas.frame.shapes;
 
-  // Generate frame backgrounds
-  const frameElements = includeBackground 
-    ? canvas.frames.map(frame => renderFrameToSVG(frame)).join('\n  ')
+  // Generate frame background
+  const frameElement = includeBackground 
+    ? renderFrameToSVG(canvas.frame)
     : '';
 
   // Generate shape elements
@@ -94,7 +94,7 @@ export function generateSVGFromCanvas(
     .join('\n  ');
 
   // Combine all elements
-  const content = [frameElements, shapeElements]
+  const content = [frameElement, shapeElements]
     .filter(Boolean)
     .join('\n  ');
 
@@ -148,8 +148,8 @@ export function exportCanvasToSVG(
   } = {}
 ): string {
   return generateSVGFromCanvas(canvas, {
-    width: canvas.viewBox.width,
-    height: canvas.viewBox.height,
+    width: canvas.frame.width,
+    height: canvas.frame.height,
     ...exportOptions
   });
 }

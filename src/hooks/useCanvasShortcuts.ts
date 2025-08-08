@@ -11,7 +11,8 @@ interface CanvasShortcutsOptions {
 }
 
 export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
-  const { shapes, frames } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { selectedIds } = useStore(selectionStore);
   const { shapes: clipboardShapes } = useStore(clipboardStore);
   const { zoomIn, zoomOut, setTransform, instance } = useControls();
@@ -102,34 +103,24 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
 
   // Cmd+0 / Ctrl+0 - Fit to Screen
   useHotkeys('ctrl+0, cmd+0', (event) => {
-    if (frames.length > 0) {
-      event.preventDefault();
-      
-      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      frames.forEach(frame => {
-        minX = Math.min(minX, frame.x);
-        minY = Math.min(minY, frame.y);
-        maxX = Math.max(maxX, frame.x + frame.width);
-        maxY = Math.max(maxY, frame.y + frame.height);
-      });
-
-      const padding = 50;
-      const boundsWidth = maxX - minX + padding * 2;
-      const boundsHeight = maxY - minY + padding * 2;
-      
-      const containerWidth = window.innerWidth;
-      const containerHeight = window.innerHeight;
-      const scaleX = containerWidth / boundsWidth;
-      const scaleY = containerHeight / boundsHeight;
-      const newScale = Math.min(scaleX, scaleY, 1);
-      
-      const centerX = (minX + maxX) / 2;
-      const centerY = (minY + maxY) / 2;
-      const newX = containerWidth / 2 - centerX * newScale;
-      const newY = containerHeight / 2 - centerY * newScale;
-      
-      setTransform(newX, newY, newScale);
-    }
+    event.preventDefault();
+    
+    const padding = 50;
+    const boundsWidth = frame.width + padding * 2;
+    const boundsHeight = frame.height + padding * 2;
+    
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    const scaleX = containerWidth / boundsWidth;
+    const scaleY = containerHeight / boundsHeight;
+    const newScale = Math.min(scaleX, scaleY, 1);
+    
+    const centerX = frame.width / 2;
+    const centerY = frame.height / 2;
+    const newX = containerWidth / 2 - centerX * newScale;
+    const newY = containerHeight / 2 - centerY * newScale;
+    
+    setTransform(newX, newY, newScale);
   }, {
     enableOnFormTags: false,
   });
@@ -233,19 +224,17 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
 
   // Home - Center to Main Artboard
   useHotkeys('home', (event) => {
-    if (frames.length > 0) {
-      event.preventDefault();
-      const mainFrame = frames[0];
+    event.preventDefault();
+    const mainFrame = frame;
       const containerWidth = window.innerWidth;
       const containerHeight = window.innerHeight;
       
-      const centerX = mainFrame.x + mainFrame.width / 2;
-      const centerY = mainFrame.y + mainFrame.height / 2;
+      const centerX = mainFrame.width / 2;
+      const centerY = mainFrame.height / 2;
       const newX = containerWidth / 2 - centerX;
-      const newY = containerHeight / 2 - centerY;
-      
-      setTransform(newX, newY, 1);
-    }
+    const newY = containerHeight / 2 - centerY;
+    
+    setTransform(newX, newY, 1);
   }, {
     enableOnFormTags: false,
   });

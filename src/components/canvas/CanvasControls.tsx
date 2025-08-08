@@ -17,7 +17,7 @@ import {
 import { useEffect, useState } from 'react';
 
 export function CanvasControls() {
-  const { frames } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
   const { zoomIn, zoomOut, centerView, instance } = useControls();
   const [zoomPercentage, setZoomPercentage] = useState(100);
 
@@ -30,33 +30,21 @@ export function CanvasControls() {
   };
 
   const zoomToFit = () => {
-    if (frames.length === 0) return;
-
-    // Calculate bounding box of all frames
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-
-    frames.forEach(frame => {
-      minX = Math.min(minX, frame.x);
-      minY = Math.min(minY, frame.y);
-      maxX = Math.max(maxX, frame.x + frame.width);
-      maxY = Math.max(maxY, frame.y + frame.height);
-    });
-
     const padding = 50;
-    const boundsWidth = maxX - minX + padding * 2;
-    const boundsHeight = maxY - minY + padding * 2;
+    const boundsWidth = frame.width + padding * 2;
+    const boundsHeight = frame.height + padding * 2;
 
     const wrapper = instance.wrapperComponent?.getBoundingClientRect();
     if (!wrapper) return;
 
-    // Calculate scale to fit
+    // Calculate scale to fit frame
     const containerWidth = wrapper.width;
     const containerHeight = wrapper.height;
     const scaleX = containerWidth / boundsWidth;
     const scaleY = containerHeight / boundsHeight;
     const newScale = Math.min(scaleX, scaleY, 1);
 
-    // Center the content
+    // Center the frame
     centerView(1 / newScale);
   };
 

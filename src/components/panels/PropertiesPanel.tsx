@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 
 export function PropertiesPanel() {
-  const { shapes } = useStore(canvasStore);
+  const { frame } = useStore(canvasStore);
+  const { shapes } = frame;
   const { selectedIds } = useStore(selectionStore);
   const { toolSettings } = useStore(toolStore);
 
