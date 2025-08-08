@@ -10,6 +10,8 @@ import { AppearanceMenuContent } from '../menus/AppearanceMenu';
 import { HelpMenu } from '../menus/HelpMenu';
 import { DebugMenu } from '../menus/DebugMenu';
 import { InlineEditableFileName } from '../ui/InlineEditableFileName';
+import { useStore } from '@nanostores/react';
+import { uiStore } from '@/stores/ui';
 import {
   Menubar,
   MenubarMenu,
@@ -22,6 +24,7 @@ import {
 } from '@/components/ui/resizable';
 
 export function MainLayout() {
+  const ui = useStore(uiStore);
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -73,23 +76,29 @@ export function MainLayout() {
       {/* Main Content */}
       <ResizablePanelGroup direction="horizontal" className="flex-1">
         {/* Left Panel - Layers */}
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
-          <LayersPanel />
-        </ResizablePanel>
-
-        <ResizableHandle withHandle />
+        {ui.showLayers && (
+          <>
+            <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+              <LayersPanel />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+          </>
+        )}
 
         {/* Canvas Area */}
-        <ResizablePanel defaultSize={60} minSize={30}>
+        <ResizablePanel defaultSize={ui.showLayers && ui.showProperties ? 60 : ui.showLayers || ui.showProperties ? 75 : 100} minSize={30}>
           <CanvasArea />
         </ResizablePanel>
 
-        <ResizableHandle withHandle />
-
         {/* Right Panel - Properties */}
-        <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
-          <PropertiesPanel />
-        </ResizablePanel>
+        {ui.showProperties && (
+          <>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+              <PropertiesPanel />
+            </ResizablePanel>
+          </>
+        )}
       </ResizablePanelGroup>
     </div>
   );

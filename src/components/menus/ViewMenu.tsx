@@ -13,34 +13,43 @@ import {
   Eye,
   Layers,
   Settings,
-  Palette
+  Palette,
+  Target,
+  Navigation
 } from 'lucide-react';
-import { useState } from 'react';
+import { useStore } from '@nanostores/react';
+import { uiStore, togglePanel } from '@/stores/ui';
+import { eventBus } from '@/utils/eventBus';
 
 export function ViewMenu() {
-  const [showGrid, setShowGrid] = useState(false);
-  const [showRulers, setShowRulers] = useState(false);
-  const [showLayers, setShowLayers] = useState(true);
-  const [showProperties, setShowProperties] = useState(true);
+  const ui = useStore(uiStore);
 
   const handleZoomIn = () => {
-    console.log('Zoom In action');
+    eventBus.emit('zoom:in');
   };
 
   const handleZoomOut = () => {
-    console.log('Zoom Out action');
+    eventBus.emit('zoom:out');
   };
 
   const handleZoomToFit = () => {
-    console.log('Zoom to Fit action');
+    eventBus.emit('zoom:fit');
   };
 
   const handleActualSize = () => {
-    console.log('Actual Size action');
+    eventBus.emit('zoom:actual');
+  };
+
+  const handleCenterCanvas = () => {
+    eventBus.emit('canvas:center');
   };
 
   const handleFullscreen = () => {
-    console.log('Fullscreen action');
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
   };
 
   return (
@@ -69,11 +78,17 @@ export function ViewMenu() {
         <MenubarShortcut>⌘1</MenubarShortcut>
       </MenubarItem>
 
+      <MenubarItem onClick={handleCenterCanvas}>
+        <Target className="w-4 h-4 mr-2" />
+        Center Canvas
+        <MenubarShortcut>⌘2</MenubarShortcut>
+      </MenubarItem>
+
       <MenubarSeparator />
 
       <MenubarCheckboxItem
-        checked={showGrid}
-        onCheckedChange={setShowGrid}
+        checked={ui.showGrid}
+        onCheckedChange={() => togglePanel('showGrid')}
       >
         <Grid3X3 className="w-4 h-4 mr-2" />
         Show Grid
@@ -81,27 +96,45 @@ export function ViewMenu() {
       </MenubarCheckboxItem>
 
       <MenubarCheckboxItem
-        checked={showRulers}
-        onCheckedChange={setShowRulers}
+        checked={ui.showRulers}
+        onCheckedChange={() => togglePanel('showRulers')}
       >
         <Settings className="w-4 h-4 mr-2" />
         Show Rulers
         <MenubarShortcut>⌘R</MenubarShortcut>
       </MenubarCheckboxItem>
 
+      <MenubarCheckboxItem
+        checked={ui.showGuides}
+        onCheckedChange={() => togglePanel('showGuides')}
+      >
+        <Navigation className="w-4 h-4 mr-2" />
+        Show Guides
+        <MenubarShortcut>⌘'</MenubarShortcut>
+      </MenubarCheckboxItem>
+
+      <MenubarCheckboxItem
+        checked={ui.showOutlines}
+        onCheckedChange={() => togglePanel('showOutlines')}
+      >
+        <Eye className="w-4 h-4 mr-2" />
+        Show Outlines
+        <MenubarShortcut>⌘Y</MenubarShortcut>
+      </MenubarCheckboxItem>
+
       <MenubarSeparator />
 
       <MenubarCheckboxItem
-        checked={showLayers}
-        onCheckedChange={setShowLayers}
+        checked={ui.showLayers}
+        onCheckedChange={() => togglePanel('showLayers')}
       >
         <Layers className="w-4 h-4 mr-2" />
         Layers Panel
       </MenubarCheckboxItem>
 
       <MenubarCheckboxItem
-        checked={showProperties}
-        onCheckedChange={setShowProperties}
+        checked={ui.showProperties}
+        onCheckedChange={() => togglePanel('showProperties')}
       >
         <Palette className="w-4 h-4 mr-2" />
         Properties Panel

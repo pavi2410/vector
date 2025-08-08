@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { TransformComponent, useTransformContext } from 'react-zoom-pan-pinch';
+import { TransformComponent, useTransformContext, useControls } from 'react-zoom-pan-pinch';
 import { canvasStore, addShape } from '@/stores/canvas';
 import { toolStore } from '@/stores/tools';
 import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
@@ -14,6 +14,7 @@ import { FrameSelectionOverlay } from './FrameSelectionOverlay';
 import { CanvasControls } from './CanvasControls';
 import { DebugInfo } from './DebugInfo';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
+import { useOnEvent } from '@/utils/eventBus';
 import type { Shape } from '@/types/canvas';
 
 interface FrameContentProps {
@@ -33,6 +34,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   const { hoveredId } = useStore(hoverStore);
   const { showDebugInfo } = useStore(debugStore);
   const { transformState } = useTransformContext();
+  const { zoomIn, zoomOut, centerView, instance } = useControls();
 
   const scale = transformState.scale;
 
@@ -40,6 +42,44 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
   useCanvasShortcuts({
     onTogglePanMode: (active: boolean) => setIsSpacePanning(active)
   });
+
+  // Listen to zoom events from ViewMenu
+  useOnEvent('zoom:in', () => zoomIn(0.2), [zoomIn]);
+  useOnEvent('zoom:out', () => zoomOut(0.2), [zoomOut]);
+  useOnEvent('zoom:actual', () => centerView(1), [centerView]);
+  useOnEvent('canvas:center', () => centerView(), [centerView]);
+  
+  useOnEvent('zoom:fit', () => {
+    const { frames } = canvasStore.get();
+    if (frames.length === 0) return;
+
+    // Calculate bounding box of all frames
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    frames.forEach(frame => {
+      minX = Math.min(minX, frame.x);
+      minY = Math.min(minY, frame.y);
+      maxX = Math.max(maxX, frame.x + frame.width);
+      maxY = Math.max(maxY, frame.y + frame.height);
+    });
+
+    const padding = 50;
+    const boundsWidth = maxX - minX + padding * 2;
+    const boundsHeight = maxY - minY + padding * 2;
+
+    const wrapper = instance.wrapperComponent?.getBoundingClientRect();
+    if (!wrapper) return;
+
+    // Calculate scale to fit
+    const containerWidth = wrapper.width;
+    const containerHeight = wrapper.height;
+    const scaleX = containerWidth / boundsWidth;
+    const scaleY = containerHeight / boundsHeight;
+    const newScale = Math.min(scaleX, scaleY, 1);
+
+    // Center the content
+    centerView(1 / newScale);
+  }, [centerView, instance]);
 
   const getMousePosition = useCallback((event: React.MouseEvent) => {
     if (!svgRef.current) return { x: 0, y: 0 };
