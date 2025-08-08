@@ -18,7 +18,7 @@ interface NewProjectDialogProps {
 }
 
 const PRESET_SIZES = [
-  { name: 'Web (1920×1080)', width: 1920, height: 1080 },
+  { name: 'Web (512×512)', width: 512, height: 512 },
   { name: 'Mobile (375×812)', width: 375, height: 812 },
   { name: 'Tablet (768×1024)', width: 768, height: 1024 },
   { name: 'Desktop (1440×900)', width: 1440, height: 900 },

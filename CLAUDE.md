@@ -81,8 +81,8 @@ Vector uses native SVG rendering instead of Canvas for the following reasons:
 // Use Nanostores atoms for reactive state
 export const canvasStore = atom({
   shapes: [] as Shape[],
-  artboards: [] as Artboard[],
-  viewBox: { x: 0, y: 0, width: 1920, height: 1080 },
+  frames: [] as Frame[],
+  viewBox: { x: 0, y: 0, width: 512, height: 512 },
   zoom: 1
 });
 ```

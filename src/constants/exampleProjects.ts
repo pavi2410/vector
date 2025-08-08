@@ -5,7 +5,7 @@ import { DEFAULT_PROJECT_SETTINGS, PROJECT_VERSION } from '@/types/project';
 const createExampleCanvas = (shapes: any[], frames: any[]): CanvasState => ({
   shapes,
   frames,
-  viewBox: { x: 0, y: 0, width: 1920, height: 1080 },
+  viewBox: { x: 0, y: 0, width: 512, height: 512 },
   zoom: 1
 });
 

@@ -30,7 +30,7 @@ Technical architecture and implementation specifications for Vector, the modern 
 
 ```tsx
 // Main canvas component renders actual SVG with filters and animations
-<svg viewBox="0 0 1920 1080" className="canvas">
+<svg viewBox="0 0 512 512" className="canvas">
   <defs>
     {/* Filter definitions generated from React Flow pipeline */}
     <filter id="blur-shadow-pipeline">
@@ -113,18 +113,26 @@ src/
 │   │       └── RepeatNode.tsx     # Loop and repeat controls node
 │   └── ui/                        # Shadcn/ui components
 ├── stores/
-│   ├── canvas.ts                  # Canvas state (shapes, artboards, view)
+│   ├── canvas.ts                  # Canvas state (shapes, frames, view)
 │   ├── selection.ts               # Selection management
 │   ├── tools.ts                   # Active tool and tool state
 │   ├── filters.ts                 # Filter pipelines and active filters
-│   ├── animations.ts              # Animation timelines and playback state
-│   └── history.ts                 # Undo/redo command history
+│   ├── project.ts                 # Project management and persistence
+│   ├── appearance.ts              # UI appearance and theme settings
+│   ├── clipboard.ts               # Copy/paste functionality
+│   ├── hover.ts                   # Hover state management
+│   ├── mouse.ts                   # Mouse interaction state
+│   ├── ui.ts                      # UI state management
+│   └── debug.ts                   # Debug state and utilities
+│   // animations.ts              # PLANNED - Animation timelines and playback state
+│   // history.ts                 # PLANNED - Undo/redo command history
 ├── types/
 │   ├── canvas.ts                  # Canvas and shape type definitions
 │   ├── filters.ts                 # Filter node and pipeline types
-│   ├── animations.ts              # Animation timeline and keyframe types
-│   ├── tools.ts                   # Tool-related type definitions
-│   └── history.ts                 # Command pattern types
+│   ├── project.ts                 # Project-related type definitions
+│   └── tools.ts                   # Tool-related type definitions
+│   // animations.ts              # PLANNED - Animation timeline and keyframe types
+│   // history.ts                 # PLANNED - Command pattern types
 └── utils/
     ├── svg.ts                     # SVG manipulation utilities
     ├── filters.ts                 # Filter generation and optimization
@@ -143,8 +151,8 @@ Using Nanostores for granular, reactive state management:
 // Canvas store - shapes and viewport
 export const canvasStore = atom({
   shapes: [] as Shape[],
-  artboards: [] as Artboard[],
-  viewBox: { x: 0, y: 0, width: 1920, height: 1080 },
+  frames: [] as Frame[],
+  viewBox: { x: 0, y: 0, width: 512, height: 512 },
   zoom: 1
 });
 
@@ -167,19 +175,20 @@ export const filterStore = atom({
   previewEnabled: true
 });
 
-// Animation store - timelines and playback
-export const animationStore = atom({
-  timelines: {} as Record<string, AnimationTimeline>,
-  activeTimeline: null as string | null,
-  currentTime: 0,
-  isPlaying: false,
-  previewEnabled: true,
-  playbackSettings: {
-    fps: 60,
-    loop: false,
-    autoplay: false
-  }
-});
+// PLANNED - Animation store for future implementation
+// Currently animation features are not implemented
+// export const animationStore = atom({
+//   timelines: {} as Record<string, AnimationTimeline>,
+//   activeTimeline: null as string | null,
+//   currentTime: 0,
+//   isPlaying: false,
+//   previewEnabled: true,
+//   playbackSettings: {
+//     fps: 60,
+//     loop: false,
+//     autoplay: false
+//   }
+// });
 ```
 
 ## 🎛️ Filter Pipeline System
@@ -193,7 +202,13 @@ interface FilterPipeline {
   id: string;
   name: string;
   nodes: FilterNode[];
-  edges: Edge[];
+  edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    sourceHandle?: string;
+    targetHandle?: string;
+  }>;
   outputNode: string;
 }
 
@@ -256,9 +271,12 @@ export function BlurNode({ data, id }: NodeProps) {
 
 ### Timeline-Based Animation System
 
-The animation system uses a timeline-based approach similar to After Effects, with keyframes organized by layers and properties:
+**Note: The animation system described below is planned for future implementation. Currently, animation features are not fully implemented in the codebase.**
+
+The animation system will use a timeline-based approach similar to After Effects, with keyframes organized by layers and properties:
 
 ```typescript
+// PLANNED - Not yet implemented
 interface AnimationTimeline {
   id: string;
   name: string;
@@ -299,9 +317,12 @@ interface PropertyKeyframe {
 
 ### React Flow Animation Nodes
 
-Animation nodes integrate with the existing React Flow pipeline for visual animation editing:
+**Note: Animation nodes are planned for future implementation.**
+
+Animation nodes will integrate with the existing React Flow pipeline for visual animation editing:
 
 ```typescript
+// PLANNED - Not yet implemented
 type AnimationNodeType = 
   | 'timeline'         // Master timeline control
   | 'keyframe'         // Individual keyframe definition
@@ -317,10 +338,12 @@ type AnimationNodeType =
 
 ### SMIL Animation Generation
 
-The animation pipeline generates native SMIL animations for SVG export:
+**Note: SMIL animation generation is planned for future implementation.**
+
+The animation pipeline will generate native SMIL animations for SVG export:
 
 ```typescript
-// Animation pipeline to SMIL conversion
+// PLANNED - Animation pipeline to SMIL conversion
 function generateSMILAnimation(timeline: AnimationTimeline): SVGAnimateElement[] {
   return timeline.layers.flatMap(layer => 
     layer.properties.map(property => ({
@@ -457,10 +480,10 @@ interface VectorProject {
     pipelines: FilterPipeline[];
     activeFilters: Record<string, string>;
   };
-  animations: {
-    timelines: AnimationTimeline[];
-    globalSettings: AnimationSettings;
-  };
+  // animations: {
+  //   timelines: AnimationTimeline[]; // PLANNED - not yet implemented
+  //   globalSettings: AnimationSettings; // PLANNED - not yet implemented
+  // };
 }
 ```
 
