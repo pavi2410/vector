@@ -30,24 +30,20 @@ export function CanvasControls() {
   };
 
   const zoomToFit = () => {
-    const padding = 50;
-    const boundsWidth = frame.width + padding * 2;
-    const boundsHeight = frame.height + padding * 2;
-
     const wrapper = instance.wrapperComponent?.getBoundingClientRect();
     if (!wrapper) return;
 
     // Calculate scale to fit frame
-    const containerWidth = wrapper.width;
-    const containerHeight = wrapper.height;
-    const scaleX = containerWidth / boundsWidth;
-    const scaleY = containerHeight / boundsHeight;
-    const newScale = Math.min(scaleX, scaleY, 1);
+    const padding = 0;
+    const containerWidth = wrapper.width - padding * 2;
+    const containerHeight = wrapper.height - padding * 2;
+    const scaleX = containerWidth / frame.width;
+    const scaleY = containerHeight / frame.height;
+    const newScale = Math.min(scaleX, scaleY);
 
-    // Center the frame
-    centerView(1 / newScale);
+    // Center the frame with calculated scale
+    centerView(newScale);
   };
-
 
   const zoomTo100 = () => {
     centerView(1);
