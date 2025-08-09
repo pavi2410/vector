@@ -2,6 +2,9 @@
 
 A modern, local-first SVG editor built with React 19, featuring first-class support for SVG filters through a visual node-based pipeline editor.
 
+<img width="1582" height="969" alt="image" src="https://github.com/user-attachments/assets/79145717-e9f1-4942-9d6e-cbf6203eb621" />
+
+
 ## 🚀 Quick Start
 
 ```bash
