@@ -11,7 +11,7 @@ export function buildLayerTree(shapes: Shape[]): LayerTreeItem[] {
   const rootShapes = shapes.filter(s => !s.parentId);
   
   // Sort root shapes by z-index (reversed for UI - higher z on top)
-  const sortedRoots = [...rootShapes].sort((a, b) => b.z - a.z);
+  const sortedRoots = [...rootShapes].sort((a, b) => (b.z || 0) - (a.z || 0));
   
   function buildSubtree(shape: Shape, depth: number): LayerTreeItem {
     const children: LayerTreeItem[] = [];
@@ -21,7 +21,7 @@ export function buildLayerTree(shapes: Shape[]): LayerTreeItem[] {
       const childShapes = shape.children
         .map(id => shapeMap.get(id))
         .filter((s): s is Shape => s !== undefined)
-        .sort((a, b) => b.z - a.z);
+        .sort((a, b) => (b.z || 0) - (a.z || 0));
       
       children.push(...childShapes.map(child => buildSubtree(child, depth + 1)));
     }
@@ -145,6 +145,9 @@ export function validateHierarchy(shapes: Shape[]): { valid: boolean; errors: st
   const errors: string[] = [];
   const shapeMap = new Map(shapes.map(s => [s.id, s]));
   
+  // Track all referenced children to find orphaned shapes
+  const referencedChildren = new Set<string>();
+  
   for (const shape of shapes) {
     // Check for circular references
     if (shape.parentId) {
@@ -170,6 +173,7 @@ export function validateHierarchy(shapes: Shape[]): { valid: boolean; errors: st
     // Check group children references
     if (shape.type === 'group' && shape.children) {
       for (const childId of shape.children) {
+        referencedChildren.add(childId);
         const child = shapeMap.get(childId);
         if (!child) {
           errors.push(`Group ${shape.id} references non-existent child ${childId}`);
@@ -180,9 +184,96 @@ export function validateHierarchy(shapes: Shape[]): { valid: boolean; errors: st
     }
   }
   
+  // Check for orphaned shapes (have parentId but parent doesn't reference them)
+  for (const shape of shapes) {
+    if (shape.parentId && !referencedChildren.has(shape.id)) {
+      const parent = shapeMap.get(shape.parentId);
+      if (parent && parent.type === 'group' && parent.children) {
+        if (!parent.children.includes(shape.id)) {
+          errors.push(`Shape ${shape.id} claims parent ${shape.parentId} but parent doesn't reference it`);
+        }
+      }
+    }
+  }
+  
   return {
     valid: errors.length === 0,
     errors
+  };
+}
+
+/**
+ * Debug utility to log hierarchy structure
+ */
+export function logHierarchy(shapes: Shape[], title = 'Hierarchy Structure'): void {
+  console.group(title);
+  
+  const tree = buildLayerTree(shapes);
+  
+  function logItem(item: LayerTreeItem, indent = 0) {
+    const prefix = '  '.repeat(indent);
+    const shape = item.shape;
+    const type = shape.type === 'group' ? `group (${shape.children?.length || 0} children)` : shape.type;
+    
+    console.log(`${prefix}${shape.id} [${type}] z:${shape.z}`);
+    
+    if (item.children.length > 0) {
+      item.children.forEach(child => logItem(child, indent + 1));
+    }
+  }
+  
+  tree.forEach(item => logItem(item));
+  
+  // Also log validation results
+  const validation = validateHierarchy(shapes);
+  if (!validation.valid) {
+    console.warn('Hierarchy validation errors:', validation.errors);
+  } else {
+    console.log('✅ Hierarchy is valid');
+  }
+  
+  console.groupEnd();
+}
+
+/**
+ * Get hierarchy statistics for debugging
+ */
+export function getHierarchyStats(shapes: Shape[]): {
+  totalShapes: number;
+  rootShapes: number;
+  groups: number;
+  maxDepth: number;
+  orphanedShapes: string[];
+} {
+  const tree = buildLayerTree(shapes);
+  const groups = shapes.filter(s => s.type === 'group');
+  const orphanedShapes: string[] = [];
+  
+  // Find shapes with parentId that don't have a valid parent
+  shapes.forEach(shape => {
+    if (shape.parentId) {
+      const parent = shapes.find(s => s.id === shape.parentId);
+      if (!parent || parent.type !== 'group' || !parent.children?.includes(shape.id)) {
+        orphanedShapes.push(shape.id);
+      }
+    }
+  });
+  
+  // Calculate max depth
+  function getMaxDepth(items: LayerTreeItem[], currentDepth = 0): number {
+    let maxDepth = currentDepth;
+    items.forEach(item => {
+      maxDepth = Math.max(maxDepth, getMaxDepth(item.children, currentDepth + 1));
+    });
+    return maxDepth;
+  }
+  
+  return {
+    totalShapes: shapes.length,
+    rootShapes: tree.length,
+    groups: groups.length,
+    maxDepth: getMaxDepth(tree),
+    orphanedShapes
   };
 }
 

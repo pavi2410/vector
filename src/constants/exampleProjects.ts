@@ -31,6 +31,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 3,
           opacity: 1,
           rotation: 0,
+          z: 1,
+          parentId: 'logo-group',
         },
         {
           id: 'rect-1',
@@ -44,6 +46,22 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 45,
+          z: 2,
+          parentId: 'logo-group',
+        },
+        {
+          id: 'logo-group',
+          type: 'group',
+          x: 106,
+          y: 56,
+          width: 200,
+          height: 200,
+          children: ['circle-1', 'rect-1'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 3,
         }
       ],
       {
@@ -77,6 +95,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 1,
+          parentId: 'header-group',
         },
         {
           id: 'nav-item-1',
@@ -90,6 +110,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 2,
+          parentId: 'header-group',
         },
         {
           id: 'nav-item-2',
@@ -103,6 +125,22 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 3,
+          parentId: 'header-group',
+        },
+        {
+          id: 'header-group',
+          type: 'group',
+          x: 25,
+          y: 25,
+          width: 462,
+          height: 40,
+          children: ['header-bg', 'nav-item-1', 'nav-item-2'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 4,
         },
         {
           id: 'content-area',
@@ -116,6 +154,7 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 1,
           opacity: 1,
           rotation: 0,
+          z: 5,
         }
       ],
       {
@@ -149,7 +188,9 @@ export const EXAMPLE_PROJECTS: Project[] = [
           stroke: 'none',
           strokeWidth: 0,
           opacity: 1,
-          rotation: 0
+          rotation: 0,
+          z: 1,
+          parentId: 'nav-icons-group',
         },
         // Settings icon (gear)
         {
@@ -163,7 +204,24 @@ export const EXAMPLE_PROJECTS: Project[] = [
           stroke: '#374151',
           strokeWidth: 3,
           opacity: 1,
-          rotation: 0
+          rotation: 0,
+          z: 2,
+          parentId: 'nav-icons-group',
+        },
+        // Navigation icons group
+        {
+          id: 'nav-icons-group',
+          type: 'group',
+          x: 60,
+          y: 206,
+          width: 146,
+          height: 50,
+          children: ['home-icon', 'settings-icon'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 3,
         },
         // User icon
         {
@@ -177,7 +235,9 @@ export const EXAMPLE_PROJECTS: Project[] = [
           stroke: '#374151',
           strokeWidth: 3,
           opacity: 1,
-          rotation: 0
+          rotation: 0,
+          z: 4,
+          parentId: 'social-icons-group',
         },
         // Heart icon
         {
@@ -191,7 +251,24 @@ export const EXAMPLE_PROJECTS: Project[] = [
           stroke: 'none',
           strokeWidth: 0,
           opacity: 1,
-          rotation: 0
+          rotation: 0,
+          z: 5,
+          parentId: 'social-icons-group',
+        },
+        // Social icons group
+        {
+          id: 'social-icons-group',
+          type: 'group',
+          x: 256,
+          y: 206,
+          width: 150,
+          height: 50,
+          children: ['user-icon', 'heart-icon'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 6,
         }
       ],
       {
@@ -226,6 +303,7 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 1,
         },
         // Stats boxes
         {
@@ -240,6 +318,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 2,
           opacity: 1,
           rotation: 0,
+          z: 2,
+          parentId: 'stats-group',
         },
         {
           id: 'stat-2',
@@ -253,6 +333,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 2,
           opacity: 1,
           rotation: 0,
+          z: 3,
+          parentId: 'stats-group',
         },
         {
           id: 'stat-3',
@@ -266,6 +348,23 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 2,
           opacity: 1,
           rotation: 0,
+          z: 4,
+          parentId: 'stats-group',
+        },
+        // Stats group
+        {
+          id: 'stats-group',
+          type: 'group',
+          x: 50,
+          y: 120,
+          width: 412,
+          height: 70,
+          children: ['stat-1', 'stat-2', 'stat-3'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 5,
         },
         // Chart area
         {
@@ -280,6 +379,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 1,
           opacity: 1,
           rotation: 0,
+          z: 6,
+          parentId: 'complete-chart',
         },
         // Bar graph - Bar 1 (height: 120px)
         {
@@ -294,6 +395,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 7,
+          parentId: 'bar-chart-data',
         },
         // Bar graph - Bar 2 (height: 80px)
         {
@@ -308,6 +411,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 8,
+          parentId: 'bar-chart-data',
         },
         // Bar graph - Bar 3 (height: 160px)
         {
@@ -322,6 +427,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 9,
+          parentId: 'bar-chart-data',
         },
         // Bar graph - Bar 4 (height: 100px)
         {
@@ -336,6 +443,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 10,
+          parentId: 'bar-chart-data',
         },
         // Bar graph - Bar 5 (height: 140px)
         {
@@ -350,6 +459,24 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 0,
           opacity: 1,
           rotation: 0,
+          z: 11,
+          parentId: 'bar-chart-data',
+        },
+        // Bar chart data group
+        {
+          id: 'bar-chart-data',
+          type: 'group',
+          x: 90,
+          y: 260,
+          width: 230,
+          height: 160,
+          children: ['bar-1', 'bar-2', 'bar-3', 'bar-4', 'bar-5'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 12,
+          parentId: 'complete-chart',
         },
         // X-axis line
         {
@@ -364,6 +491,8 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 2,
           opacity: 1,
           rotation: 0,
+          z: 13,
+          parentId: 'chart-axes',
         },
         // Y-axis line
         {
@@ -378,6 +507,39 @@ export const EXAMPLE_PROJECTS: Project[] = [
           strokeWidth: 2,
           opacity: 1,
           rotation: 0,
+          z: 14,
+          parentId: 'chart-axes',
+        },
+        // Chart axes group
+        {
+          id: 'chart-axes',
+          type: 'group',
+          x: 80,
+          y: 240,
+          width: 250,
+          height: 180,
+          children: ['x-axis', 'y-axis'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 15,
+          parentId: 'complete-chart',
+        },
+        // Complete chart group
+        {
+          id: 'complete-chart',
+          type: 'group',
+          x: 50,
+          y: 220,
+          width: 412,
+          height: 240,
+          children: ['chart-bg', 'bar-chart-data', 'chart-axes'],
+          expanded: true,
+          opacity: 1,
+          visible: true,
+          locked: false,
+          z: 16,
         }
       ],
       {
