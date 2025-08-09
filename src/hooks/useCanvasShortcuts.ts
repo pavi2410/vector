@@ -1,7 +1,7 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useStore } from '@nanostores/react';
-import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
-import { editorStore, clearSelection, selectMultiple, setActiveTool } from '@/stores/editorState';
+import { canvasStore, removeShape, addShapes, createGroup, ungroup, moveToFront, moveToBack, moveForward, moveBackward, toggleShapeVisibility, toggleShapeLock } from '@/stores/canvas';
+import { editorStore, clearSelection, selectMultiple, setActiveTool, selectShape } from '@/stores/editorState';
 import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
 import { useControls } from 'react-zoom-pan-pinch';
 
@@ -234,6 +234,102 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
     const newY = containerHeight / 2 - centerY;
     
     setTransform(newX, newY, 1);
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Group Operations
+  // Cmd+G / Ctrl+G - Group Selected Shapes
+  useHotkeys('ctrl+g, cmd+g', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 1) {
+      try {
+        const groupId = createGroup(selectedIds);
+        selectShape(groupId);
+      } catch (error) {
+        console.error('Failed to create group:', error);
+      }
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+Shift+G / Ctrl+Shift+G - Ungroup Selected Group
+  useHotkeys('ctrl+shift+g, cmd+shift+g', (event) => {
+    event.preventDefault();
+    if (selectedIds.length === 1) {
+      const selectedShape = shapes.find(s => s.id === selectedIds[0]);
+      if (selectedShape?.type === 'group') {
+        try {
+          const childIds = ungroup(selectedIds[0]);
+          selectMultiple(childIds);
+        } catch (error) {
+          console.error('Failed to ungroup:', error);
+        }
+      }
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Arrange Operations
+  // Cmd+Shift+] - Bring to Front
+  useHotkeys('ctrl+shift+], cmd+shift+]', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      moveToFront(selectedIds);
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+] - Bring Forward
+  useHotkeys('ctrl+], cmd+]', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      moveForward(selectedIds);
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+[ - Send Backward
+  useHotkeys('ctrl+[, cmd+[', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      moveBackward(selectedIds);
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+Shift+[ - Send to Back
+  useHotkeys('ctrl+shift+[, cmd+shift+[', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      moveToBack(selectedIds);
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Visibility and Locking
+  // Cmd+H / Ctrl+H - Toggle Visibility
+  useHotkeys('ctrl+h, cmd+h', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      selectedIds.forEach(id => toggleShapeVisibility(id));
+    }
+  }, {
+    enableOnFormTags: false,
+  });
+
+  // Cmd+L / Ctrl+L - Toggle Lock
+  useHotkeys('ctrl+l, cmd+l', (event) => {
+    event.preventDefault();
+    if (selectedIds.length > 0) {
+      selectedIds.forEach(id => toggleShapeLock(id));
+    }
   }, {
     enableOnFormTags: false,
   });

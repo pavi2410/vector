@@ -7,6 +7,7 @@ import { setMousePosition } from '@/stores/mouse';
 import { debugStore } from '@/stores/debug';
 import { projectSettingsStore } from '@/stores/project';
 import { ShapeRenderer } from './ShapeRenderer';
+import { GroupRenderer } from './GroupRenderer';
 import { InteractiveShape } from './InteractiveShape';
 import { SelectionOverlay } from './SelectionOverlay';
 import { FrameSelectionOverlay } from './FrameSelectionOverlay';
@@ -14,7 +15,8 @@ import { CanvasControls } from './CanvasControls';
 import { DebugInfo } from './DebugInfo';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
 import { useOnEvent } from '@/utils/eventBus';
-import type { Shape } from '@/types/canvas';
+import { getRenderableShapes } from '@/utils/zIndex';
+import type { Shape, Group } from '@/types/canvas';
 
 interface FrameContentProps {
   isSpacePanning: boolean;
@@ -111,6 +113,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
         y: position.y,
         width: 0,
         height: 0,
+        z: 0, // Will be assigned proper z-index when added
         fill: toolSettings.fill,
         stroke: toolSettings.stroke,
         strokeWidth: toolSettings.strokeWidth,
@@ -131,6 +134,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
         y: position.y,
         width: textWidth,
         height: textHeight,
+        z: 0, // Will be assigned proper z-index when added
         fill: toolSettings.fill,
         stroke: toolSettings.stroke,
         strokeWidth: toolSettings.strokeWidth,
@@ -319,15 +323,33 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
             fill="url(#grid)"
           />
 
-          {/* Rendered shapes */}
-          {shapes.map(shape => (
-            <InteractiveShape
-              key={shape.id}
-              shape={shape}
-              isSelected={selectedIds.includes(shape.id)}
-              isHovered={hoveredId === shape.id}
-            />
-          ))}
+          {/* Rendered shapes - sorted by z-index and filtered for visibility */}
+          {getRenderableShapes(shapes)
+            .filter(shape => !shape.parentId) // Only render root level shapes (groups will render their children)
+            .map(shape => {
+              if (shape.type === 'group') {
+                return (
+                  <GroupRenderer
+                    key={shape.id}
+                    group={shape as Group}
+                    shapes={shapes}
+                    isSelected={selectedIds.includes(shape.id)}
+                    isHovered={hoveredId === shape.id}
+                    selectedIds={selectedIds}
+                    hoveredId={hoveredId || undefined}
+                  />
+                );
+              } else {
+                return (
+                  <InteractiveShape
+                    key={shape.id}
+                    shape={shape}
+                    isSelected={selectedIds.includes(shape.id)}
+                    isHovered={hoveredId === shape.id}
+                  />
+                );
+              }
+            })}
 
           {/* Current drawing shape */}
           {currentShape && (
