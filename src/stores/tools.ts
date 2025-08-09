@@ -7,7 +7,13 @@ export const toolStore = atom<ToolState>({
     fill: '#3b82f6',
     stroke: '#1e40af',
     strokeWidth: 0,
-    opacity: 1
+    opacity: 1,
+    // Text-specific defaults
+    fontSize: 16,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    textAlign: 'start'
   }
 });
 

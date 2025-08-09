@@ -121,6 +121,33 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
       };
       
       setCurrentShape(newShape);
+    } else if (activeTool === 'text') {
+      // Text tool - create immediately on click
+      const fontSize = toolSettings.fontSize || 16;
+      const textWidth = 100; // Default width for text bounding box
+      const textHeight = fontSize * 1.2; // Height based on font size
+      
+      const newShape: Shape = {
+        id: `shape-${Date.now()}`,
+        type: 'text',
+        x: position.x,
+        y: position.y,
+        width: textWidth,
+        height: textHeight,
+        fill: toolSettings.fill,
+        stroke: toolSettings.stroke,
+        strokeWidth: toolSettings.strokeWidth,
+        opacity: toolSettings.opacity,
+        text: 'Text',
+        fontSize: fontSize,
+        fontFamily: toolSettings.fontFamily || 'Inter, system-ui, sans-serif',
+        fontWeight: toolSettings.fontWeight || 'normal',
+        fontStyle: toolSettings.fontStyle || 'normal',
+        textAlign: toolSettings.textAlign || 'start'
+      };
+      
+      addShape(newShape);
+      selectShape(newShape.id);
     }
   }, [activeTool, toolSettings, getMousePosition, isSpacePanning]);
 

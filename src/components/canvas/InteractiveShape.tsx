@@ -5,7 +5,9 @@ import { toolStore } from '@/stores/tools';
 import { selectShape, selectionStore } from '@/stores/selection';
 import { setHoveredShape } from '@/stores/hover';
 import { updateShape } from '@/stores/canvas';
+import { setTextEditing } from '@/stores/textEditing';
 import { ShapeRenderer } from './ShapeRenderer';
+import { TextEditor } from './TextEditor';
 import type { Shape } from '@/types/canvas';
 
 interface InteractiveShapeProps {
@@ -23,6 +25,7 @@ export function InteractiveShape({ shape, isSelected, isHovered, isPreview = fal
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [initialPosition, setInitialPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isEditingText, setIsEditingText] = useState(false);
 
   const scale = transformState.scale;
 
@@ -72,6 +75,19 @@ export function InteractiveShape({ shape, isSelected, isHovered, isPreview = fal
     }
   }, [activeTool]);
 
+  const handleDoubleClick = useCallback((event: React.MouseEvent) => {
+    if (activeTool === 'select' && shape.type === 'text') {
+      event.stopPropagation();
+      setIsEditingText(true);
+      setTextEditing(shape.id);
+    }
+  }, [activeTool, shape.type, shape.id]);
+
+  const handleFinishTextEditing = useCallback(() => {
+    setIsEditingText(false);
+    setTextEditing(null);
+  }, []);
+
   // Add global event listeners when dragging
   useEffect(() => {
     if (isDragging) {
@@ -90,17 +106,26 @@ export function InteractiveShape({ shape, isSelected, isHovered, isPreview = fal
       onMouseDown={handleMouseDown}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onDoubleClick={handleDoubleClick}
       style={{ 
-        cursor: activeTool === 'select' ? (isDragging ? 'grabbing' : 'grab') : 'default',
+        cursor: activeTool === 'select' ? (isDragging ? 'grabbing' : (shape.type === 'text' ? 'text' : 'grab')) : 'default',
         pointerEvents: isPreview ? 'none' : 'all'
       }}
     >
-      <ShapeRenderer 
-        shape={shape} 
-        isSelected={isSelected} 
-        isHovered={isHovered}
-        isPreview={isPreview} 
-      />
+      {isEditingText && shape.type === 'text' ? (
+        <TextEditor 
+          shape={shape} 
+          onFinishEditing={handleFinishTextEditing}
+          scale={scale}
+        />
+      ) : (
+        <ShapeRenderer 
+          shape={shape} 
+          isSelected={isSelected} 
+          isHovered={isHovered}
+          isPreview={isPreview} 
+        />
+      )}
     </g>
   );
 }

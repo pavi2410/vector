@@ -57,15 +57,39 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
       );
 
     case 'text':
+      const fontSize = shape.fontSize || 16;
+      const fontFamily = shape.fontFamily || 'Inter, system-ui, sans-serif';
+      const fontWeight = shape.fontWeight || 'normal';
+      const fontStyle = shape.fontStyle || 'normal';
+      const textAlign = shape.textAlign || 'start';
+      const text = shape.text || 'Text';
+      
+      // Calculate text anchor based on alignment
+      let textAnchor: 'start' | 'middle' | 'end' = 'start';
+      let adjustedX = shape.x;
+      
+      if (textAlign === 'middle') {
+        textAnchor = 'middle';
+        adjustedX = shape.x + shape.width / 2;
+      } else if (textAlign === 'end') {
+        textAnchor = 'end';
+        adjustedX = shape.x + shape.width;
+      }
+      
       return (
         <text
-          x={shape.x}
-          y={shape.y + 16} // Approximate baseline adjustment
-          fontSize="16"
+          x={adjustedX}
+          y={shape.y + shape.height / 2}
+          fontSize={fontSize}
+          fontFamily={fontFamily}
+          fontWeight={fontWeight}
+          fontStyle={fontStyle}
+          textAnchor={textAnchor}
+          dominantBaseline="middle"
           {...commonProps}
           fill={shape.fill || '#000000'}
         >
-          Text
+          {text}
         </text>
       );
 

@@ -11,6 +11,13 @@ export interface Shape {
   opacity?: number;
   rotation?: number;
   filters?: string[];
+  // Text-specific properties
+  text?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  fontWeight?: string;
+  fontStyle?: string;
+  textAlign?: 'start' | 'middle' | 'end';
 }
 
 export interface Frame {
