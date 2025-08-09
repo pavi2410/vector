@@ -29,12 +29,14 @@ export interface SortableTreeItemProps<T extends TreeItem> {
   item: T;
   onRenderItem: (item: T) => ReactNode;
   onRenderChildren?: (children: T[]) => ReactNode;
+  isExpanded?: (item: T) => boolean;
 }
 
 function SortableTreeItem<T extends TreeItem>({ 
   item, 
   onRenderItem, 
-  onRenderChildren 
+  onRenderChildren,
+  isExpanded 
 }: SortableTreeItemProps<T>) {
   const {
     attributes,
@@ -49,11 +51,13 @@ function SortableTreeItem<T extends TreeItem>({
     transition,
   };
 
+  const shouldShowChildren = isExpanded ? isExpanded(item) : true;
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {onRenderItem(item)}
-      {onRenderChildren && item.children.length > 0 && (
-        <div className="ml-4">
+      {onRenderChildren && item.children.length > 0 && shouldShowChildren && (
+        <div>
           {onRenderChildren(item.children as T[])}
         </div>
       )}
@@ -68,6 +72,7 @@ export interface SortableTreeProps<T extends TreeItem> {
   className?: string;
   emptyMessage?: string;
   activationDistance?: number;
+  isExpanded?: (item: T) => boolean;
 }
 
 export function SortableTree<T extends TreeItem>({
@@ -76,7 +81,8 @@ export function SortableTree<T extends TreeItem>({
   onRenderItem,
   className,
   emptyMessage = "No items",
-  activationDistance = 8
+  activationDistance = 8,
+  isExpanded
 }: SortableTreeProps<T>) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -111,6 +117,7 @@ export function SortableTree<T extends TreeItem>({
         item={child}
         onRenderItem={onRenderItem}
         onRenderChildren={renderChildren}
+        isExpanded={isExpanded}
       />
     ));
   };
@@ -130,13 +137,14 @@ export function SortableTree<T extends TreeItem>({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={allItems.map(item => item.id)} strategy={verticalListSortingStrategy}>
-        <div className={cn("space-y-1", className)}>
+        <div className={className}>
           {items.map((item) => (
             <SortableTreeItem
               key={item.id}
               item={item}
               onRenderItem={onRenderItem}
               onRenderChildren={renderChildren}
+              isExpanded={isExpanded}
             />
           ))}
         </div>

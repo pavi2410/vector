@@ -5,7 +5,7 @@ import { canvasStore, removeShape, createGroup, ungroup, toggleShapeVisibility, 
 import { editorStore, selectShape, clearSelection, selectMultiple } from '@/stores/editorState';
 import { buildLayerTree } from '@/utils/hierarchy';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, Lock, Unlock, Trash2, MoreVertical, ChevronRight, ChevronDown, Folder, FolderOpen, Group as GroupIcon } from 'lucide-react';
+import { Eye, EyeOff, Lock, Unlock, Trash2, MoreVertical, ChevronRight, ChevronDown, Folder, FolderOpen, Group as GroupIcon, Square, Circle, Minus, Type, Tangent } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +30,10 @@ interface LayerItemRendererProps {
   onGroup: (ids: string[]) => void;
   onUngroup: (id: string) => void;
   onSetRef?: (id: string, element: HTMLDivElement | null) => void;
+  indentSize?: number;
+  chevronWidth?: number;
+  showGuides?: boolean;
+  guideStyle?: 'solid' | 'dashed' | 'dotted';
 }
 
 function LayerItemRenderer({
@@ -43,11 +47,14 @@ function LayerItemRenderer({
   onGroup,
   onUngroup,
   onSetRef,
+  indentSize = 16,
+  chevronWidth = 20,
+  showGuides = true,
 }: LayerItemRendererProps) {
   const handleClick = (e: React.MouseEvent) => {
     const isModifierClick = e.metaKey || e.ctrlKey;
     const isShiftClick = e.shiftKey;
-    
+
     if (isShiftClick && selectedIds.length > 0) {
       // Shift+Click: Range selection
       onSelect(item.id, false, 'range');
@@ -65,64 +72,90 @@ function LayerItemRenderer({
       case 'group':
         return shape.expanded ? <FolderOpen size={14} /> : <Folder size={14} />;
       case 'rectangle':
-        return <div className="w-3 h-3 border border-current rounded-sm" />;
+        return <Square size={14} className="opacity-60" />;
       case 'circle':
-        return <div className="w-3 h-3 border border-current rounded-full" />;
+        return <Circle size={14} className="opacity-60" />;
       case 'line':
-        return <div className="w-3 h-0 border-t border-current" />;
+        return <Minus size={14} className="opacity-60" />;
       case 'text':
-        return <div className="text-xs font-bold">T</div>;
+        return <Type size={14} className="opacity-60" />;
+      case 'path':
+        return <Tangent size={14} className="opacity-60" />;
       default:
-        return <div className="w-3 h-3 border border-current" />;
+        return <Square size={14} className="opacity-60" />;
     }
   };
 
   const canGroup = selectedIds.length > 1 && selectedIds.includes(item.id);
   const canUngroup = item.shape.type === 'group' && selectedIds.includes(item.id);
 
+  // Calculate positioning for proper alignment
+  const baseLeftPadding = 8;
+  const chevronPosition = baseLeftPadding + (item.depth * indentSize);
+  const iconPosition = chevronPosition + chevronWidth;
+  const totalLeftPadding = iconPosition + 24; // 24px for icon + spacing
+
   return (
     <div
       ref={(el) => onSetRef?.(item.id, el)}
       data-layer-item={item.id}
       className={cn(
-        "flex items-center justify-between p-2 rounded-md cursor-pointer",
+        "relative flex items-center justify-between py-1.5 px-2 rounded-md cursor-pointer w-full",
         "hover:bg-accent hover:text-accent-foreground text-sm",
         selectedIds.includes(item.id) && "bg-accent text-accent-foreground"
       )}
-      style={{ paddingLeft: `${8 + item.depth * 16}px` }}
       onClick={handleClick}
     >
-      <div className="flex items-center space-x-2 flex-1 min-w-0">
-        {/* Expansion toggle for groups */}
-        {item.shape.type === 'group' ? (
-          <button
-            className="p-0.5 hover:bg-background rounded"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleExpansion(item.id);
-            }}
-          >
-            {item.shape.expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          </button>
-        ) : (
-          <div className="w-5" /> // Spacer for alignment
-        )}
-        
-        {/* Shape icon */}
-        <div className="flex-shrink-0 text-muted-foreground">
-          {getShapeIcon(item.shape)}
-        </div>
-        
-        {/* Shape name */}
-        <span className="capitalize truncate">
-          {item.shape.type === 'group' ? `Group (${item.shape.children?.length || 0})` : item.shape.type}
-          {item.shape.type === 'text' && item.shape.text && `: ${item.shape.text}`}
-        </span>
+      {/* Indent guides */}
+      {showGuides && item.depth > 0 && (
+        <>
+          {Array.from({ length: item.depth }, (_, i) => (
+            <div
+              key={`guide-${i}`}
+              className="absolute inset-y-0 w-px border-l border-border pointer-events-none z-[1]"
+              style={{ 
+                left: `${baseLeftPadding + (i * indentSize) + (chevronWidth / 2)}px`,
+              }}
+            />
+          ))}
+        </>
+      )}
+
+      {/* Chevron button positioned absolutely */}
+      {item.shape.type === 'group' && (
+        <button
+          className="absolute p-0.5 hover:bg-background rounded z-10"
+          style={{ left: `${chevronPosition}px` }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleExpansion(item.id);
+          }}
+        >
+          {item.shape.expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+        </button>
+      )}
+
+      {/* Shape icon positioned absolutely */}
+      <div 
+        className="absolute flex-shrink-0 text-muted-foreground"
+        style={{ left: `${iconPosition}px` }}
+      >
+        {getShapeIcon(item.shape)}
       </div>
 
-      <div className="flex items-center space-x-1 flex-shrink-0">
+      {/* Content area with proper left margin */}
+      <div className="flex items-center justify-between w-full" style={{ marginLeft: `${totalLeftPadding - 8}px` }}>
+        <div className="flex items-center space-x-2 flex-1 min-w-0">
+          {/* Shape name */}
+          <span className="truncate">
+            {item.shape.type === 'group' ? `${item.id} (${item.shape.children?.length || 0})` : item.id}
+            {item.shape.type === 'text' && item.shape.text && ` - "${item.shape.text}"`}
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-1 flex-shrink-0">
         {/* Visibility toggle */}
-        <button 
+        <button
           className="p-1 hover:bg-background rounded"
           onClick={(e) => {
             e.stopPropagation();
@@ -132,9 +165,9 @@ function LayerItemRenderer({
         >
           {item.shape.visible === false ? <EyeOff size={12} /> : <Eye size={12} />}
         </button>
-        
+
         {/* Lock toggle */}
-        <button 
+        <button
           className="p-1 hover:bg-background rounded"
           onClick={(e) => {
             e.stopPropagation();
@@ -144,11 +177,11 @@ function LayerItemRenderer({
         >
           {item.shape.locked ? <Lock size={12} /> : <Unlock size={12} />}
         </button>
-        
+
         {/* More options menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button 
+            <button
               className="p-1 hover:bg-background rounded"
               onClick={(e) => e.stopPropagation()}
             >
@@ -165,7 +198,7 @@ function LayerItemRenderer({
                 <DropdownMenuSeparator />
               </>
             )}
-            
+
             {canUngroup && (
               <>
                 <DropdownMenuItem onClick={() => onUngroup(item.id)}>
@@ -175,7 +208,7 @@ function LayerItemRenderer({
                 <DropdownMenuSeparator />
               </>
             )}
-            
+
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 Arrange
@@ -195,9 +228,9 @@ function LayerItemRenderer({
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
-            
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => onDelete(item.id)}
               variant="destructive"
             >
@@ -206,6 +239,7 @@ function LayerItemRenderer({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
     </div>
   );
@@ -214,7 +248,7 @@ function LayerItemRenderer({
 // Utility to flatten layer tree for range selection
 const getAllLayerItems = (items: LayerTreeItem[]): LayerTreeItem[] => {
   const result: LayerTreeItem[] = [];
-  
+
   const traverse = (nodes: LayerTreeItem[]) => {
     for (const node of nodes) {
       result.push(node);
@@ -223,7 +257,7 @@ const getAllLayerItems = (items: LayerTreeItem[]): LayerTreeItem[] => {
       }
     }
   };
-  
+
   traverse(items);
   return result;
 };
@@ -235,7 +269,7 @@ export function LayersPanel() {
 
   // Build hierarchical tree from flat shapes array
   const layerTree = buildLayerTree(shapes);
-  
+
   // Box selection state
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState({ x: 0, y: 0 });
@@ -249,16 +283,16 @@ export function LayersPanel() {
     if ((e.target as HTMLElement).closest('[data-layer-item]')) {
       return;
     }
-    
+
     e.preventDefault();
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    
+
     const startPoint = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     };
-    
+
     setSelectionStart(startPoint);
     setSelectionEnd(startPoint);
     setIsSelecting(true);
@@ -266,17 +300,17 @@ export function LayersPanel() {
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isSelecting) return;
-    
+
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
-    
+
     const endPoint = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
     };
-    
+
     setSelectionEnd(endPoint);
-    
+
     // Find items within selection box
     const selectionBox = {
       left: Math.min(selectionStart.x, endPoint.x),
@@ -284,33 +318,33 @@ export function LayersPanel() {
       right: Math.max(selectionStart.x, endPoint.x),
       bottom: Math.max(selectionStart.y, endPoint.y)
     };
-    
+
     const flatItems = getAllLayerItems(layerTree);
     const selectedInBox: string[] = [];
-    
+
     flatItems.forEach(item => {
       const element = itemRefs.current.get(item.id);
       if (element) {
         const itemRect = element.getBoundingClientRect();
         const containerRect = containerRef.current!.getBoundingClientRect();
-        
+
         const itemBox = {
           left: itemRect.left - containerRect.left,
           top: itemRect.top - containerRect.top,
           right: itemRect.right - containerRect.left,
           bottom: itemRect.bottom - containerRect.top
         };
-        
+
         // Check if item intersects with selection box
         if (itemBox.right >= selectionBox.left &&
-            itemBox.left <= selectionBox.right &&
-            itemBox.bottom >= selectionBox.top &&
-            itemBox.top <= selectionBox.bottom) {
+          itemBox.left <= selectionBox.right &&
+          itemBox.bottom >= selectionBox.top &&
+          itemBox.top <= selectionBox.bottom) {
           selectedInBox.push(item.id);
         }
       }
     });
-    
+
     if (selectedInBox.length > 0) {
       selectMultiple(selectedInBox);
     }
@@ -334,7 +368,7 @@ export function LayersPanel() {
     if (isSelecting) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
-      
+
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
@@ -345,7 +379,7 @@ export function LayersPanel() {
   useEffect(() => {
     // Add keyboard event listener for Select All
     document.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -367,7 +401,7 @@ export function LayersPanel() {
       const flatItems = getAllLayerItems(layerTree);
       const currentIndex = flatItems.findIndex(item => item.id === id);
       const lastSelectedIndex = flatItems.findIndex(item => selectedIds.includes(item.id));
-      
+
       if (currentIndex !== -1 && lastSelectedIndex !== -1) {
         const startIndex = Math.min(currentIndex, lastSelectedIndex);
         const endIndex = Math.max(currentIndex, lastSelectedIndex);
@@ -426,6 +460,9 @@ export function LayersPanel() {
       onGroup={handleGroup}
       onUngroup={handleUngroup}
       onSetRef={handleSetRef}
+      indentSize={16}
+      chevronWidth={20}
+      showGuides={true}
     />
   );
 
@@ -444,8 +481,8 @@ export function LayersPanel() {
   return (
     <div className="p-4">
       <div className="text-sm font-medium mb-3">Layers</div>
-      
-      <div 
+
+      <div
         ref={containerRef}
         className="relative"
         onMouseDown={handleMouseDown}
@@ -457,8 +494,9 @@ export function LayersPanel() {
           onRenderItem={renderLayerItem}
           emptyMessage="No layers yet"
           activationDistance={8}
+          isExpanded={(item) => item.shape.type !== 'group' || item.shape.expanded === true}
         />
-        
+
         {/* Selection box overlay */}
         {isSelecting && (
           <div style={selectionBoxStyle} />

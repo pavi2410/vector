@@ -78,7 +78,7 @@ export function MainLayout() {
         {/* Left Panel - Layers */}
         {ui.showLayers && (
           <>
-            <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+            <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
               <LayersPanel />
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -94,7 +94,7 @@ export function MainLayout() {
         {ui.showProperties && (
           <>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={15} minSize={15} maxSize={30}>
+            <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
               <PropertiesPanel />
             </ResizablePanel>
           </>
