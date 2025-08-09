@@ -35,7 +35,7 @@ export function TextEditor({ shape, onFinishEditing }: TextEditorProps) {
     onFinishEditing();
   };
 
-  const fontSize = shape.fontSize || 16;
+  const fontSize = shape.fontSize ?? 16;
   const fontFamily = shape.fontFamily || 'Inter, system-ui, sans-serif';
   const fontWeight = shape.fontWeight || 'normal';
   const fontStyle = shape.fontStyle || 'normal';

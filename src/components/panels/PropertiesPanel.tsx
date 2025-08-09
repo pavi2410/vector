@@ -117,7 +117,7 @@ export function PropertiesPanel() {
                 <div>
                   <Label htmlFor="fontSize" className="text-xs">Font Size</Label>
                   <Slider
-                    value={[selectedShape.fontSize || 16]}
+                    value={[selectedShape.fontSize ?? 16]}
                     onValueChange={([value]) => updateShape(selectedShape.id, { fontSize: value })}
                     max={72}
                     min={8}
@@ -125,7 +125,7 @@ export function PropertiesPanel() {
                     className="mt-2"
                   />
                   <div className="text-xs text-muted-foreground mt-1">
-                    {selectedShape.fontSize || 16}px
+                    {selectedShape.fontSize ?? 16}px
                   </div>
                 </div>
 
@@ -235,20 +235,23 @@ export function PropertiesPanel() {
             <div>
               <Label htmlFor="strokeWidth" className="text-xs">Stroke Width</Label>
               <Slider
-                value={[selectedShape.strokeWidth || 2]}
+                value={[selectedShape.strokeWidth ?? 2]}
                 onValueChange={([value]) => updateShape(selectedShape.id, { strokeWidth: value })}
                 max={20}
                 min={0}
                 step={1}
                 className="mt-2"
               />
+              <div className="text-xs text-muted-foreground mt-1">
+                {selectedShape.strokeWidth ?? 2}px
+              </div>
             </div>
 
             {/* Opacity */}
             <div>
               <Label htmlFor="opacity" className="text-xs">Opacity</Label>
               <Slider
-                value={[(selectedShape.opacity || 1) * 100]}
+                value={[(selectedShape.opacity ?? 1) * 100]}
                 onValueChange={([value]) => updateShape(selectedShape.id, { opacity: value / 100 })}
                 max={100}
                 min={0}
@@ -305,6 +308,9 @@ export function PropertiesPanel() {
               step={1}
               className="mt-2"
             />
+            <div className="text-xs text-muted-foreground mt-1">
+              {toolSettings.strokeWidth}px
+            </div>
           </div>
 
           {/* Opacity */}
@@ -328,7 +334,7 @@ export function PropertiesPanel() {
             <div>
               <Label htmlFor="toolFontSize" className="text-xs">Font Size</Label>
               <Slider
-                value={[toolSettings.fontSize || 16]}
+                value={[toolSettings.fontSize ?? 16]}
                 onValueChange={([value]) => updateToolSettings({ fontSize: value })}
                 max={72}
                 min={8}
@@ -336,7 +342,7 @@ export function PropertiesPanel() {
                 className="mt-2"
               />
               <div className="text-xs text-muted-foreground mt-1">
-                {toolSettings.fontSize || 16}px
+                {toolSettings.fontSize ?? 16}px
               </div>
             </div>
 

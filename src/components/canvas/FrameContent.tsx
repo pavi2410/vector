@@ -120,7 +120,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
       setCurrentShape(newShape);
     } else if (activeTool === 'text') {
       // Text tool - create immediately on click
-      const fontSize = toolSettings.fontSize || 16;
+      const fontSize = toolSettings.fontSize ?? 16;
       const textWidth = 100; // Default width for text bounding box
       const textHeight = fontSize * 1.2; // Height based on font size
       

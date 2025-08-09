@@ -12,8 +12,8 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
   const commonProps = {
     fill: shape.fill || 'transparent',
     stroke: shape.stroke || '#000000',
-    strokeWidth: shape.strokeWidth || 1,
-    opacity: shape.opacity || 1,
+    strokeWidth: shape.strokeWidth ?? 1,
+    opacity: shape.opacity ?? 1,
     className: cn(
       isPreview && "pointer-events-none opacity-70",
       isSelected && "stroke-blue-500",
@@ -57,7 +57,7 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
       );
 
     case 'text':
-      const fontSize = shape.fontSize || 16;
+      const fontSize = shape.fontSize ?? 16;
       const fontFamily = shape.fontFamily || 'Inter, system-ui, sans-serif';
       const fontWeight = shape.fontWeight || 'normal';
       const fontStyle = shape.fontStyle || 'normal';
