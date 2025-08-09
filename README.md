@@ -61,6 +61,9 @@ bun run build
 - [Filter Pipeline](./USER_GUIDE.md#filter-pipeline)
 - [Keyboard Shortcuts](./USER_GUIDE.md#keyboard-shortcuts)
 
+### External References
+- [SVG from Scratch](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorials/SVG_from_scratch) - MDN tutorial on SVG fundamentals
+
 ## 🛠 Tech Stack
 
 - **Runtime**: Bun (fast package manager and runtime)
