@@ -43,9 +43,7 @@ export function AlignmentSection() {
   const canDistribute = selectedShapes.length >= 3;
 
   return (
-    <div className="space-y-3">
-      <div className="text-xs font-medium text-muted-foreground">Alignment</div>
-      
+    <div className="space-y-3">      
       {/* Horizontal Alignment */}
       <div className="flex gap-1">
         <Button
