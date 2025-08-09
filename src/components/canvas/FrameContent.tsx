@@ -19,9 +19,10 @@ import type { Shape } from '@/types/canvas';
 interface FrameContentProps {
   isSpacePanning: boolean;
   setIsSpacePanning: (active: boolean) => void;
+  onWrapperClick: (event: React.MouseEvent) => void;
 }
 
-export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContentProps) {
+export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick }: FrameContentProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
@@ -268,6 +269,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
     <>
       <TransformComponent
         wrapperClass="w-full! h-full! bg-muted"
+        wrapperProps={{ onClick: onWrapperClick }}
         // contentClass="w-full! h-full!"
       >
         <svg
