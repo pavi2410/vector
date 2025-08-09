@@ -17,7 +17,7 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
     className: cn(
       isPreview && "pointer-events-none opacity-70",
       isSelected && "stroke-blue-500",
-      isHovered && !isSelected && "stroke-blue-300 stroke-2"
+      isHovered && !isSelected && "stroke-blue-300 stroke-1"
     )
   };
 
