@@ -18,11 +18,11 @@ import {
   Navigation
 } from 'lucide-react';
 import { useStore } from '@nanostores/react';
-import { uiStore, togglePanel } from '@/stores/ui';
+import { editorStore, togglePanel } from '@/stores/editorState';
 import { eventBus } from '@/utils/eventBus';
 
 export function ViewMenu() {
-  const ui = useStore(uiStore);
+  const ui = useStore(editorStore);
 
   const handleZoomIn = () => {
     eventBus.emit('zoom:in');

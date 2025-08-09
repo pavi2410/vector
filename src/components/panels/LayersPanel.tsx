@@ -1,6 +1,6 @@
 import { useStore } from '@nanostores/react';
 import { canvasStore, removeShape } from '@/stores/canvas';
-import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
+import { editorStore, selectShape, clearSelection } from '@/stores/editorState';
 import { cn } from '@/lib/utils';
 import { Eye, Unlock, Trash2, MoreVertical } from 'lucide-react';
 import {
@@ -13,7 +13,7 @@ import {
 export function LayersPanel() {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { selectedIds } = useStore(selectionStore);
+  const { selectedIds } = useStore(editorStore);
 
   const handleDeleteShape = (shapeId: string) => {
     removeShape(shapeId);

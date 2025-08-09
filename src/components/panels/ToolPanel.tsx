@@ -1,5 +1,5 @@
 import { useStore } from '@nanostores/react';
-import { toolStore, setActiveTool } from '@/stores/tools';
+import { editorStore, setActiveTool } from '@/stores/editorState';
 import { cn } from '@/lib/utils';
 import { 
   Tooltip,
@@ -26,7 +26,7 @@ const tools = [
 ] as const;
 
 export function ToolPanel() {
-  const { activeTool } = useStore(toolStore);
+  const { activeTool } = useStore(editorStore);
 
   return (
     <TooltipProvider>

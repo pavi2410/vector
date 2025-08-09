@@ -14,7 +14,7 @@ import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { currentProjectStore } from '@/stores/project';
 import { canvasStore } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
+import { editorStore } from '@/stores/editorState';
 import { exportCanvasToSVG } from '@/utils/svgExport';
 import type { ExportOptions } from '@/types/project';
 
@@ -33,7 +33,9 @@ const EXPORT_FORMATS = [
 export function ExportDialog({ onClose }: ExportDialogProps) {
   const currentProject = useStore(currentProjectStore);
   const canvas = useStore(canvasStore);
-  const selection = useStore(selectionStore);
+  const { selectedIds } = useStore(editorStore);
+  
+  const hasSelection = selectedIds.length > 0;
   
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     format: 'svg',
@@ -76,7 +78,7 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
     const svgContent = exportCanvasToSVG(canvas, {
       includeBackground: exportOptions.includeBackground,
       selectedOnly: exportOptions.selectedOnly,
-      selectedIds: selection.selectedIds
+      selectedIds: selectedIds
     });
     
     downloadFile(svgContent, `${fileName}.svg`, 'image/svg+xml');
@@ -161,7 +163,6 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
     setExportOptions(prev => ({ ...prev, [key]: value }));
   };
 
-  const hasSelection = selection.selectedIds.length > 0;
 
   return (
     <DialogContent className="sm:max-w-md">

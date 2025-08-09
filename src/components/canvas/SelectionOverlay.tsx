@@ -1,15 +1,13 @@
 import { useStore } from '@nanostores/react';
 import { canvasStore, updateShape, removeShape } from '@/stores/canvas';
-import { selectionStore, clearSelection } from '@/stores/selection';
-import { textEditingStore } from '@/stores/textEditing';
+import { editorStore, clearSelection } from '@/stores/editorState';
 import { useTransformContext } from 'react-zoom-pan-pinch';
 import { useState, useCallback, useEffect } from 'react';
 
 export function SelectionOverlay() {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { selectedIds } = useStore(selectionStore);
-  const { editingShapeId } = useStore(textEditingStore);
+  const { selectedIds, editingTextId } = useStore(editorStore);
   const { transformState } = useTransformContext();
   
   const [isDragging, setIsDragging] = useState(false);
@@ -192,7 +190,7 @@ export function SelectionOverlay() {
   if (selectedIds.length === 0 || selectedShapes.length === 0) return null;
 
   // Hide selection overlay if any selected shape is being edited
-  if (editingShapeId && selectedIds.includes(editingShapeId)) return null;
+  if (editingTextId && selectedIds.includes(editingTextId)) return null;
 
   // Calculate bounding box for all selected shapes
   const minX = Math.min(...selectedShapes.map(s => s.x));

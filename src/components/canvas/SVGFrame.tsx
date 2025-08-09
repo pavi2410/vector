@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { TransformWrapper } from 'react-zoom-pan-pinch';
-import { toolStore } from '@/stores/tools';
+import { editorStore } from '@/stores/editorState';
 import { FrameContent } from './FrameContent';
 
 export function SVGFrame() {
   const [isSpacePanning, setIsSpacePanning] = useState(false);
 
-  const { activeTool } = useStore(toolStore);
+  const { activeTool } = useStore(editorStore);
 
   return (
     <TransformWrapper

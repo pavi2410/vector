@@ -1,11 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { useTransformContext } from 'react-zoom-pan-pinch';
-import { toolStore } from '@/stores/tools';
-import { selectShape, selectionStore } from '@/stores/selection';
-import { setHoveredShape } from '@/stores/hover';
+import { editorStore, selectShape, setHoveredShape, setTextEditing } from '@/stores/editorState';
 import { updateShape } from '@/stores/canvas';
-import { setTextEditing } from '@/stores/textEditing';
 import { ShapeRenderer } from './ShapeRenderer';
 import { TextEditor } from './TextEditor';
 import type { Shape } from '@/types/canvas';
@@ -18,8 +15,7 @@ interface InteractiveShapeProps {
 }
 
 export function InteractiveShape({ shape, isSelected, isHovered, isPreview = false }: InteractiveShapeProps) {
-  const { activeTool } = useStore(toolStore);
-  const { selectedIds } = useStore(selectionStore);
+  const { activeTool, selectedIds } = useStore(editorStore);
   const { transformState } = useTransformContext();
   
   const [isDragging, setIsDragging] = useState(false);

@@ -2,9 +2,7 @@ import { useRef, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
 import { TransformComponent, useTransformContext, useControls } from 'react-zoom-pan-pinch';
 import { canvasStore, addShape } from '@/stores/canvas';
-import { toolStore } from '@/stores/tools';
-import { selectionStore, selectShape, clearSelection } from '@/stores/selection';
-import { hoverStore } from '@/stores/hover';
+import { editorStore, selectShape, clearSelection } from '@/stores/editorState';
 import { setMousePosition } from '@/stores/mouse';
 import { debugStore } from '@/stores/debug';
 import { projectSettingsStore } from '@/stores/project';
@@ -31,9 +29,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning }: FrameContent
 
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { activeTool, toolSettings } = useStore(toolStore);
-  const { selectedIds } = useStore(selectionStore);
-  const { hoveredId } = useStore(hoverStore);
+  const { activeTool, toolSettings, selectedIds, hoveredId } = useStore(editorStore);
   const { showDebugInfo } = useStore(debugStore);
   const { gridSize } = useStore(projectSettingsStore);
   const { transformState } = useTransformContext();

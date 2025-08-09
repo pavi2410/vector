@@ -1,9 +1,8 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useStore } from '@nanostores/react';
 import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
-import { selectionStore, clearSelection, selectMultiple } from '@/stores/selection';
+import { editorStore, clearSelection, selectMultiple, setActiveTool } from '@/stores/editorState';
 import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
-import { setActiveTool } from '@/stores/tools';
 import { useControls } from 'react-zoom-pan-pinch';
 
 interface CanvasShortcutsOptions {
@@ -13,7 +12,7 @@ interface CanvasShortcutsOptions {
 export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { selectedIds } = useStore(selectionStore);
+  const { selectedIds } = useStore(editorStore);
   const { shapes: clipboardShapes } = useStore(clipboardStore);
   const { zoomIn, zoomOut, setTransform, instance } = useControls();
 

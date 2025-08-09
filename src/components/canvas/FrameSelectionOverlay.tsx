@@ -1,12 +1,12 @@
 import { useStore } from '@nanostores/react';
 import { canvasStore, updateFrame } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
+import { editorStore } from '@/stores/editorState';
 import { useTransformContext } from 'react-zoom-pan-pinch';
 import { useState, useCallback, useEffect } from 'react';
 
 export function FrameSelectionOverlay() {
   const { frame } = useStore(canvasStore);
-  const { selectedFrameIds } = useStore(selectionStore);
+  const { selectedFrameIds } = useStore(editorStore);
   const { transformState } = useTransformContext();
   
   const [isDragging, setIsDragging] = useState(false);

@@ -11,7 +11,7 @@ import { HelpMenu } from '../menus/HelpMenu';
 import { DebugMenu } from '../menus/DebugMenu';
 import { InlineEditableFileName } from '../ui/InlineEditableFileName';
 import { useStore } from '@nanostores/react';
-import { uiStore } from '@/stores/ui';
+import { editorStore } from '@/stores/editorState';
 import {
   Menubar,
   MenubarMenu,
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/resizable';
 
 export function MainLayout() {
-  const ui = useStore(uiStore);
+  const ui = useStore(editorStore);
 
   return (
     <div className="h-screen flex flex-col bg-background">

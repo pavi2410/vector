@@ -10,7 +10,7 @@ import {
   AlignVerticalDistributeCenter
 } from 'lucide-react';
 import { canvasStore, updateMultipleShapes } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
+import { editorStore } from '@/stores/editorState';
 import { Button } from '@/components/ui/button';
 import { 
   alignLeft, 
@@ -25,7 +25,7 @@ import {
 
 export function AlignmentSection() {
   const { frame } = useStore(canvasStore);
-  const { selectedIds } = useStore(selectionStore);
+  const { selectedIds } = useStore(editorStore);
   
   const selectedShapes = frame.shapes.filter(shape => selectedIds.includes(shape.id));
 

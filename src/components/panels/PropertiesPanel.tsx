@@ -1,7 +1,6 @@
 import { useStore } from '@nanostores/react';
 import { canvasStore, updateShape } from '@/stores/canvas';
-import { selectionStore } from '@/stores/selection';
-import { toolStore, updateToolSettings } from '@/stores/tools';
+import { editorStore, updateToolSettings } from '@/stores/editorState';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -14,8 +13,7 @@ import { ChevronDown, AlignLeft, AlignCenter, AlignRight, Bold, Italic } from 'l
 export function PropertiesPanel() {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { selectedIds } = useStore(selectionStore);
-  const { toolSettings } = useStore(toolStore);
+  const { selectedIds, toolSettings } = useStore(editorStore);
 
   const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));
   const selectedShape = selectedIds.length === 1 

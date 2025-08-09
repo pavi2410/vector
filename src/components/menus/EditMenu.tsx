@@ -15,12 +15,12 @@ import {
   Square
 } from 'lucide-react';
 import { useStore } from '@nanostores/react';
-import { selectionStore, clearSelection, selectMultiple } from '@/stores/selection';
+import { editorStore, clearSelection, selectMultiple } from '@/stores/editorState';
 import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
 import { clipboardStore, copyShapesToClipboard } from '@/stores/clipboard';
 
 export function EditMenu() {
-  const { selectedIds } = useStore(selectionStore);
+  const { selectedIds } = useStore(editorStore);
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
   const { shapes: clipboardShapes } = useStore(clipboardStore);

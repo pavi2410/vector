@@ -1,13 +1,9 @@
 import { useStore } from '@nanostores/react';
-import { selectionStore } from '@/stores/selection';
-import { hoverStore } from '@/stores/hover';
-import { toolStore } from '@/stores/tools';
+import { editorStore } from '@/stores/editorState';
 import { mouseStore } from '@/stores/mouse';
 
 export function DebugInfo() {
-  const { selectedIds } = useStore(selectionStore);
-  const { hoveredId } = useStore(hoverStore);
-  const { activeTool } = useStore(toolStore);
+  const { selectedIds, hoveredId, activeTool } = useStore(editorStore);
   const { x, y, screenX, screenY } = useStore(mouseStore);
 
   return (
