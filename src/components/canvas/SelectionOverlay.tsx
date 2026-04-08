@@ -119,7 +119,7 @@ export function SelectionOverlay() {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
   const { selectedIds, editingTextId } = useStore(editorStore);
-  const { transformState } = useTransformContext();
+  const { state: transformState } = useTransformContext();
   
   const [mouseState, setMouseState] = useState({
     isDragging: false,

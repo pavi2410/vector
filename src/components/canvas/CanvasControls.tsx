@@ -46,7 +46,7 @@ export function CanvasControls() {
 
   useEffect(() => {
     return instance.onChange(() => {
-      const scale = instance.transformState.scale;
+      const scale = instance.state.scale;
       setZoomPercentage(Math.round(scale * 100));
     });
   }, [instance]);
@@ -56,15 +56,8 @@ export function CanvasControls() {
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 bg-background border border-border rounded-md p-2 shadow-lg [[data-appearance=blur]_&]:backdrop-blur-md [[data-appearance=blur]_&]:bg-background/80">
         {/* Zoom Out */}
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleZoomOut}
-              className="h-8 w-8 p-0"
-            >
-              <IconZoomOut className="h-4 w-4" />
-            </Button>
+          <TooltipTrigger render={<Button variant="ghost" size="sm" onClick={handleZoomOut} className="h-8 w-8 p-0" />}>
+            <IconZoomOut className="h-4 w-4" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Zoom Out</p>
@@ -73,15 +66,8 @@ export function CanvasControls() {
 
         {/* Zoom to 100% */}
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs font-mono"
-              onClick={zoomTo100}
-            >
-              {zoomPercentage}%
-            </Button>
+          <TooltipTrigger render={<Button variant="ghost" size="sm" className="text-xs font-mono" onClick={zoomTo100} />}>
+            {zoomPercentage}%
           </TooltipTrigger>
           <TooltipContent>
             <p>Zoom to 100%</p>
@@ -90,15 +76,8 @@ export function CanvasControls() {
 
         {/* Zoom In */}
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleZoomIn}
-              className="h-8 w-8 p-0"
-            >
-              <IconZoomIn className="h-4 w-4" />
-            </Button>
+          <TooltipTrigger render={<Button variant="ghost" size="sm" onClick={handleZoomIn} className="h-8 w-8 p-0" />}>
+            <IconZoomIn className="h-4 w-4" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Zoom In</p>
@@ -110,15 +89,8 @@ export function CanvasControls() {
 
         {/* Zoom to Fit */}
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={zoomToFit}
-              className="h-8 w-8 p-0"
-            >
-              <IconMaximize className="h-4 w-4" />
-            </Button>
+          <TooltipTrigger render={<Button variant="ghost" size="sm" onClick={zoomToFit} className="h-8 w-8 p-0" />}>
+            <IconMaximize className="h-4 w-4" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Zoom to Fit</p>
@@ -127,15 +99,8 @@ export function CanvasControls() {
 
         {/* Center View */}
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => centerView()}
-              className="h-8 w-8 p-0"
-            >
-              <IconFocusCentered className="h-4 w-4" />
-            </Button>
+          <TooltipTrigger render={<Button variant="ghost" size="sm" onClick={() => centerView()} className="h-8 w-8 p-0" />}>
+            <IconFocusCentered className="h-4 w-4" />
           </TooltipTrigger>
           <TooltipContent>
             <p>Center View</p>

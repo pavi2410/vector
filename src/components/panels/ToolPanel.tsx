@@ -26,17 +26,8 @@ export function ToolPanel() {
       <div className="p-2 flex gap-2 items-center">
         {tools.map(({ id, icon: Icon, label }) => (
           <Tooltip key={id}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setActiveTool(id)}
-                className={cn(
-                  "size-8 flex items-center justify-center rounded-md transition-colors",
-                  "hover:bg-accent hover:text-accent-foreground",
-                  activeTool === id && "bg-accent text-accent-foreground"
-                )}
-              >
-                <Icon size={16} />
-              </button>
+            <TooltipTrigger render={<button onClick={() => setActiveTool(id)} className={cn("size-8 flex items-center justify-center rounded-md transition-colors", "hover:bg-accent hover:text-accent-foreground", activeTool === id && "bg-accent text-accent-foreground")} />}>
+              <Icon size={16} />
             </TooltipTrigger>
             <TooltipContent>
               <p>{label}</p>

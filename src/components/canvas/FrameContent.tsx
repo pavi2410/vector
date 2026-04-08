@@ -35,7 +35,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
   const { activeTool, toolSettings, selectedIds, hoveredId } = useStore(editorStore);
   const { showDebugInfo } = useStore(debugStore);
   const { gridSize } = useStore(projectSettingsStore);
-  const { transformState } = useTransformContext();
+  const { state: transformState } = useTransformContext();
   const { zoomIn, zoomOut, centerView, instance } = useControls();
 
   const scale = transformState.scale;

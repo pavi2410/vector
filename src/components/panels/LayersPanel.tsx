@@ -180,13 +180,8 @@ function LayerItemRenderer({
 
         {/* More options menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="p-1 hover:bg-background rounded"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <IconDotsVertical size={12} />
-            </button>
+          <DropdownMenuTrigger render={<button className="p-1 hover:bg-background rounded" onClick={(e) => e.stopPropagation()} />}>
+            <IconDotsVertical size={12} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {canGroup && (

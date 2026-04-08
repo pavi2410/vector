@@ -173,7 +173,7 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   useHotkeys('up', (event) => {
     event.preventDefault();
     const panAmount = event.shiftKey ? 50 : 10;
-    setTransform(instance.transformState.positionX, instance.transformState.positionY + panAmount, instance.transformState.scale);
+    setTransform(instance.state.positionX, instance.state.positionY + panAmount, instance.state.scale);
   }, {
     enableOnFormTags: false,
   });
@@ -181,7 +181,7 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   useHotkeys('down', (event) => {
     event.preventDefault();
     const panAmount = event.shiftKey ? 50 : 10;
-    setTransform(instance.transformState.positionX, instance.transformState.positionY - panAmount, instance.transformState.scale);
+    setTransform(instance.state.positionX, instance.state.positionY - panAmount, instance.state.scale);
   }, {
     enableOnFormTags: false,
   });
@@ -189,7 +189,7 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   useHotkeys('left', (event) => {
     event.preventDefault();
     const panAmount = event.shiftKey ? 50 : 10;
-    setTransform(instance.transformState.positionX + panAmount, instance.transformState.positionY, instance.transformState.scale);
+    setTransform(instance.state.positionX + panAmount, instance.state.positionY, instance.state.scale);
   }, {
     enableOnFormTags: false,
   });
@@ -197,7 +197,7 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
   useHotkeys('right', (event) => {
     event.preventDefault();
     const panAmount = event.shiftKey ? 50 : 10;
-    setTransform(instance.transformState.positionX - panAmount, instance.transformState.positionY, instance.transformState.scale);
+    setTransform(instance.state.positionX - panAmount, instance.state.positionY, instance.state.scale);
   }, {
     enableOnFormTags: false,
   });

@@ -74,11 +74,11 @@ export function MainLayout() {
       </div>
 
       {/* Main Content */}
-      <ResizablePanelGroup direction="horizontal" className="flex-1">
+      <ResizablePanelGroup orientation="horizontal" className="flex-1">
         {/* Left Panel - Layers */}
         {ui.showLayers && (
           <>
-            <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <ResizablePanel defaultSize="20%" minSize="15%" maxSize="30%">
               <LayersPanel />
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -86,7 +86,7 @@ export function MainLayout() {
         )}
 
         {/* Canvas Area */}
-        <ResizablePanel defaultSize={ui.showLayers && ui.showProperties ? 60 : ui.showLayers || ui.showProperties ? 75 : 100} minSize={30}>
+        <ResizablePanel defaultSize={ui.showLayers && ui.showProperties ? "60%" : ui.showLayers || ui.showProperties ? "75%" : "100%"} minSize="30%">
           <CanvasArea />
         </ResizablePanel>
 
@@ -94,7 +94,7 @@ export function MainLayout() {
         {ui.showProperties && (
           <>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <ResizablePanel defaultSize="20%" minSize="15%" maxSize="30%">
               <PropertiesPanel />
             </ResizablePanel>
           </>

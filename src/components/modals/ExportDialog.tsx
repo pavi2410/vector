@@ -212,7 +212,7 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
               <Label>Scale: {exportOptions.scale}x</Label>
               <Slider
                 value={[exportOptions.scale!]}
-                onValueChange={([value]) => updateOption('scale', value)}
+                onValueChange={(v) => updateOption('scale', (v as number[])[0])}
                 min={0.5}
                 max={4}
                 step={0.5}
@@ -230,7 +230,7 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
             <Label>Quality: {exportOptions.quality}%</Label>
             <Slider
               value={[exportOptions.quality!]}
-              onValueChange={([value]) => updateOption('quality', value)}
+              onValueChange={(v) => updateOption('quality', (v as number[])[0])}
               min={10}
               max={100}
               step={5}

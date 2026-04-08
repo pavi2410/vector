@@ -16,7 +16,7 @@ interface InteractiveShapeProps {
 
 export function InteractiveShape({ shape, isSelected, isHovered, isPreview = false }: InteractiveShapeProps) {
   const { activeTool, selectedIds } = useStore(editorStore);
-  const { transformState } = useTransformContext();
+  const { state: transformState } = useTransformContext();
   
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);

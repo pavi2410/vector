@@ -118,7 +118,7 @@ export function PropertiesPanel() {
                 <div className="flex items-center gap-2 mt-1">
                   <Slider
                     value={[(selectedShape.opacity ?? 1) * 100]}
-                    onValueChange={([value]) => updateShape(selectedShape.id, { opacity: value / 100 })}
+                    onValueChange={(v) => updateShape(selectedShape.id, { opacity: (v as number[])[0] / 100 })}
                     max={100}
                     min={0}
                     step={1}
@@ -166,7 +166,7 @@ export function PropertiesPanel() {
                   <div className="flex items-center gap-2 mt-1">
                     <Slider
                       value={[selectedShape.strokeWidth ?? 2]}
-                      onValueChange={([value]) => updateShape(selectedShape.id, { strokeWidth: value })}
+                      onValueChange={(v) => updateShape(selectedShape.id, { strokeWidth: (v as number[])[0] })}
                       max={20}
                       min={0}
                       step={1}
@@ -206,7 +206,7 @@ export function PropertiesPanel() {
                       <div className="flex items-center gap-2 mt-1">
                         <Slider
                           value={[selectedShape.fontSize ?? 16]}
-                          onValueChange={([value]) => updateShape(selectedShape.id, { fontSize: value })}
+                          onValueChange={(v) => updateShape(selectedShape.id, { fontSize: (v as number[])[0] })}
                           max={72}
                           min={8}
                           step={1}
@@ -222,11 +222,9 @@ export function PropertiesPanel() {
                     <div>
                       <Label className="text-xs text-muted-foreground">Font Family</Label>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="h-8 w-full justify-between mt-1">
-                            {selectedShape.fontFamily || 'Inter'}
-                            <IconChevronDown className="h-4 w-4" />
-                          </Button>
+                        <DropdownMenuTrigger render={<Button variant="outline" className="h-8 w-full justify-between mt-1" />}>
+                          {selectedShape.fontFamily || 'Inter'}
+                          <IconChevronDown className="h-4 w-4" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-full">
                           {['Inter', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New'].map((font) => (
@@ -346,7 +344,7 @@ export function PropertiesPanel() {
                 <div className="flex items-center gap-2 mt-1">
                   <Slider
                     value={[toolSettings.strokeWidth]}
-                    onValueChange={([value]) => updateToolSettings({ strokeWidth: value })}
+                    onValueChange={(v) => updateToolSettings({ strokeWidth: (v as number[])[0] })}
                     max={20}
                     min={0}
                     step={1}
@@ -370,7 +368,7 @@ export function PropertiesPanel() {
               <div className="flex items-center gap-2 mt-1">
                 <Slider
                   value={[toolSettings.opacity * 100]}
-                  onValueChange={([value]) => updateToolSettings({ opacity: value / 100 })}
+                  onValueChange={(v) => updateToolSettings({ opacity: (v as number[])[0] / 100 })}
                   max={100}
                   min={0}
                   step={1}
@@ -396,7 +394,7 @@ export function PropertiesPanel() {
                 <div className="flex items-center gap-2 mt-1">
                   <Slider
                     value={[toolSettings.fontSize ?? 16]}
-                    onValueChange={([value]) => updateToolSettings({ fontSize: value })}
+                    onValueChange={(v) => updateToolSettings({ fontSize: (v as number[])[0] })}
                     max={72}
                     min={8}
                     step={1}
@@ -412,11 +410,9 @@ export function PropertiesPanel() {
               <div>
                 <Label className="text-xs text-muted-foreground">Font Family</Label>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-8 w-full justify-between mt-1">
-                      {toolSettings.fontFamily?.split(',')[0] || 'Inter'}
-                      <IconChevronDown className="h-4 w-4" />
-                    </Button>
+                  <DropdownMenuTrigger render={<Button variant="outline" className="h-8 w-full justify-between mt-1" />}>
+                    {toolSettings.fontFamily?.split(',')[0] || 'Inter'}
+                    <IconChevronDown className="h-4 w-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full">
                     {['Inter', 'Arial', 'Helvetica', 'Times New Roman', 'Georgia', 'Courier New'].map((font) => (

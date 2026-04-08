@@ -7,7 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 export function FrameSelectionOverlay() {
   const { frame } = useStore(canvasStore);
   const { selectedFrameIds } = useStore(editorStore);
-  const { transformState } = useTransformContext();
+  const { state: transformState } = useTransformContext();
   
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
