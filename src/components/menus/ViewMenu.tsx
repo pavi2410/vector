@@ -5,18 +5,7 @@ import {
   MenubarCheckboxItem,
   MenubarShortcut,
 } from '@/components/ui/menubar';
-import { 
-  ZoomIn, 
-  ZoomOut, 
-  Maximize, 
-  Grid3X3,
-  Eye,
-  Layers,
-  Settings,
-  Palette,
-  Target,
-  Navigation
-} from 'lucide-react';
+import { IconZoomIn, IconZoomOut, IconMaximize, IconGrid3x3, IconEye, IconLayersIntersect, IconSettings, IconPalette, IconTarget, IconNavigation } from '@tabler/icons-react';
 import { useStore } from '@nanostores/react';
 import { editorStore, togglePanel } from '@/stores/editorState';
 import { eventBus } from '@/utils/eventBus';
@@ -55,31 +44,31 @@ export function ViewMenu() {
   return (
     <MenubarContent align="start" className="w-56">
       <MenubarItem onClick={handleZoomIn}>
-        <ZoomIn className="w-4 h-4 mr-2" />
+        <IconZoomIn className="w-4 h-4 mr-2" />
         Zoom In
         <MenubarShortcut>⌘+</MenubarShortcut>
       </MenubarItem>
       
       <MenubarItem onClick={handleZoomOut}>
-        <ZoomOut className="w-4 h-4 mr-2" />
+        <IconZoomOut className="w-4 h-4 mr-2" />
         Zoom Out
         <MenubarShortcut>⌘-</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handleZoomToFit}>
-        <Maximize className="w-4 h-4 mr-2" />
+        <IconMaximize className="w-4 h-4 mr-2" />
         Zoom to Fit
         <MenubarShortcut>⌘0</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handleActualSize}>
-        <Eye className="w-4 h-4 mr-2" />
+        <IconEye className="w-4 h-4 mr-2" />
         Actual Size
         <MenubarShortcut>⌘1</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handleCenterCanvas}>
-        <Target className="w-4 h-4 mr-2" />
+        <IconTarget className="w-4 h-4 mr-2" />
         Center Canvas
         <MenubarShortcut>⌘2</MenubarShortcut>
       </MenubarItem>
@@ -90,7 +79,7 @@ export function ViewMenu() {
         checked={ui.showGrid}
         onCheckedChange={() => togglePanel('showGrid')}
       >
-        <Grid3X3 className="w-4 h-4 mr-2" />
+        <IconGrid3x3 className="w-4 h-4 mr-2" />
         Show Grid
         <MenubarShortcut>⌘;</MenubarShortcut>
       </MenubarCheckboxItem>
@@ -99,7 +88,7 @@ export function ViewMenu() {
         checked={ui.showRulers}
         onCheckedChange={() => togglePanel('showRulers')}
       >
-        <Settings className="w-4 h-4 mr-2" />
+        <IconSettings className="w-4 h-4 mr-2" />
         Show Rulers
         <MenubarShortcut>⌘R</MenubarShortcut>
       </MenubarCheckboxItem>
@@ -108,7 +97,7 @@ export function ViewMenu() {
         checked={ui.showGuides}
         onCheckedChange={() => togglePanel('showGuides')}
       >
-        <Navigation className="w-4 h-4 mr-2" />
+        <IconNavigation className="w-4 h-4 mr-2" />
         Show Guides
         <MenubarShortcut>⌘'</MenubarShortcut>
       </MenubarCheckboxItem>
@@ -117,7 +106,7 @@ export function ViewMenu() {
         checked={ui.showOutlines}
         onCheckedChange={() => togglePanel('showOutlines')}
       >
-        <Eye className="w-4 h-4 mr-2" />
+        <IconEye className="w-4 h-4 mr-2" />
         Show Outlines
         <MenubarShortcut>⌘Y</MenubarShortcut>
       </MenubarCheckboxItem>
@@ -128,7 +117,7 @@ export function ViewMenu() {
         checked={ui.showLayers}
         onCheckedChange={() => togglePanel('showLayers')}
       >
-        <Layers className="w-4 h-4 mr-2" />
+        <IconLayersIntersect className="w-4 h-4 mr-2" />
         Layers Panel
       </MenubarCheckboxItem>
 
@@ -136,14 +125,14 @@ export function ViewMenu() {
         checked={ui.showProperties}
         onCheckedChange={() => togglePanel('showProperties')}
       >
-        <Palette className="w-4 h-4 mr-2" />
+        <IconPalette className="w-4 h-4 mr-2" />
         Properties Panel
       </MenubarCheckboxItem>
 
       <MenubarSeparator />
 
       <MenubarItem onClick={handleFullscreen}>
-        <Maximize className="w-4 h-4 mr-2" />
+        <IconMaximize className="w-4 h-4 mr-2" />
         Enter Fullscreen
         <MenubarShortcut>F11</MenubarShortcut>
       </MenubarItem>

@@ -25,15 +25,7 @@ import {
   isProjectSavedInLocalStorage
 } from '@/stores/project';
 import { EXAMPLE_PROJECTS, loadExampleProject } from '@/constants/exampleProjects';
-import { 
-  FileText, 
-  FolderOpen, 
-  Save, 
-  Download, 
-  Upload, 
-  History,
-  BookOpen
-} from 'lucide-react';
+import { IconFileText, IconFolderOpen, IconDeviceFloppy, IconDownload, IconUpload, IconHistory, IconBook } from '@tabler/icons-react';
 
 export function FileMenu() {
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -125,20 +117,20 @@ export function FileMenu() {
     <>
       <MenubarContent align="start" className="w-56">
         <MenubarItem onClick={handleNewProject}>
-          <FileText className="w-4 h-4 mr-2" />
+          <IconFileText className="w-4 h-4 mr-2" />
           New Project
           <MenubarShortcut>⌘N</MenubarShortcut>
         </MenubarItem>
         
         <MenubarItem onClick={handleOpenProject}>
-          <FolderOpen className="w-4 h-4 mr-2" />
+          <IconFolderOpen className="w-4 h-4 mr-2" />
           Open Project
           <MenubarShortcut>⌘O</MenubarShortcut>
         </MenubarItem>
 
         <MenubarSub>
           <MenubarSubTrigger>
-            <BookOpen className="w-4 h-4 mr-2" />
+            <IconBook className="w-4 h-4 mr-2" />
             Load example
           </MenubarSubTrigger>
           <MenubarSubContent className="w-64">
@@ -160,7 +152,7 @@ export function FileMenu() {
         {recentFiles.length > 0 && (
           <MenubarSub>
             <MenubarSubTrigger>
-              <History className="w-4 h-4 mr-2" />
+              <IconHistory className="w-4 h-4 mr-2" />
               Recent Files
             </MenubarSubTrigger>
             <MenubarSubContent className="w-64">
@@ -186,13 +178,13 @@ export function FileMenu() {
           onClick={handleSave}
           disabled={!currentProject && !hasUnsavedChanges()}
         >
-          <Save className="w-4 h-4 mr-2" />
+          <IconDeviceFloppy className="w-4 h-4 mr-2" />
           Save
           <MenubarShortcut>⌘S</MenubarShortcut>
         </MenubarItem>
 
         <MenubarItem onClick={handleSaveAs}>
-          <Save className="w-4 h-4 mr-2" />
+          <IconDeviceFloppy className="w-4 h-4 mr-2" />
           Save As...
           <MenubarShortcut>⌘⇧S</MenubarShortcut>
         </MenubarItem>
@@ -200,12 +192,12 @@ export function FileMenu() {
         <MenubarSeparator />
 
         <MenubarItem onClick={handleImport}>
-          <Upload className="w-4 h-4 mr-2" />
+          <IconUpload className="w-4 h-4 mr-2" />
           Import
         </MenubarItem>
 
         <MenubarItem onClick={handleExport}>
-          <Download className="w-4 h-4 mr-2" />
+          <IconDownload className="w-4 h-4 mr-2" />
           Export
           <MenubarShortcut>⌘E</MenubarShortcut>
         </MenubarItem>

@@ -5,7 +5,7 @@ import { canvasStore, removeShape, createGroup, ungroup, toggleShapeVisibility, 
 import { editorStore, selectShape, clearSelection, selectMultiple } from '@/stores/editorState';
 import { buildLayerTree } from '@/utils/hierarchy';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, Lock, Unlock, Trash2, MoreVertical, ChevronRight, ChevronDown, Folder, FolderOpen, Group as GroupIcon, Square, Circle, Minus, Type, Tangent } from 'lucide-react';
+import { IconEye, IconEyeOff, IconLock, IconLockOpen, IconTrash, IconDotsVertical, IconChevronRight, IconChevronDown, IconFolder, IconFolderOpen, IconStack2 as GroupIcon, IconSquare, IconCircle, IconMinus, IconTypography, IconVectorBezier } from '@tabler/icons-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,19 +70,19 @@ function LayerItemRenderer({
   const getShapeIcon = (shape: Shape) => {
     switch (shape.type) {
       case 'group':
-        return shape.expanded ? <FolderOpen size={14} /> : <Folder size={14} />;
+        return shape.expanded ? <IconFolderOpen size={14} /> : <IconFolder size={14} />;
       case 'rectangle':
-        return <Square size={14} className="opacity-60" />;
+        return <IconSquare size={14} className="opacity-60" />;
       case 'circle':
-        return <Circle size={14} className="opacity-60" />;
+        return <IconCircle size={14} className="opacity-60" />;
       case 'line':
-        return <Minus size={14} className="opacity-60" />;
+        return <IconMinus size={14} className="opacity-60" />;
       case 'text':
-        return <Type size={14} className="opacity-60" />;
+        return <IconTypography size={14} className="opacity-60" />;
       case 'path':
-        return <Tangent size={14} className="opacity-60" />;
+        return <IconVectorBezier size={14} className="opacity-60" />;
       default:
-        return <Square size={14} className="opacity-60" />;
+        return <IconSquare size={14} className="opacity-60" />;
     }
   };
 
@@ -131,7 +131,7 @@ function LayerItemRenderer({
             onToggleExpansion(item.id);
           }}
         >
-          {item.shape.expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          {item.shape.expanded ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
         </button>
       )}
 
@@ -163,7 +163,7 @@ function LayerItemRenderer({
           }}
           title={item.shape.visible === false ? "Show" : "Hide"}
         >
-          {item.shape.visible === false ? <EyeOff size={12} /> : <Eye size={12} />}
+          {item.shape.visible === false ? <IconEyeOff size={12} /> : <IconEye size={12} />}
         </button>
 
         {/* Lock toggle */}
@@ -175,7 +175,7 @@ function LayerItemRenderer({
           }}
           title={item.shape.locked ? "Unlock" : "Lock"}
         >
-          {item.shape.locked ? <Lock size={12} /> : <Unlock size={12} />}
+          {item.shape.locked ? <IconLock size={12} /> : <IconLockOpen size={12} />}
         </button>
 
         {/* More options menu */}
@@ -185,7 +185,7 @@ function LayerItemRenderer({
               className="p-1 hover:bg-background rounded"
               onClick={(e) => e.stopPropagation()}
             >
-              <MoreVertical size={12} />
+              <IconDotsVertical size={12} />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -234,7 +234,7 @@ function LayerItemRenderer({
               onClick={() => onDelete(item.id)}
               variant="destructive"
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              <IconTrash className="w-4 h-4 mr-2" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>

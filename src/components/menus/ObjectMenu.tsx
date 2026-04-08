@@ -5,18 +5,7 @@ import {
   MenubarSeparator,
   MenubarShortcut,
 } from '@/components/ui/menubar';
-import { 
-  Group, 
-  Ungroup, 
-  Lock, 
-  Unlock,
-  Eye,
-  EyeOff,
-  ArrowUp,
-  ArrowDown,
-  ArrowBigUp,
-  ArrowBigDown
-} from 'lucide-react';
+import { IconStack2, IconStackPop, IconLock, IconLockOpen, IconEye, IconEyeOff, IconArrowUp, IconArrowDown, IconArrowBigUp, IconArrowBigDown } from '@tabler/icons-react';
 import { canvasStore, createGroup, ungroup, moveToFront, moveToBack, moveForward, moveBackward, toggleShapeVisibility, toggleShapeLock } from '@/stores/canvas';
 import { editorStore, selectShape, selectMultiple } from '@/stores/editorState';
 
@@ -70,13 +59,13 @@ export function ObjectMenu() {
   return (
     <MenubarContent align="start" className="w-56">
       <MenubarItem onClick={handleGroup} disabled={!canGroup}>
-        <Group className="w-4 h-4 mr-2" />
+        <IconStack2 className="w-4 h-4 mr-2" />
         Group
         <MenubarShortcut>⌘G</MenubarShortcut>
       </MenubarItem>
       
       <MenubarItem onClick={handleUngroup} disabled={!canUngroup}>
-        <Ungroup className="w-4 h-4 mr-2" />
+        <IconStackPop className="w-4 h-4 mr-2" />
         Ungroup
         <MenubarShortcut>⌘⇧G</MenubarShortcut>
       </MenubarItem>
@@ -85,22 +74,22 @@ export function ObjectMenu() {
 
       {/* Arrange options - inlined for better UX */}
       <MenubarItem onClick={handleBringToFront} disabled={!hasSelection}>
-        <ArrowBigUp className="w-4 h-4 mr-2" />
+        <IconArrowBigUp className="w-4 h-4 mr-2" />
         Bring to Front
         <MenubarShortcut>⌘⇧]</MenubarShortcut>
       </MenubarItem>
       <MenubarItem onClick={handleBringForward} disabled={!hasSelection}>
-        <ArrowUp className="w-4 h-4 mr-2" />
+        <IconArrowUp className="w-4 h-4 mr-2" />
         Bring Forward
         <MenubarShortcut>⌘]</MenubarShortcut>
       </MenubarItem>
       <MenubarItem onClick={handleSendBackward} disabled={!hasSelection}>
-        <ArrowDown className="w-4 h-4 mr-2" />
+        <IconArrowDown className="w-4 h-4 mr-2" />
         Send Backward
         <MenubarShortcut>⌘[</MenubarShortcut>
       </MenubarItem>
       <MenubarItem onClick={handleSendToBack} disabled={!hasSelection}>
-        <ArrowBigDown className="w-4 h-4 mr-2" />
+        <IconArrowBigDown className="w-4 h-4 mr-2" />
         Send to Back
         <MenubarShortcut>⌘⇧[</MenubarShortcut>
       </MenubarItem>
@@ -110,13 +99,13 @@ export function ObjectMenu() {
       <MenubarItem onClick={handleToggleLock} disabled={!hasSelection}>
         {hasLockedShapes ? (
           <>
-            <Unlock className="w-4 h-4 mr-2" />
+            <IconLockOpen className="w-4 h-4 mr-2" />
             Unlock
             <MenubarShortcut>⌘⇧L</MenubarShortcut>
           </>
         ) : (
           <>
-            <Lock className="w-4 h-4 mr-2" />
+            <IconLock className="w-4 h-4 mr-2" />
             Lock
             <MenubarShortcut>⌘L</MenubarShortcut>
           </>
@@ -128,13 +117,13 @@ export function ObjectMenu() {
       <MenubarItem onClick={handleToggleVisibility} disabled={!hasSelection}>
         {hasHiddenShapes ? (
           <>
-            <Eye className="w-4 h-4 mr-2" />
+            <IconEye className="w-4 h-4 mr-2" />
             Show
             <MenubarShortcut>⌘⇧H</MenubarShortcut>
           </>
         ) : (
           <>
-            <EyeOff className="w-4 h-4 mr-2" />
+            <IconEyeOff className="w-4 h-4 mr-2" />
             Hide
             <MenubarShortcut>⌘H</MenubarShortcut>
           </>

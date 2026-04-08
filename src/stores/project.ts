@@ -88,7 +88,7 @@ export const hasUnsavedChanges = (): boolean => {
 };
 
 // Auto-save functionality
-let autoSaveInterval: NodeJS.Timeout | null = null;
+let autoSaveInterval: ReturnType<typeof setInterval> | null = null;
 
 const startAutoSave = () => {
   if (autoSaveInterval) clearInterval(autoSaveInterval);

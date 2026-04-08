@@ -9,19 +9,13 @@ import {
   MenubarCheckboxItem,
   MenubarSeparator,
 } from '@/components/ui/menubar';
-import { 
-  Sun,
-  Moon,
-  Monitor,
-  Palette,
-  Sparkles
-} from 'lucide-react';
+import { IconSun, IconMoon, IconDeviceDesktop, IconPalette, IconSparkles } from '@tabler/icons-react';
 import { appearanceStore, setTheme, setBlur, type Theme } from '@/stores/appearance';
 
 const themeOptions = [
-  { value: 'light' as Theme, label: 'Light', icon: Sun },
-  { value: 'dark' as Theme, label: 'Dark', icon: Moon },
-  { value: 'auto' as Theme, label: 'Auto', icon: Monitor },
+  { value: 'light' as Theme, label: 'Light', icon: IconSun },
+  { value: 'dark' as Theme, label: 'Dark', icon: IconMoon },
+  { value: 'auto' as Theme, label: 'Auto', icon: IconDeviceDesktop },
 ];
 
 export function AppearanceMenuContent() {
@@ -39,7 +33,7 @@ export function AppearanceMenuContent() {
     <MenubarContent align="start" className="w-48">
       <MenubarSub>
         <MenubarSubTrigger>
-          <Palette className="mr-2 h-4 w-4" />
+          <IconPalette className="mr-2 h-4 w-4" />
           Theme
         </MenubarSubTrigger>
         <MenubarSubContent>
@@ -60,7 +54,7 @@ export function AppearanceMenuContent() {
         checked={appearance.blur}
         onCheckedChange={handleBlurToggle}
       >
-        <Sparkles className="mr-2 h-4 w-4" />
+        <IconSparkles className="mr-2 h-4 w-4" />
         Blur
       </MenubarCheckboxItem>
     </MenubarContent>

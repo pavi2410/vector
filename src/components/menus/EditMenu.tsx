@@ -4,16 +4,7 @@ import {
   MenubarSeparator,
   MenubarShortcut,
 } from '@/components/ui/menubar';
-import { 
-  Undo2, 
-  Redo2, 
-  Copy, 
-  Scissors, 
-  Clipboard,
-  Trash2,
-  MousePointer,
-  Square
-} from 'lucide-react';
+import { IconArrowBackUp, IconArrowForwardUp, IconCopy, IconScissors, IconClipboard, IconTrash, IconPointer, IconSquare } from '@tabler/icons-react';
 import { useStore } from '@nanostores/react';
 import { editorStore, clearSelection, selectMultiple } from '@/stores/editorState';
 import { canvasStore, removeShape, addShapes } from '@/stores/canvas';
@@ -87,13 +78,13 @@ export function EditMenu() {
   return (
     <MenubarContent align="start" className="w-56">
       <MenubarItem onClick={handleUndo}>
-        <Undo2 className="w-4 h-4 mr-2" />
+        <IconArrowBackUp className="w-4 h-4 mr-2" />
         Undo
         <MenubarShortcut>⌘Z</MenubarShortcut>
       </MenubarItem>
       
       <MenubarItem onClick={handleRedo}>
-        <Redo2 className="w-4 h-4 mr-2" />
+        <IconArrowForwardUp className="w-4 h-4 mr-2" />
         Redo
         <MenubarShortcut>⌘⇧Z</MenubarShortcut>
       </MenubarItem>
@@ -101,19 +92,19 @@ export function EditMenu() {
       <MenubarSeparator />
 
       <MenubarItem onClick={handleCut} disabled={selectedShapes.length === 0}>
-        <Scissors className="w-4 h-4 mr-2" />
+        <IconScissors className="w-4 h-4 mr-2" />
         Cut
         <MenubarShortcut>⌘X</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handleCopy} disabled={selectedShapes.length === 0}>
-        <Copy className="w-4 h-4 mr-2" />
+        <IconCopy className="w-4 h-4 mr-2" />
         Copy
         <MenubarShortcut>⌘C</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handlePaste} disabled={clipboardShapes.length === 0}>
-        <Clipboard className="w-4 h-4 mr-2" />
+        <IconClipboard className="w-4 h-4 mr-2" />
         Paste
         <MenubarShortcut>⌘V</MenubarShortcut>
       </MenubarItem>
@@ -121,13 +112,13 @@ export function EditMenu() {
       <MenubarSeparator />
 
       <MenubarItem onClick={handleDelete} disabled={selectedShapes.length === 0}>
-        <Trash2 className="w-4 h-4 mr-2" />
+        <IconTrash className="w-4 h-4 mr-2" />
         Delete
         <MenubarShortcut>Del</MenubarShortcut>
       </MenubarItem>
 
       <MenubarItem onClick={handleDuplicate}>
-        <Square className="w-4 h-4 mr-2" />
+        <IconSquare className="w-4 h-4 mr-2" />
         Duplicate
         <MenubarShortcut>⌘D</MenubarShortcut>
       </MenubarItem>
@@ -135,7 +126,7 @@ export function EditMenu() {
       <MenubarSeparator />
 
       <MenubarItem onClick={handleSelectAll}>
-        <MousePointer className="w-4 h-4 mr-2" />
+        <IconPointer className="w-4 h-4 mr-2" />
         Select All
         <MenubarShortcut>⌘A</MenubarShortcut>
       </MenubarItem>

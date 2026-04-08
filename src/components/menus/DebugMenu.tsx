@@ -3,7 +3,7 @@ import {
   MenubarCheckboxItem,
   MenubarSeparator,
 } from '@/components/ui/menubar';
-import { Bug, Tags, Square, Hash } from 'lucide-react';
+import { IconBug, IconTags, IconSquare, IconHash } from '@tabler/icons-react';
 import { useStore } from '@nanostores/react';
 import { debugStore, toggleDebugInfo, toggleGroupLabels, toggleBounds, toggleZIndex } from '@/stores/debug';
 
@@ -16,7 +16,7 @@ export function DebugMenu() {
         checked={showDebugInfo}
         onCheckedChange={toggleDebugInfo}
       >
-        <Bug className="w-4 h-4 mr-2" />
+        <IconBug className="w-4 h-4 mr-2" />
         Show Debug Info
       </MenubarCheckboxItem>
       
@@ -26,7 +26,7 @@ export function DebugMenu() {
         checked={showGroupLabels}
         onCheckedChange={toggleGroupLabels}
       >
-        <Tags className="w-4 h-4 mr-2" />
+        <IconTags className="w-4 h-4 mr-2" />
         Show Group Labels
       </MenubarCheckboxItem>
       
@@ -34,7 +34,7 @@ export function DebugMenu() {
         checked={showBounds}
         onCheckedChange={toggleBounds}
       >
-        <Square className="w-4 h-4 mr-2" />
+        <IconSquare className="w-4 h-4 mr-2" />
         Show Shape Bounds
       </MenubarCheckboxItem>
       
@@ -42,7 +42,7 @@ export function DebugMenu() {
         checked={showZIndex}
         onCheckedChange={toggleZIndex}
       >
-        <Hash className="w-4 h-4 mr-2" />
+        <IconHash className="w-4 h-4 mr-2" />
         Show Z-Index
       </MenubarCheckboxItem>
     </MenubarContent>

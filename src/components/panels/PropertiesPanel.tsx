@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { AlignmentSection } from './AlignmentSection';
-import { ChevronDown, AlignLeft, AlignCenter, AlignRight, Bold, Italic } from 'lucide-react';
+import { IconChevronDown, IconAlignLeft, IconAlignCenter, IconAlignRight, IconBold, IconItalic } from '@tabler/icons-react';
 
 export function PropertiesPanel() {
   const { frame } = useStore(canvasStore);
@@ -225,7 +225,7 @@ export function PropertiesPanel() {
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="h-8 w-full justify-between mt-1">
                             {selectedShape.fontFamily || 'Inter'}
-                            <ChevronDown className="h-4 w-4" />
+                            <IconChevronDown className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-full">
@@ -252,7 +252,7 @@ export function PropertiesPanel() {
                             fontWeight: selectedShape.fontWeight === 'bold' ? 'normal' : 'bold' 
                           })}
                         >
-                          <Bold className="h-4 w-4" />
+                          <IconBold className="h-4 w-4" />
                         </Button>
                         <Button
                           variant={selectedShape.fontStyle === 'italic' ? 'default' : 'outline'}
@@ -261,7 +261,7 @@ export function PropertiesPanel() {
                             fontStyle: selectedShape.fontStyle === 'italic' ? 'normal' : 'italic' 
                           })}
                         >
-                          <Italic className="h-4 w-4" />
+                          <IconItalic className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -275,21 +275,21 @@ export function PropertiesPanel() {
                           size="sm"
                           onClick={() => updateShape(selectedShape.id, { textAlign: 'start' })}
                         >
-                          <AlignLeft className="h-4 w-4" />
+                          <IconAlignLeft className="h-4 w-4" />
                         </Button>
                         <Button
                           variant={selectedShape.textAlign === 'middle' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => updateShape(selectedShape.id, { textAlign: 'middle' })}
                         >
-                          <AlignCenter className="h-4 w-4" />
+                          <IconAlignCenter className="h-4 w-4" />
                         </Button>
                         <Button
                           variant={selectedShape.textAlign === 'end' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => updateShape(selectedShape.id, { textAlign: 'end' })}
                         >
-                          <AlignRight className="h-4 w-4" />
+                          <IconAlignRight className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -415,7 +415,7 @@ export function PropertiesPanel() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="h-8 w-full justify-between mt-1">
                       {toolSettings.fontFamily?.split(',')[0] || 'Inter'}
-                      <ChevronDown className="h-4 w-4" />
+                      <IconChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-full">
@@ -442,7 +442,7 @@ export function PropertiesPanel() {
                       fontWeight: toolSettings.fontWeight === 'bold' ? 'normal' : 'bold' 
                     })}
                   >
-                    <Bold className="h-4 w-4" />
+                    <IconBold className="h-4 w-4" />
                   </Button>
                   <Button
                     variant={toolSettings.fontStyle === 'italic' ? 'default' : 'outline'}
@@ -451,7 +451,7 @@ export function PropertiesPanel() {
                       fontStyle: toolSettings.fontStyle === 'italic' ? 'normal' : 'italic' 
                     })}
                   >
-                    <Italic className="h-4 w-4" />
+                    <IconItalic className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -465,21 +465,21 @@ export function PropertiesPanel() {
                     size="sm"
                     onClick={() => updateToolSettings({ textAlign: 'start' })}
                   >
-                    <AlignLeft className="h-4 w-4" />
+                    <IconAlignLeft className="h-4 w-4" />
                   </Button>
                   <Button
                     variant={toolSettings.textAlign === 'middle' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateToolSettings({ textAlign: 'middle' })}
                   >
-                    <AlignCenter className="h-4 w-4" />
+                    <IconAlignCenter className="h-4 w-4" />
                   </Button>
                   <Button
                     variant={toolSettings.textAlign === 'end' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateToolSettings({ textAlign: 'end' })}
                   >
-                    <AlignRight className="h-4 w-4" />
+                    <IconAlignRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

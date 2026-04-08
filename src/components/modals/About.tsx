@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ExternalLink, Github } from 'lucide-react';
+import { IconExternalLink, IconBrandGithub } from '@tabler/icons-react';
 
 interface AboutProps {
   isOpen: boolean;
@@ -83,7 +83,7 @@ export function About({ isOpen, onClose }: AboutProps) {
                   className="h-auto p-0 text-xs"
                   onClick={handleReactFlowClick}
                 >
-                  <ExternalLink className="w-3 h-3" />
+                  <IconExternalLink className="w-3 h-3" />
                 </Button>
               </div>
               <div className="flex items-center justify-between">
@@ -94,7 +94,7 @@ export function About({ isOpen, onClose }: AboutProps) {
                   className="h-auto p-0 text-xs"
                   onClick={handleShadcnClick}
                 >
-                  <ExternalLink className="w-3 h-3" />
+                  <IconExternalLink className="w-3 h-3" />
                 </Button>
               </div>
               <div className="flex items-center justify-between">
@@ -113,7 +113,7 @@ export function About({ isOpen, onClose }: AboutProps) {
               onClick={handleGitHubClick}
               className="flex items-center space-x-2"
             >
-              <Github className="w-4 h-4" />
+              <IconBrandGithub className="w-4 h-4" />
               <span>View on GitHub</span>
             </Button>
           </div>

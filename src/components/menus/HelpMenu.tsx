@@ -4,13 +4,7 @@ import {
   MenubarItem,
   MenubarSeparator,
 } from '@/components/ui/menubar';
-import { 
-  Keyboard, 
-  FileText, 
-  Bug, 
-  Info,
-  ExternalLink 
-} from 'lucide-react';
+import { IconKeyboard, IconFileText, IconBug, IconInfoCircle, IconExternalLink } from '@tabler/icons-react';
 import { KeyboardShortcuts } from '../modals/KeyboardShortcuts';
 import { About } from '../modals/About';
 
@@ -30,28 +24,28 @@ export function HelpMenu() {
     <>
       <MenubarContent align="start" className="w-56">
         <MenubarItem onClick={() => setShowShortcuts(true)}>
-          <Keyboard className="mr-2 h-4 w-4" />
+          <IconKeyboard className="mr-2 h-4 w-4" />
           Keyboard Shortcuts
         </MenubarItem>
         
         <MenubarItem onClick={handleDocumentation}>
-          <FileText className="mr-2 h-4 w-4" />
+          <IconFileText className="mr-2 h-4 w-4" />
           Documentation
-          <ExternalLink className="ml-auto h-3 w-3" />
+          <IconExternalLink className="ml-auto h-3 w-3" />
         </MenubarItem>
         
         <MenubarSeparator />
         
         <MenubarItem onClick={handleReportIssue}>
-          <Bug className="mr-2 h-4 w-4" />
+          <IconBug className="mr-2 h-4 w-4" />
           Report Issue
-          <ExternalLink className="ml-auto h-3 w-3" />
+          <IconExternalLink className="ml-auto h-3 w-3" />
         </MenubarItem>
         
         <MenubarSeparator />
         
         <MenubarItem onClick={() => setShowAbout(true)}>
-          <Info className="mr-2 h-4 w-4" />
+          <IconInfoCircle className="mr-2 h-4 w-4" />
           About Vector
         </MenubarItem>
       </MenubarContent>

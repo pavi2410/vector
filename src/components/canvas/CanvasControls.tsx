@@ -8,12 +8,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useControls } from 'react-zoom-pan-pinch';
-import {
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Focus,
-} from 'lucide-react';
+import { IconZoomIn, IconZoomOut, IconMaximize, IconFocusCentered } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 export function CanvasControls() {
@@ -68,7 +63,7 @@ export function CanvasControls() {
               onClick={handleZoomOut}
               className="h-8 w-8 p-0"
             >
-              <ZoomOut className="h-4 w-4" />
+              <IconZoomOut className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -102,7 +97,7 @@ export function CanvasControls() {
               onClick={handleZoomIn}
               className="h-8 w-8 p-0"
             >
-              <ZoomIn className="h-4 w-4" />
+              <IconZoomIn className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -122,7 +117,7 @@ export function CanvasControls() {
               onClick={zoomToFit}
               className="h-8 w-8 p-0"
             >
-              <Maximize2 className="h-4 w-4" />
+              <IconMaximize className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -139,7 +134,7 @@ export function CanvasControls() {
               onClick={() => centerView()}
               className="h-8 w-8 p-0"
             >
-              <Focus className="h-4 w-4" />
+              <IconFocusCentered className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>

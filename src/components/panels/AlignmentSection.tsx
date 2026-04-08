@@ -1,14 +1,14 @@
 import { useStore } from '@nanostores/react';
-import { 
-  AlignLeft, 
-  AlignCenter, 
-  AlignRight, 
-  AlignVerticalJustifyStart, 
-  AlignVerticalJustifyCenter, 
-  AlignVerticalJustifyEnd,
-  AlignHorizontalDistributeCenter,
-  AlignVerticalDistributeCenter
-} from 'lucide-react';
+import {
+  IconAlignLeft,
+  IconAlignCenter,
+  IconAlignRight,
+  IconLayoutAlignTop,
+  IconLayoutAlignMiddle,
+  IconLayoutAlignBottom,
+  IconLayoutDistributeHorizontal,
+  IconLayoutDistributeVertical
+} from '@tabler/icons-react';
 import { canvasStore, updateMultipleShapes } from '@/stores/canvas';
 import { editorStore } from '@/stores/editorState';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignLeft)}
           title="Align Left"
         >
-          <AlignLeft className="h-4 w-4" />
+          <IconAlignLeft className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -62,7 +62,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignCenter)}
           title="Align Center"
         >
-          <AlignCenter className="h-4 w-4" />
+          <IconAlignCenter className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -71,7 +71,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignRight)}
           title="Align Right"
         >
-          <AlignRight className="h-4 w-4" />
+          <IconAlignRight className="h-4 w-4" />
         </Button>
       </div>
 
@@ -84,7 +84,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignTop)}
           title="Align Top"
         >
-          <AlignVerticalJustifyStart className="h-4 w-4" />
+          <IconLayoutAlignTop className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -93,7 +93,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignMiddle)}
           title="Align Middle"
         >
-          <AlignVerticalJustifyCenter className="h-4 w-4" />
+          <IconLayoutAlignMiddle className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -102,7 +102,7 @@ export function AlignmentSection() {
           onClick={() => handleAlignment(alignBottom)}
           title="Align Bottom"
         >
-          <AlignVerticalJustifyEnd className="h-4 w-4" />
+          <IconLayoutAlignBottom className="h-4 w-4" />
         </Button>
       </div>
 
@@ -118,7 +118,7 @@ export function AlignmentSection() {
               onClick={() => handleAlignment(distributeHorizontally)}
               title="Distribute Horizontally"
             >
-              <AlignHorizontalDistributeCenter className="h-4 w-4" />
+              <IconLayoutDistributeHorizontal className="h-4 w-4" />
             </Button>
             <Button
               variant="ghost"
@@ -127,7 +127,7 @@ export function AlignmentSection() {
               onClick={() => handleAlignment(distributeVertically)}
               title="Distribute Vertically"
             >
-              <AlignVerticalDistributeCenter className="h-4 w-4" />
+              <IconLayoutDistributeVertical className="h-4 w-4" />
             </Button>
           </div>
         </>

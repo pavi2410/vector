@@ -24,13 +24,7 @@ import {
   loadProjectFromLocalStorage,
   deleteProjectFromLocalStorage 
 } from '@/stores/project';
-import { 
-  FolderOpen, 
-  Search, 
-  Trash2, 
-  Calendar,
-  FileText
-} from 'lucide-react';
+import { IconFolderOpen, IconSearch, IconTrash, IconCalendar, IconFileText } from '@tabler/icons-react';
 import type { Project } from '@/types/project';
 
 interface OpenProjectDialogProps {
@@ -98,7 +92,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
       <DialogContent className="sm:max-w-4xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FolderOpen className="w-5 h-5" />
+            <IconFolderOpen className="w-5 h-5" />
             Open Project
           </DialogTitle>
           <DialogDescription>
@@ -111,7 +105,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
           <div className="space-y-2">
             <Label htmlFor="project-search">Search Projects</Label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 id="project-search"
                 placeholder="Search by project name..."
@@ -126,7 +120,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
           <div className="flex-1 min-h-0">
             {filteredProjects.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <FileText className="w-12 h-12 text-muted-foreground mb-4" />
+                <IconFileText className="w-12 h-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium mb-2">
                   {allProjects.length === 0 ? 'No Projects Yet' : 'No Projects Found'}
                 </h3>
@@ -155,7 +149,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
                           }}
                         />
                       ) : (
-                        <FileText className="w-12 h-12 text-muted-foreground" />
+                        <IconFileText className="w-12 h-12 text-muted-foreground" />
                       )}
                     </div>
                     
@@ -165,7 +159,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
                         {project.name}
                       </h4>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
+                        <IconCalendar className="w-3 h-3" />
                         {formatDate(project.modifiedAt)}
                       </div>
                     </div>
@@ -180,7 +174,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
                         handleDeleteProject(project);
                       }}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <IconTrash className="w-4 h-4" />
                     </Button>
                   </div>
                 ))}

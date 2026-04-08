@@ -7,22 +7,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { 
-  MousePointer2, 
-  Square, 
-  Circle, 
-  Minus, 
-  Type, 
-  Pen 
-} from 'lucide-react';
+import { IconPointer, IconSquare, IconCircle, IconMinus, IconTypography, IconPencil } from '@tabler/icons-react';
 
 const tools = [
-  { id: 'select', icon: MousePointer2, label: 'Select' },
-  { id: 'rectangle', icon: Square, label: 'Rectangle' },
-  { id: 'circle', icon: Circle, label: 'Circle' },
-  { id: 'line', icon: Minus, label: 'Line' },
-  { id: 'text', icon: Type, label: 'Text' },
-  { id: 'path', icon: Pen, label: 'Path' },
+  { id: 'select', icon: IconPointer, label: 'Select' },
+  { id: 'rectangle', icon: IconSquare, label: 'Rectangle' },
+  { id: 'circle', icon: IconCircle, label: 'Circle' },
+  { id: 'line', icon: IconMinus, label: 'Line' },
+  { id: 'text', icon: IconTypography, label: 'Text' },
+  { id: 'path', icon: IconPencil, label: 'Path' },
 ] as const;
 
 export function ToolPanel() {
