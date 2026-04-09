@@ -53,7 +53,7 @@ export function About({ isOpen, onClose }: AboutProps) {
               </svg>
             </div>
             <h2 className="text-lg font-semibold">Vector</h2>
-            <p className="text-sm text-muted-foreground">Version 0.1.0</p>
+            <p className="text-sm text-muted-foreground">Version 0.0.0</p>
           </div>
 
           <Separator />

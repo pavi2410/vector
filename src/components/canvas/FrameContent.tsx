@@ -170,8 +170,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
       setIsDrawing(true);
       setStartPoint(pos);
       setCurrentShape({
-        id: `shape-${Date.now()}`,
-        type: activeTool as 'rectangle' | 'circle' | 'line',
+        id: `shape-${crypto.randomUUID()}`,
         x: pos.x,
         y: pos.y,
         width: 0,
@@ -185,8 +184,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
     } else if (activeTool === 'text') {
       const fontSize = toolSettings.fontSize ?? 16;
       const newShape: Shape = {
-        id: `shape-${Date.now()}`,
-        type: 'text',
+        id: `shape-${crypto.randomUUID()}`,
         x: pos.x,
         y: pos.y,
         width: 100,
@@ -305,7 +303,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
         <div
           ref={containerRef}
           style={{ position: 'relative', width: frame.width, height: frame.height }}
-          className={getCursor()}
+          className={`${getCursor()} select-none`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
