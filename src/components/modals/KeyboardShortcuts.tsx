@@ -19,18 +19,22 @@ interface ShortcutGroup {
   }>;
 }
 
+// Detect macOS at module load time (stable, never changes at runtime)
+const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
+const MOD = isMac ? '⌘' : 'Ctrl';
+
 const shortcutGroups: ShortcutGroup[] = [
   {
     title: 'General',
     shortcuts: [
-      { keys: ['Ctrl', 'Z'], description: 'Undo' },
-      { keys: ['Ctrl', 'Y'], description: 'Redo' },
-      { keys: ['Ctrl', 'A'], description: 'Select All' },
-      { keys: ['Ctrl', 'C'], description: 'Copy' },
-      { keys: ['Ctrl', 'X'], description: 'Cut' },
-      { keys: ['Ctrl', 'V'], description: 'Paste' },
+      { keys: [MOD, 'Z'], description: 'Undo' },
+      { keys: [MOD, 'Y'], description: 'Redo' },
+      { keys: [MOD, 'A'], description: 'Select All' },
+      { keys: [MOD, 'C'], description: 'Copy' },
+      { keys: [MOD, 'X'], description: 'Cut' },
+      { keys: [MOD, 'V'], description: 'Paste' },
       { keys: ['Delete'], description: 'Delete Selected' },
-      { keys: ['Ctrl', 'D'], description: 'Duplicate' },
+      { keys: [MOD, 'D'], description: 'Duplicate' },
     ],
   },
   {
@@ -46,28 +50,28 @@ const shortcutGroups: ShortcutGroup[] = [
   {
     title: 'View',
     shortcuts: [
-      { keys: ['Ctrl', '+'], description: 'Zoom In' },
-      { keys: ['Ctrl', '-'], description: 'Zoom Out' },
-      { keys: ['Ctrl', '0'], description: 'Zoom to Fit' },
-      { keys: ['Ctrl', '1'], description: 'Zoom to 100%' },
-      { keys: ['Ctrl', '2'], description: 'Zoom to Selection' },
+      { keys: [MOD, '+'], description: 'Zoom In' },
+      { keys: [MOD, '-'], description: 'Zoom Out' },
+      { keys: [MOD, '0'], description: 'Zoom to Fit' },
+      { keys: [MOD, '1'], description: 'Zoom to 100%' },
+      { keys: [MOD, '2'], description: 'Zoom to Selection' },
       { keys: ['Space'], description: 'Pan Mode (hold)' },
       { keys: ['↑', '↓', '←', '→'], description: 'Pan View' },
       { keys: ['Shift', '↑↓←→'], description: 'Pan View (fast)' },
       { keys: ['Home'], description: 'Center View' },
       { keys: ['Shift', 'Wheel'], description: 'Horizontal Pan' },
       { keys: ['Alt', 'Wheel'], description: 'Vertical Pan' },
-      { keys: ['Ctrl', 'Wheel'], description: 'Precise Zoom' },
+      { keys: [MOD, 'Wheel'], description: 'Precise Zoom' },
     ],
   },
   {
     title: 'File',
     shortcuts: [
-      { keys: ['Ctrl', 'N'], description: 'New Document' },
-      { keys: ['Ctrl', 'O'], description: 'Open' },
-      { keys: ['Ctrl', 'S'], description: 'Save' },
-      { keys: ['Ctrl', 'Shift', 'S'], description: 'Save As' },
-      { keys: ['Ctrl', 'E'], description: 'Export' },
+      { keys: [MOD, 'N'], description: 'New Document' },
+      { keys: [MOD, 'O'], description: 'Open' },
+      { keys: [MOD, 'S'], description: 'Save' },
+      { keys: [MOD, 'Shift', 'S'], description: 'Save As' },
+      { keys: [MOD, 'E'], description: 'Export' },
     ],
   },
 ];
@@ -129,7 +133,7 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
         
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground">
-            <strong>Tip:</strong> On Mac, use <KeyboardKey>Cmd</KeyboardKey> instead of <KeyboardKey>Ctrl</KeyboardKey>
+            <strong>Tip:</strong> Hold <KeyboardKey>Shift</KeyboardKey> while using arrow keys to pan the view faster.
           </p>
         </div>
       </DialogContent>
