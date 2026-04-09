@@ -79,16 +79,14 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
   }, [scale]);
 
   const hitTest = useCallback((docX: number, docY: number): Shape | null => {
-    // Check all renderable shapes (including children) in reverse z-order.
-    // Children have higher z than their group, so they're checked first,
-    // matching the old per-shape event handler behavior.
+    // Check all renderable shapes in reverse z-order (highest z = topmost).
+    // Children have higher z than their parent group, so they are checked first.
+    // If no child is hit, we fall through to the group itself, which lets users
+    // select the group by clicking on empty space inside its bounding box.
     const all = getRenderableShapes(shapes);
     const margin = 6 / scale;
     for (let i = all.length - 1; i >= 0; i--) {
       const s = all[i];
-      // Skip groups — they're only a container; clicking empty space
-      // inside a group shouldn't select it (children handle their own hits)
-      if (s.type === 'group') continue;
       // Normalize bounds — lines can have negative width/height
       const minX = Math.min(s.x, s.x + s.width);
       const maxX = Math.max(s.x, s.x + s.width);
