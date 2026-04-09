@@ -1,6 +1,18 @@
 import type { CanvasState, Shape, Frame } from '@/types/canvas';
 
 /**
+ * Escape XML special characters to prevent injection in SVG attributes/text content.
+ */
+function escapeXml(value: string | number): string {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
  * Generate SVG markup for a single shape
  */
 function renderShapeToSVG(shape: Shape): string {
@@ -12,36 +24,44 @@ function renderShapeToSVG(shape: Shape): string {
   };
 
   const attrsString = Object.entries(commonAttrs)
-    .map(([key, value]) => `${key}="${value}"`)
+    .map(([key, value]) => `${key}="${escapeXml(value)}"`)
     .join(' ');
 
   switch (shape.type) {
     case 'rectangle':
       return `<rect x="${shape.x}" y="${shape.y}" width="${shape.width}" height="${shape.height}" ${attrsString} />`;
 
-    case 'circle':
+    case 'circle': {
       const cx = shape.x + shape.width / 2;
       const cy = shape.y + shape.height / 2;
       const rx = shape.width / 2;
       const ry = shape.height / 2;
       return `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${attrsString} />`;
+    }
 
-    case 'line':
+    case 'line': {
       const x1 = shape.x;
       const y1 = shape.y;
       const x2 = shape.x + shape.width;
       const y2 = shape.y + shape.height;
       return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${attrsString} />`;
+    }
 
-    case 'text':
+    case 'text': {
+      const fontSize = shape.fontSize ?? 16;
       const textAttrs = Object.entries({
         ...commonAttrs,
         fill: shape.fill || '#000000',
-        'font-size': '16'
+        'font-size': fontSize,
+        ...(shape.fontFamily ? { 'font-family': shape.fontFamily } : {}),
+        ...(shape.fontWeight ? { 'font-weight': shape.fontWeight } : {}),
+        ...(shape.textAlign ? { 'text-anchor': shape.textAlign } : {}),
       })
-        .map(([key, value]) => `${key}="${value}"`)
+        .map(([key, value]) => `${key}="${escapeXml(value)}"`)
         .join(' ');
-      return `<text x="${shape.x}" y="${shape.y + 16}" ${textAttrs}>Text</text>`;
+      const textContent = escapeXml(shape.text ?? '');
+      return `<text x="${shape.x}" y="${shape.y + fontSize}" ${textAttrs}>${textContent}</text>`;
+    }
 
     default:
       return '';
