@@ -12,9 +12,17 @@ class EventBus<T extends Record<string, any>> {
   private listeners = new Map<keyof T, Function[]>();
 
   emit<K extends keyof T>(event: K, ...args: T[K] extends void ? [] : [T[K]]) {
-    this.listeners.get(event)?.forEach(handler => 
-      handler(...(args as T[K] extends void ? [] : [T[K]]))
-    );
+    const handlers = this.listeners.get(event);
+    if (!handlers) return;
+    // Snapshot the handlers array so that on/off calls inside a handler
+    // don't affect the current iteration.
+    for (const handler of [...handlers]) {
+      try {
+        handler(...(args as T[K] extends void ? [] : [T[K]]));
+      } catch (err) {
+        console.error(`[EventBus] Handler for "${String(event)}" threw:`, err);
+      }
+    }
   }
 
   on<K extends keyof T>(event: K, handler: T[K] extends void ? () => void : (data: T[K]) => void) {
@@ -40,8 +48,17 @@ export function useOnEvent<K extends keyof EventMap>(
   handler: EventMap[K] extends void ? () => void : (data: EventMap[K]) => void,
   deps: React.DependencyList = []
 ) {
+  // Keep a stable ref to the latest handler so we don't need to
+  // re-subscribe on every render when the handler identity changes.
+  const handlerRef = React.useRef(handler);
+  React.useLayoutEffect(() => {
+    handlerRef.current = handler;
+  });
+
   React.useEffect(() => {
-    eventBus.on(event, handler);
-    return () => eventBus.off(event, handler);
-  }, deps);
+    const stable = (...args: any[]) => (handlerRef.current as any)(...args);
+    eventBus.on(event, stable as any);
+    return () => eventBus.off(event, stable as any);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event, ...deps]);
 }
