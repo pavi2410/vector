@@ -382,12 +382,30 @@ export function LayersPanel() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    if (active.id !== over?.id) {
-      // TODO: Implement drag reordering logic
-      // This would involve updating z-indices and potentially parent-child relationships
-      console.log('Drag from', active.id, 'to', over?.id);
-    }
+    // The layer tree is rendered top-to-bottom (highest z first).
+    // Swapping z-indices of active and over achieves the expected visual reorder.
+    const flatItems = getAllLayerItems(layerTree);
+    const activeItem = flatItems.find(item => item.id === active.id);
+    const overItem = flatItems.find(item => item.id === over.id);
+    if (!activeItem || !overItem) return;
+
+    const activeShape = activeItem.shape;
+    const overShape = overItem.shape;
+
+    // Swap the z-indices of the two shapes
+    const current = canvasStore.get();
+    const updatedShapes = current.frame.shapes.map(shape => {
+      if (shape.id === activeShape.id) return { ...shape, z: overShape.z };
+      if (shape.id === overShape.id) return { ...shape, z: activeShape.z };
+      return shape;
+    });
+
+    canvasStore.set({
+      ...current,
+      frame: { ...current.frame, shapes: updatedShapes },
+    });
   };
 
   const handleSelect = (id: string, addToSelection = false, mode: 'single' | 'toggle' | 'range' = 'single') => {
