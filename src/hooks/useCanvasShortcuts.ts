@@ -82,9 +82,9 @@ export function useCanvasShortcuts(options: CanvasShortcutsOptions = {}) {
     if (clipboardShapes.length > 0) {
       // Generate new IDs for pasted shapes and offset their position
       const offset = 20; // Offset pasted shapes by 20px
-      const pastedShapes = clipboardShapes.map((shape, index) => ({
+      const pastedShapes = clipboardShapes.map((shape) => ({
         ...shape,
-        id: `${shape.type}-${Date.now()}-${index}`,
+        id: `${shape.type}-${crypto.randomUUID()}`,
         x: shape.x + offset,
         y: shape.y + offset,
       }));

@@ -18,9 +18,10 @@ export const validateProjectFile = (file: File): Promise<boolean> => {
         const data = JSON.parse(content);
         
         // Basic validation - check for required fields
-        const isValid = data.id && data.name && data.canvas && 
-                       Array.isArray(data.canvas.shapes) && 
-                       Array.isArray(data.canvas.frames);
+        // Note: schema uses canvas.frame (singular), not canvas.frames
+        const isValid = !!(data.id && data.name && data.canvas &&
+                       data.canvas.frame &&
+                       Array.isArray(data.canvas.frame.shapes));
         
         resolve(isValid);
       } catch {

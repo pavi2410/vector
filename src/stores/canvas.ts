@@ -286,20 +286,47 @@ export const removeFromGroup = (shapeIds: string[]): void => {
       return { ...shape, parentId: undefined };
     }
     
-    // Update group children arrays
+    // Update group children arrays and recalculate bounds
     if (affectedGroups.has(shape.id) && shape.type === 'group' && shape.children) {
       const newChildren = shape.children.filter(id => !shapeIds.includes(id));
-      return { ...shape, children: newChildren };
+      if (newChildren.length === 0) {
+        // Empty group — remove it entirely below
+        return { ...shape, children: newChildren };
+      }
+      // Recalculate group bounds based on remaining children
+      const remainingChildren = shapes.filter(s => newChildren.includes(s.id));
+      const bounds = remainingChildren.reduce(
+        (acc, s) => ({
+          left: Math.min(acc.left, s.x),
+          top: Math.min(acc.top, s.y),
+          right: Math.max(acc.right, s.x + s.width),
+          bottom: Math.max(acc.bottom, s.y + s.height),
+        }),
+        { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity }
+      );
+      return {
+        ...shape,
+        children: newChildren,
+        x: bounds.left,
+        y: bounds.top,
+        width: bounds.right - bounds.left,
+        height: bounds.bottom - bounds.top,
+      };
     }
     
     return shape;
   });
+
+  // Remove groups that are now empty
+  const shapesWithoutEmptyGroups = updatedShapes.filter(
+    s => !(s.type === 'group' && s.children && s.children.length === 0)
+  );
   
   canvasStore.set({
     ...current,
     frame: {
       ...current.frame,
-      shapes: updatedShapes
+      shapes: shapesWithoutEmptyGroups
     }
   });
 };
