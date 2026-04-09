@@ -46,9 +46,9 @@ export function EditMenu() {
     if (clipboardShapes.length > 0) {
       // Generate new IDs for pasted shapes and offset their position
       const offset = 20; // Offset pasted shapes by 20px
-      const pastedShapes = clipboardShapes.map((shape, index) => ({
+      const pastedShapes = clipboardShapes.map((shape) => ({
         ...shape,
-        id: `${shape.type}-${Date.now()}-${index}`,
+        id: `${shape.type}-${crypto.randomUUID()}`,
         x: shape.x + offset,
         y: shape.y + offset,
       }));
@@ -68,11 +68,22 @@ export function EditMenu() {
   };
 
   const handleSelectAll = () => {
-    console.log('Select All action');
+    // Select all top-level shapes in the current frame
+    const allIds = shapes.map(s => s.id);
+    selectMultiple(allIds);
   };
 
   const handleDuplicate = () => {
-    console.log('Duplicate action');
+    if (selectedShapes.length === 0) return;
+    const offset = 20;
+    const duplicated = selectedShapes.map((shape) => ({
+      ...structuredClone(shape),
+      id: `${shape.type}-${crypto.randomUUID()}`,
+      x: shape.x + offset,
+      y: shape.y + offset,
+    }));
+    addShapes(duplicated);
+    selectMultiple(duplicated.map(s => s.id));
   };
 
   return (
