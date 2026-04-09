@@ -171,6 +171,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
       setStartPoint(pos);
       setCurrentShape({
         id: `shape-${crypto.randomUUID()}`,
+        type: activeTool as 'rectangle' | 'circle' | 'line',
         x: pos.x,
         y: pos.y,
         width: 0,
@@ -185,6 +186,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
       const fontSize = toolSettings.fontSize ?? 16;
       const newShape: Shape = {
         id: `shape-${crypto.randomUUID()}`,
+        type: 'text',
         x: pos.x,
         y: pos.y,
         width: 100,
