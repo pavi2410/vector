@@ -39,7 +39,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
 
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { activeTool, toolSettings, selectedIds, hoveredId, editingTextId } = useStore(editorStore);
+  const { activeTool, toolSettings, selectedIds, hoveredId, editingTextId, showGrid } = useStore(editorStore);
   const { showDebugInfo } = useStore(debugStore);
   const { gridSize } = useStore(projectSettingsStore);
   const { state: transformState } = useTransformContext();
@@ -344,6 +344,7 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
               x={0} y={0}
               width={frame.width} height={frame.height}
               fill="url(#grid)"
+              style={{ display: showGrid ? undefined : 'none' }}
             />
 
             {getRenderableShapes(shapes)
