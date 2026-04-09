@@ -91,7 +91,8 @@ export function PropertiesPanel() {
                     id="width"
                     type="number"
                     value={selectedShape.width}
-                    onChange={(e) => updateShape(selectedShape.id, { width: Number(e.target.value) })}
+                    onChange={(e) => updateShape(selectedShape.id, { width: Math.max(1, Number(e.target.value)) })}
+                    min={1}
                     className="h-8 mt-1"
                   />
                 </div>
@@ -101,7 +102,8 @@ export function PropertiesPanel() {
                     id="height"
                     type="number"
                     value={selectedShape.height}
-                    onChange={(e) => updateShape(selectedShape.id, { height: Number(e.target.value) })}
+                    onChange={(e) => updateShape(selectedShape.id, { height: Math.max(1, Number(e.target.value)) })}
+                    min={1}
                     className="h-8 mt-1"
                   />
                 </div>
