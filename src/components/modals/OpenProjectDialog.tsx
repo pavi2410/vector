@@ -36,6 +36,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [, forceUpdate] = useState(0);
 
   // Get all saved projects and filter by search query
   const allProjects = getAllSavedProjects();
@@ -70,9 +71,7 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
       const success = deleteProjectFromLocalStorage(projectToDelete.id);
       if (success) {
         setProjectToDelete(null);
-        // Force re-render by updating search query
-        setSearchQuery(prev => prev + ' ');
-        setSearchQuery(prev => prev.trim());
+        forceUpdate(n => n + 1);
       }
     }
   };
@@ -142,11 +141,10 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
                     {/* Thumbnail */}
                     <div className="aspect-[4/3] bg-muted flex items-center justify-center">
                       {project.thumbnail ? (
-                        <div 
-                          className="w-full h-full"
-                          dangerouslySetInnerHTML={{ 
-                            __html: atob(project.thumbnail.split(',')[1])
-                          }}
+                        <img
+                          src={project.thumbnail}
+                          alt={project.name}
+                          className="w-full h-full object-contain"
                         />
                       ) : (
                         <IconFileText className="w-12 h-12 text-muted-foreground" />
