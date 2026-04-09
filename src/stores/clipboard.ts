@@ -10,7 +10,9 @@ export const clipboardStore = atom<ClipboardState>({
 });
 
 export const copyShapesToClipboard = (shapes: Shape[]) => {
-  clipboardStore.set({ shapes: [...shapes] });
+  // Deep-clone so that subsequent mutations to original shapes don't corrupt
+  // the clipboard, and pasting doesn't share nested object references.
+  clipboardStore.set({ shapes: structuredClone(shapes) });
 };
 
 export const clearClipboard = () => {
