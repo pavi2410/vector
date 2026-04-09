@@ -23,26 +23,33 @@ export const appearanceStore = persistentMap<AppearanceValue>('vector-appearance
   }
 });
 
+// Track the current auto-theme listener so it can be removed when theme changes
+let autoThemeCleanup: (() => void) | null = null;
+
 export function setTheme(theme: Theme) {
+  // Always remove any previous auto-theme listener before switching
+  if (autoThemeCleanup) {
+    autoThemeCleanup();
+    autoThemeCleanup = null;
+  }
+
   appearanceStore.setKey('theme', theme);
-  
+
   // Apply theme to document
   const root = document.documentElement;
-  
+
   if (theme === 'auto') {
     // Use system preference
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const applySystemTheme = () => {
       root.classList.toggle('dark', mediaQuery.matches);
     };
-    
+
     applySystemTheme();
-    
-    // Listen for system theme changes
+
+    // Listen for system theme changes and keep a stable cleanup reference
     mediaQuery.addEventListener('change', applySystemTheme);
-    
-    // Store cleanup function for when theme changes
-    return () => mediaQuery.removeEventListener('change', applySystemTheme);
+    autoThemeCleanup = () => mediaQuery.removeEventListener('change', applySystemTheme);
   } else {
     // Apply explicit theme
     root.classList.toggle('dark', theme === 'dark');
