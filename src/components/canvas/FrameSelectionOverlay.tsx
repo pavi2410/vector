@@ -148,7 +148,7 @@ export function FrameSelectionOverlay() {
           fill="#10b981"
           stroke="#ffffff"
           strokeWidth={1 / scale}
-          style={{ cursor: handle.cursor }}
+          style={{ cursor: handle.cursor, pointerEvents: 'auto' }}
           className="hover:fill-green-600"
           onMouseDown={(e) => handleMouseDown(e, handle.id)}
         />

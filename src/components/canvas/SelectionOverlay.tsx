@@ -4,6 +4,10 @@ import { editorStore } from '@/stores/editorState';
 import { useTransformContext } from 'react-zoom-pan-pinch';
 import { useState, useCallback, useEffect } from 'react';
 
+interface SelectionOverlayProps {
+  editingTextId: string | null;
+}
+
 type Shape = {
   id: string;
   x: number;
@@ -27,71 +31,65 @@ function calculateResizeTransform(
   originalBounds: { minX: number; minY: number; maxX: number; maxY: number; width: number; height: number }
 ) {
   const { width: originalWidth, height: originalHeight } = originalBounds;
-  
+
   let scaleX = 1;
   let scaleY = 1;
   let offsetX = 0;
   let offsetY = 0;
 
-  // Calculate scale and offset based on resize handle
   switch (resizeHandle) {
-    case 'nw':
-      // Diagonal handle - maintain aspect ratio
+    case 'nw': {
       const nwScale = Math.max(
         (originalWidth - deltaX) / originalWidth,
         (originalHeight - deltaY) / originalHeight
       );
-      scaleX = nwScale;
-      scaleY = nwScale;
-      offsetX = originalWidth - (originalWidth * nwScale);
-      offsetY = originalHeight - (originalHeight * nwScale);
+      scaleX = nwScale; scaleY = nwScale;
+      offsetX = originalWidth - originalWidth * nwScale;
+      offsetY = originalHeight - originalHeight * nwScale;
       break;
+    }
     case 'n':
       scaleY = (originalHeight - deltaY) / originalHeight;
       offsetY = deltaY;
       break;
-    case 'ne':
-      // Diagonal handle - maintain aspect ratio
+    case 'ne': {
       const neScale = Math.max(
         (originalWidth + deltaX) / originalWidth,
         (originalHeight - deltaY) / originalHeight
       );
-      scaleX = neScale;
-      scaleY = neScale;
-      offsetY = originalHeight - (originalHeight * neScale);
+      scaleX = neScale; scaleY = neScale;
+      offsetY = originalHeight - originalHeight * neScale;
       break;
+    }
     case 'e':
       scaleX = (originalWidth + deltaX) / originalWidth;
       break;
-    case 'se':
-      // Diagonal handle - maintain aspect ratio
+    case 'se': {
       const seScale = Math.max(
         (originalWidth + deltaX) / originalWidth,
         (originalHeight + deltaY) / originalHeight
       );
-      scaleX = seScale;
-      scaleY = seScale;
+      scaleX = seScale; scaleY = seScale;
       break;
+    }
     case 's':
       scaleY = (originalHeight + deltaY) / originalHeight;
       break;
-    case 'sw':
-      // Diagonal handle - maintain aspect ratio
+    case 'sw': {
       const swScale = Math.max(
         (originalWidth - deltaX) / originalWidth,
         (originalHeight + deltaY) / originalHeight
       );
-      scaleX = swScale;
-      scaleY = swScale;
-      offsetX = originalWidth - (originalWidth * swScale);
+      scaleX = swScale; scaleY = swScale;
+      offsetX = originalWidth - originalWidth * swScale;
       break;
+    }
     case 'w':
       scaleX = (originalWidth - deltaX) / originalWidth;
       offsetX = deltaX;
       break;
   }
 
-  // Ensure minimum scale
   const minScale = 0.1;
   scaleX = Math.max(minScale, Math.abs(scaleX));
   scaleY = Math.max(minScale, Math.abs(scaleY));
@@ -102,7 +100,6 @@ function calculateResizeTransform(
 function generateResizeHandles(minX: number, minY: number, maxX: number, maxY: number, handleSize: number) {
   const width = maxX - minX;
   const height = maxY - minY;
-  
   return [
     { id: 'nw', x: minX - handleSize / 2, y: minY - handleSize / 2, cursor: 'nw-resize' },
     { id: 'n', x: minX + width / 2 - handleSize / 2, y: minY - handleSize / 2, cursor: 'n-resize' },
@@ -115,19 +112,17 @@ function generateResizeHandles(minX: number, minY: number, maxX: number, maxY: n
   ];
 }
 
-export function SelectionOverlay() {
+export function SelectionOverlay({ editingTextId }: SelectionOverlayProps) {
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { selectedIds, editingTextId } = useStore(editorStore);
+  const { selectedIds } = useStore(editorStore);
   const { state: transformState } = useTransformContext();
-  
-  const [mouseState, setMouseState] = useState({
-    isDragging: false,
-    isMoving: false,
-    dragStart: null as { x: number; y: number } | null,
-    resizeHandle: null as string | null
-  });
-  const [initialShapes, setInitialShapes] = useState<Array<{ id: string; x: number; y: number; width: number; height: number }>>([]);
+
+  const [resizeState, setResizeState] = useState<{
+    handle: string;
+    dragStart: { x: number; y: number };
+    initialShapes: Array<{ id: string; x: number; y: number; width: number; height: number }>;
+  } | null>(null);
 
   const scale = transformState.scale;
   const selectedShapes = shapes.filter(shape => selectedIds.includes(shape.id));
@@ -135,122 +130,57 @@ export function SelectionOverlay() {
   const handleResizeMouseDown = useCallback((e: React.MouseEvent, handleId: string) => {
     if (selectedShapes.length === 0) return;
     e.stopPropagation();
-    setMouseState({
-      isDragging: true,
-      isMoving: false,
-      resizeHandle: handleId,
-      dragStart: { x: e.clientX, y: e.clientY }
+    setResizeState({
+      handle: handleId,
+      dragStart: { x: e.clientX, y: e.clientY },
+      initialShapes: selectedShapes.map(s => ({ id: s.id, x: s.x, y: s.y, width: s.width, height: s.height })),
     });
-    setInitialShapes(selectedShapes.map(shape => ({
-      id: shape.id,
-      x: shape.x,
-      y: shape.y,
-      width: shape.width,
-      height: shape.height
-    })));
-  }, [selectedShapes]);
-
-  const handleMoveMouseDown = useCallback((e: React.MouseEvent) => {
-    if (selectedShapes.length === 0) return;
-    e.stopPropagation();
-    setMouseState({
-      isDragging: false,
-      isMoving: true,
-      resizeHandle: null,
-      dragStart: { x: e.clientX, y: e.clientY }
-    });
-    setInitialShapes(selectedShapes.map(shape => ({
-      id: shape.id,
-      x: shape.x,
-      y: shape.y,
-      width: shape.width,
-      height: shape.height
-    })));
   }, [selectedShapes]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if ((!mouseState.isDragging && !mouseState.isMoving) || !mouseState.dragStart || initialShapes.length === 0) return;
-
-    const deltaX = (e.clientX - mouseState.dragStart.x) / scale;
-    const deltaY = (e.clientY - mouseState.dragStart.y) / scale;
-
-    if (mouseState.isMoving) {
-      // Handle move operation
-      initialShapes.forEach(initialShape => {
-        updateShape(initialShape.id, {
-          x: initialShape.x + deltaX,
-          y: initialShape.y + deltaY
-        });
+    if (!resizeState) return;
+    const deltaX = (e.clientX - resizeState.dragStart.x) / scale;
+    const deltaY = (e.clientY - resizeState.dragStart.y) / scale;
+    const originalBounds = calculateBoundingBox(resizeState.initialShapes);
+    const { scaleX, scaleY, offsetX, offsetY } = calculateResizeTransform(
+      resizeState.handle, deltaX, deltaY, originalBounds
+    );
+    resizeState.initialShapes.forEach(initialShape => {
+      const relativeX = initialShape.x - originalBounds.minX;
+      const relativeY = initialShape.y - originalBounds.minY;
+      updateShape(initialShape.id, {
+        x: originalBounds.minX + offsetX + relativeX * scaleX,
+        y: originalBounds.minY + offsetY + relativeY * scaleY,
+        width: Math.max(5, initialShape.width * scaleX),
+        height: Math.max(5, initialShape.height * scaleY),
       });
-    } else if (mouseState.isDragging && mouseState.resizeHandle) {
-      // Handle resize operation
-      const originalBounds = calculateBoundingBox(initialShapes);
-      const { scaleX, scaleY, offsetX, offsetY } = calculateResizeTransform(
-        mouseState.resizeHandle,
-        deltaX,
-        deltaY,
-        originalBounds
-      );
-
-      // Apply transformations to all selected shapes
-      initialShapes.forEach(initialShape => {
-        const relativeX = initialShape.x - originalBounds.minX;
-        const relativeY = initialShape.y - originalBounds.minY;
-
-        const newX = originalBounds.minX + offsetX + relativeX * scaleX;
-        const newY = originalBounds.minY + offsetY + relativeY * scaleY;
-        const newWidth = Math.max(5, initialShape.width * scaleX);
-        const newHeight = Math.max(5, initialShape.height * scaleY);
-
-        updateShape(initialShape.id, {
-          x: newX,
-          y: newY,
-          width: newWidth,
-          height: newHeight
-        });
-      });
-    }
-  }, [mouseState.isDragging, mouseState.isMoving, mouseState.dragStart, mouseState.resizeHandle, initialShapes, scale]);
+    });
+  }, [resizeState, scale]);
 
   const handleMouseUp = useCallback(() => {
-    setMouseState({
-      isDragging: false,
-      isMoving: false,
-      resizeHandle: null,
-      dragStart: null
-    });
-    setInitialShapes([]);
+    setResizeState(null);
   }, []);
 
-
-  // Add global event listeners when dragging or moving
   useEffect(() => {
-    if (mouseState.isDragging || mouseState.isMoving) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [mouseState.isDragging, mouseState.isMoving, handleMouseMove, handleMouseUp]);
+    if (!resizeState) return;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizeState, handleMouseMove, handleMouseUp]);
 
-  // Early return after all hooks are called
   if (selectedIds.length === 0 || selectedShapes.length === 0) return null;
-
-  // Hide selection overlay if any selected shape is being edited
   if (editingTextId && selectedIds.includes(editingTextId)) return null;
 
-  // Calculate bounding box for all selected shapes
   const { minX, minY, maxX, maxY, width, height } = calculateBoundingBox(selectedShapes);
-
-  const handleSize = 8 / scale; // Adjust handle size based on zoom level
+  const handleSize = 8 / scale;
   const handles = generateResizeHandles(minX, minY, maxX, maxY, handleSize);
 
   return (
     <g className="selection-overlay">
-      {/* Selection rectangle */}
+      {/* Selection bounding rect — visual only, transparent to pointer events */}
       <rect
         x={minX}
         y={minY}
@@ -260,12 +190,10 @@ export function SelectionOverlay() {
         stroke="#3b82f6"
         strokeWidth={1 / scale}
         strokeDasharray={`${4 / scale} ${4 / scale}`}
-        style={{ cursor: mouseState.isMoving ? 'grabbing' : 'grab' }}
-        onMouseDown={handleMoveMouseDown}
+        style={{ pointerEvents: 'none' }}
       />
 
-
-      {/* Transform handles */}
+      {/* Resize handles — interactive */}
       {handles.map((handle) => (
         <rect
           key={handle.id}
@@ -276,7 +204,7 @@ export function SelectionOverlay() {
           fill="#3b82f6"
           stroke="#ffffff"
           strokeWidth={1 / scale}
-          style={{ cursor: handle.cursor }}
+          style={{ cursor: handle.cursor, pointerEvents: 'auto' }}
           className="hover:fill-blue-600"
           onMouseDown={(e) => handleResizeMouseDown(e, handle.id)}
         />

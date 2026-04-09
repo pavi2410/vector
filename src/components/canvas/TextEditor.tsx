@@ -46,6 +46,7 @@ export function TextEditor({ shape, onFinishEditing }: TextEditorProps) {
       y={shape.y}
       width={shape.width}
       height={shape.height}
+      style={{ pointerEvents: 'auto' }}
     >
       <input
         ref={inputRef}

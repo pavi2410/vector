@@ -1,16 +1,16 @@
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { TransformComponent, useTransformContext, useControls } from 'react-zoom-pan-pinch';
-import { canvasStore, addShape } from '@/stores/canvas';
-import { editorStore, selectShape, clearSelection } from '@/stores/editorState';
+import { canvasStore, addShape, updateShape } from '@/stores/canvas';
+import { editorStore, selectShape, clearSelection, setHoveredShape, setTextEditing } from '@/stores/editorState';
 import { setMousePosition } from '@/stores/mouse';
 import { debugStore } from '@/stores/debug';
 import { projectSettingsStore } from '@/stores/project';
 import { ShapeRenderer } from './ShapeRenderer';
 import { GroupRenderer } from './GroupRenderer';
-import { InteractiveShape } from './InteractiveShape';
 import { SelectionOverlay } from './SelectionOverlay';
 import { FrameSelectionOverlay } from './FrameSelectionOverlay';
+import { TextEditor } from './TextEditor';
 import { CanvasControls } from './CanvasControls';
 import { DebugInfo } from './DebugInfo';
 import { useCanvasShortcuts } from '@/hooks/useCanvasShortcuts';
@@ -24,15 +24,22 @@ interface FrameContentProps {
   onWrapperClick: (event: React.MouseEvent) => void;
 }
 
+type DragState = {
+  startMouse: { x: number; y: number };
+  initialPositions: { id: string; x: number; y: number }[];
+} | null;
+
 export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick }: FrameContentProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
   const [currentShape, setCurrentShape] = useState<Shape | null>(null);
+  const [dragState, setDragState] = useState<DragState>(null);
 
   const { frame } = useStore(canvasStore);
   const { shapes } = frame;
-  const { activeTool, toolSettings, selectedIds, hoveredId } = useStore(editorStore);
+  const { activeTool, toolSettings, selectedIds, hoveredId, editingTextId } = useStore(editorStore);
   const { showDebugInfo } = useStore(debugStore);
   const { gridSize } = useStore(projectSettingsStore);
   const { state: transformState } = useTransformContext();
@@ -40,218 +47,229 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
 
   const scale = transformState.scale;
 
-  // Initialize canvas keyboard shortcuts (now inside TransformWrapper)
   useCanvasShortcuts({
     onTogglePanMode: (active: boolean) => setIsSpacePanning(active)
   });
 
-  // Listen to zoom events from ViewMenu
   useOnEvent('zoom:in', () => zoomIn(0.2), [zoomIn]);
   useOnEvent('zoom:out', () => zoomOut(0.2), [zoomOut]);
   useOnEvent('zoom:actual', () => centerView(1), [centerView]);
   useOnEvent('canvas:center', () => centerView(), [centerView]);
-  
+
   useOnEvent('zoom:fit', () => {
     const { frame } = canvasStore.get();
     const padding = 50;
     const boundsWidth = frame.width + padding * 2;
     const boundsHeight = frame.height + padding * 2;
-
     const wrapper = instance.wrapperComponent?.getBoundingClientRect();
     if (!wrapper) return;
-
-    // Calculate scale to fit frame
-    const containerWidth = wrapper.width;
-    const containerHeight = wrapper.height;
-    const scaleX = containerWidth / boundsWidth;
-    const scaleY = containerHeight / boundsHeight;
+    const scaleX = wrapper.width / boundsWidth;
+    const scaleY = wrapper.height / boundsHeight;
     const newScale = Math.min(scaleX, scaleY, 1);
-
-    // Center the frame
     centerView(1 / newScale);
   }, [centerView, instance]);
 
-  const getMousePosition = useCallback((event: React.MouseEvent) => {
-    if (!svgRef.current) return { x: 0, y: 0 };
-    
-    // Get the SVG element's bounding rect
-    const svgRect = svgRef.current.getBoundingClientRect();
-    
-    // Convert screen coordinates to SVG coordinates accounting for zoom and pan
-    const x = (event.clientX - svgRect.left) / scale;
-    const y = (event.clientY - svgRect.top) / scale;
-
-    return { x, y };
+  const getDocPosition = useCallback((clientX: number, clientY: number) => {
+    if (!containerRef.current) return { x: 0, y: 0 };
+    const rect = containerRef.current.getBoundingClientRect();
+    return {
+      x: (clientX - rect.left) / scale,
+      y: (clientY - rect.top) / scale,
+    };
   }, [scale]);
 
+  const hitTest = useCallback((docX: number, docY: number): Shape | null => {
+    // Check all renderable shapes (including children) in reverse z-order.
+    // Children have higher z than their group, so they're checked first,
+    // matching the old per-shape event handler behavior.
+    const all = getRenderableShapes(shapes);
+    const margin = 6 / scale;
+    for (let i = all.length - 1; i >= 0; i--) {
+      const s = all[i];
+      // Skip groups — they're only a container; clicking empty space
+      // inside a group shouldn't select it (children handle their own hits)
+      if (s.type === 'group') continue;
+      // Normalize bounds — lines can have negative width/height
+      const minX = Math.min(s.x, s.x + s.width);
+      const maxX = Math.max(s.x, s.x + s.width);
+      const minY = Math.min(s.y, s.y + s.height);
+      const maxY = Math.max(s.y, s.y + s.height);
+      if (docX >= minX - margin && docX <= maxX + margin &&
+          docY >= minY - margin && docY <= maxY + margin) {
+        return s;
+      }
+    }
+    return null;
+  }, [shapes, scale]);
+
+  // Global drag listeners
+  useEffect(() => {
+    if (!dragState) return;
+
+    const onMove = (e: MouseEvent) => {
+      const rawDx = e.clientX - dragState.startMouse.x;
+      const rawDy = e.clientY - dragState.startMouse.y;
+      // Dead zone: ignore sub-3px movement to prevent micro-moves on click
+      if (Math.abs(rawDx) < 3 && Math.abs(rawDy) < 3) return;
+      const dx = rawDx / scale;
+      const dy = rawDy / scale;
+      dragState.initialPositions.forEach(({ id, x, y }) => {
+        updateShape(id, { x: x + dx, y: y + dy });
+      });
+    };
+
+    const onUp = () => setDragState(null);
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+  }, [dragState, scale]);
+
+  const getCursor = () => {
+    if (isSpacePanning) return 'cursor-grab';
+    if (activeTool === 'select') return 'cursor-default';
+    return 'cursor-crosshair';
+  };
+
   const handleMouseDown = useCallback((event: React.MouseEvent) => {
-    const position = getMousePosition(event);
-    
-    // Handle panning modes - let react-zoom-pan-pinch handle these
-    if (isSpacePanning || event.button === 1 || event.altKey) {
-      return;
-    }
-    
-    // For select tool, only handle background clicks (shape clicks are handled by InteractiveShape)
+    if (isSpacePanning || event.button === 1 || event.altKey) return;
+
+    const pos = getDocPosition(event.clientX, event.clientY);
+
     if (activeTool === 'select') {
-      // Only clear selection on background clicks
-      clearSelection();
+      const hit = hitTest(pos.x, pos.y);
+      if (hit) {
+        if (!selectedIds.includes(hit.id)) {
+          selectShape(hit.id, event.shiftKey);
+        }
+        // Build the set of IDs that will be selected after this click
+        const nextSelectedIds = event.shiftKey
+          ? [...new Set([...selectedIds, hit.id])]
+          : selectedIds.includes(hit.id)
+            ? selectedIds
+            : [hit.id];
+
+        const initialPositions = shapes
+          .filter(s => nextSelectedIds.includes(s.id))
+          .map(s => ({ id: s.id, x: s.x, y: s.y }));
+
+        setDragState({
+          startMouse: { x: event.clientX, y: event.clientY },
+          initialPositions,
+        });
+      } else {
+        clearSelection();
+      }
       return;
     }
-    
-    // Prevent default to stop transform wrapper from handling drawing interactions
+
     event.stopPropagation();
 
     if (['rectangle', 'circle', 'line'].includes(activeTool)) {
       setIsDrawing(true);
-      setStartPoint(position);
-      
-      const newShape: Shape = {
+      setStartPoint(pos);
+      setCurrentShape({
         id: `shape-${Date.now()}`,
         type: activeTool as 'rectangle' | 'circle' | 'line',
-        x: position.x,
-        y: position.y,
+        x: pos.x,
+        y: pos.y,
         width: 0,
         height: 0,
-        z: 0, // Will be assigned proper z-index when added
+        z: 0,
         fill: toolSettings.fill,
         stroke: toolSettings.stroke,
         strokeWidth: toolSettings.strokeWidth,
-        opacity: toolSettings.opacity
-      };
-      
-      setCurrentShape(newShape);
+        opacity: toolSettings.opacity,
+      });
     } else if (activeTool === 'text') {
-      // Text tool - create immediately on click
       const fontSize = toolSettings.fontSize ?? 16;
-      const textWidth = 100; // Default width for text bounding box
-      const textHeight = fontSize * 1.2; // Height based on font size
-      
       const newShape: Shape = {
         id: `shape-${Date.now()}`,
         type: 'text',
-        x: position.x,
-        y: position.y,
-        width: textWidth,
-        height: textHeight,
-        z: 0, // Will be assigned proper z-index when added
+        x: pos.x,
+        y: pos.y,
+        width: 100,
+        height: fontSize * 1.2,
+        z: 0,
         fill: toolSettings.fill,
         stroke: toolSettings.stroke,
         strokeWidth: toolSettings.strokeWidth,
         opacity: toolSettings.opacity,
         text: 'Text',
-        fontSize: fontSize,
+        fontSize,
         fontFamily: toolSettings.fontFamily || 'Inter, system-ui, sans-serif',
         fontWeight: toolSettings.fontWeight || 'normal',
         fontStyle: toolSettings.fontStyle || 'normal',
-        textAlign: toolSettings.textAlign || 'start'
+        textAlign: toolSettings.textAlign || 'start',
       };
-      
       addShape(newShape);
       selectShape(newShape.id);
     }
-  }, [activeTool, toolSettings, getMousePosition, isSpacePanning]);
+  }, [activeTool, toolSettings, shapes, selectedIds, isSpacePanning, getDocPosition, hitTest]);
 
   const handleMouseMove = useCallback((event: React.MouseEvent) => {
-    // Always update mouse position for debug info
-    const position = getMousePosition(event);
-    setMousePosition(position.x, position.y, event.clientX, event.clientY);
-    
-    if (!isDrawing || !startPoint || !currentShape) return;
-    
-    // Stop propagation to prevent transform wrapper interference
-    event.stopPropagation();
-    
-    // Handle line tool differently from rectangles and circles
-    if (currentShape.type === 'line') {
-      let endX = position.x;
-      let endY = position.y;
-      
-      // Apply constraint for 45-degree angle snapping when Shift is held
-      if (event.shiftKey) {
-        const deltaX = position.x - startPoint.x;
-        const deltaY = position.y - startPoint.y;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        // Calculate angle from start point to current position
-        const angle = Math.atan2(deltaY, deltaX);
-        
-        // Snap to nearest 45-degree increment (8 directions)
-        const snapAngle = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
-        
-        // Calculate snapped end position
-        endX = startPoint.x + distance * Math.cos(snapAngle);
-        endY = startPoint.y + distance * Math.sin(snapAngle);
-      }
-      
-      // For lines, store the end point directly in width and height
-      setCurrentShape({
-        ...currentShape,
-        x: startPoint.x,
-        y: startPoint.y,
-        width: endX - startPoint.x,
-        height: endY - startPoint.y
-      });
-    } else {
-      // Rectangle and circle logic
-      let width = Math.abs(position.x - startPoint.x);
-      let height = Math.abs(position.y - startPoint.y);
-      
-      // Apply constraint for perfect squares/circles when Shift is held
-      if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
-        const size = Math.max(width, height);
-        width = size;
-        height = size;
-      }
-      
-      const x = Math.min(startPoint.x, position.x);
-      const y = Math.min(startPoint.y, position.y);
-      
-      // Adjust position for perfect squares/circles to maintain center point
-      let finalX = x;
-      let finalY = y;
-      
-      if (event.shiftKey && (currentShape.type === 'rectangle' || currentShape.type === 'circle')) {
-        const centerX = startPoint.x;
-        const centerY = startPoint.y;
-        const size = Math.max(width, height);
-        
-        if (position.x >= startPoint.x && position.y >= startPoint.y) {
-          // Bottom-right quadrant
-          finalX = centerX;
-          finalY = centerY;
-        } else if (position.x < startPoint.x && position.y >= startPoint.y) {
-          // Bottom-left quadrant
-          finalX = centerX - size;
-          finalY = centerY;
-        } else if (position.x < startPoint.x && position.y < startPoint.y) {
-          // Top-left quadrant
-          finalX = centerX - size;
-          finalY = centerY - size;
-        } else {
-          // Top-right quadrant
-          finalX = centerX;
-          finalY = centerY - size;
+    const pos = getDocPosition(event.clientX, event.clientY);
+    setMousePosition(pos.x, pos.y, event.clientX, event.clientY);
+
+    // Drawing in progress
+    if (isDrawing && startPoint && currentShape) {
+      event.stopPropagation();
+
+      if (currentShape.type === 'line') {
+        let endX = pos.x;
+        let endY = pos.y;
+        if (event.shiftKey) {
+          const deltaX = pos.x - startPoint.x;
+          const deltaY = pos.y - startPoint.y;
+          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          const angle = Math.atan2(deltaY, deltaX);
+          const snapAngle = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
+          endX = startPoint.x + distance * Math.cos(snapAngle);
+          endY = startPoint.y + distance * Math.sin(snapAngle);
         }
+        setCurrentShape({ ...currentShape, x: startPoint.x, y: startPoint.y, width: endX - startPoint.x, height: endY - startPoint.y });
+      } else {
+        let width = Math.abs(pos.x - startPoint.x);
+        let height = Math.abs(pos.y - startPoint.y);
+        if (event.shiftKey) {
+          const size = Math.max(width, height);
+          width = size;
+          height = size;
+        }
+        let finalX = Math.min(startPoint.x, pos.x);
+        let finalY = Math.min(startPoint.y, pos.y);
+        if (event.shiftKey) {
+          const size = Math.max(width, height);
+          if (pos.x >= startPoint.x && pos.y >= startPoint.y) {
+            finalX = startPoint.x; finalY = startPoint.y;
+          } else if (pos.x < startPoint.x && pos.y >= startPoint.y) {
+            finalX = startPoint.x - size; finalY = startPoint.y;
+          } else if (pos.x < startPoint.x && pos.y < startPoint.y) {
+            finalX = startPoint.x - size; finalY = startPoint.y - size;
+          } else {
+            finalX = startPoint.x; finalY = startPoint.y - size;
+          }
+        }
+        setCurrentShape({ ...currentShape, x: finalX, y: finalY, width, height });
       }
-      
-      setCurrentShape({
-        ...currentShape,
-        x: finalX,
-        y: finalY,
-        width,
-        height
-      });
+      return;
     }
-  }, [isDrawing, startPoint, currentShape, getMousePosition]);
+
+    // Hover tracking
+    if (activeTool === 'select' && !dragState) {
+      const hit = hitTest(pos.x, pos.y);
+      setHoveredShape(hit ? hit.id : null);
+    }
+  }, [isDrawing, startPoint, currentShape, activeTool, dragState, getDocPosition, hitTest]);
 
   const handleMouseUp = useCallback(() => {
     if (isDrawing && currentShape) {
-      // For lines, check if there's any movement; for other shapes, check minimum size
-      const shouldAdd = currentShape.type === 'line' 
+      const shouldAdd = currentShape.type === 'line'
         ? Math.abs(currentShape.width) > 2 || Math.abs(currentShape.height) > 2
         : currentShape.width > 5 && currentShape.height > 5;
-        
       if (shouldAdd) {
         addShape(currentShape);
         selectShape(currentShape.id);
@@ -262,114 +280,127 @@ export function FrameContent({ isSpacePanning, setIsSpacePanning, onWrapperClick
     }
   }, [isDrawing, currentShape]);
 
-  // Dynamic cursor based on current state
-  const getCursor = () => {
-    if (isSpacePanning) return 'cursor-grab';
-    if (activeTool === 'select') return 'cursor-default';
-    return 'cursor-crosshair';
-  };
+  const handleDoubleClick = useCallback((event: React.MouseEvent) => {
+    if (activeTool !== 'select') return;
+    const pos = getDocPosition(event.clientX, event.clientY);
+    const hit = hitTest(pos.x, pos.y);
+    if (hit && hit.type === 'text') {
+      setTextEditing(hit.id);
+    }
+  }, [activeTool, getDocPosition, hitTest]);
+
+  const handleFinishTextEditing = useCallback(() => {
+    setTextEditing(null);
+  }, []);
+
+  const editingShape = editingTextId ? shapes.find(s => s.id === editingTextId) : null;
+  const hoveredShape = hoveredId && !selectedIds.includes(hoveredId)
+    ? shapes.find(s => s.id === hoveredId)
+    : null;
 
   return (
     <>
       <TransformComponent
         wrapperClass="w-full! h-full! bg-muted"
         wrapperProps={{ onClick: onWrapperClick }}
-        // contentClass="w-full! h-full!"
       >
-        <svg
-          ref={svgRef}
-          className={`${getCursor()}`}
-          width={frame.width}
-          height={frame.height}
-          viewBox={`0 0 ${frame.width} ${frame.height}`}
-          preserveAspectRatio="xMidYMid meet"
+        <div
+          ref={containerRef}
+          style={{ position: 'relative', width: frame.width, height: frame.height }}
+          className={getCursor()}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onDoubleClick={handleDoubleClick}
+          onMouseLeave={() => setHoveredShape(null)}
         >
-          <defs>
-            {/* Grid pattern */}
-            <pattern
-              id="grid"
-              width={gridSize}
-              height={gridSize}
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
-                fill="none"
-                stroke="#e5e7eb"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-
-          {/* Frame background */}
-          <rect
-            x={0}
-            y={0}
+          {/* Layer 1: Document — pure SVG render, no editor artifacts */}
+          <svg
+            style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
             width={frame.width}
             height={frame.height}
-            fill={frame.backgroundColor || '#ffffff'}
-            stroke="none"
-          />
-          
-          {/* Grid background */}
-          <rect
-            x={0}
-            y={0}
-            width={frame.width}
-            height={frame.height}
-            fill="url(#grid)"
-          />
+            viewBox={`0 0 ${frame.width} ${frame.height}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            <defs>
+              <pattern
+                id="grid"
+                width={gridSize}
+                height={gridSize}
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`}
+                  fill="none"
+                  stroke="#e5e7eb"
+                  strokeWidth="0.5"
+                />
+              </pattern>
+            </defs>
 
-          {/* Rendered shapes - sorted by z-index and filtered for visibility */}
-          {getRenderableShapes(shapes)
-            .filter(shape => !shape.parentId) // Only render root level shapes (groups will render their children)
-            .map(shape => {
-              if (shape.type === 'group') {
-                return (
-                  <GroupRenderer
-                    key={shape.id}
-                    group={shape as Group}
-                    shapes={shapes}
-                    isSelected={selectedIds.includes(shape.id)}
-                    isHovered={hoveredId === shape.id}
-                    selectedIds={selectedIds}
-                    hoveredId={hoveredId || undefined}
-                  />
-                );
-              } else {
-                return (
-                  <InteractiveShape
-                    key={shape.id}
-                    shape={shape}
-                    isSelected={selectedIds.includes(shape.id)}
-                    isHovered={hoveredId === shape.id}
-                  />
-                );
-              }
-            })}
-
-          {/* Current drawing shape */}
-          {currentShape && (
-            <ShapeRenderer
-              shape={currentShape}
-              isSelected={false}
-              isPreview={true}
+            <rect
+              x={0} y={0}
+              width={frame.width} height={frame.height}
+              fill={frame.backgroundColor || '#ffffff'}
+              stroke="none"
             />
-          )}
+            <rect
+              x={0} y={0}
+              width={frame.width} height={frame.height}
+              fill="url(#grid)"
+            />
 
-          {/* Selection overlays */}
-          <SelectionOverlay />
-          <FrameSelectionOverlay />
-        </svg>
+            {getRenderableShapes(shapes)
+              .filter(shape => !shape.parentId)
+              .map(shape =>
+                shape.type === 'group' ? (
+                  <GroupRenderer key={shape.id} group={shape as Group} shapes={shapes} />
+                ) : (
+                  <ShapeRenderer key={shape.id} shape={shape} />
+                )
+              )}
+
+            {currentShape && <ShapeRenderer shape={currentShape} isPreview />}
+          </svg>
+
+          {/* Layer 2: Editor overlay — selection chrome, hover outlines, text editing */}
+          <svg
+            style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
+            width={frame.width}
+            height={frame.height}
+            viewBox={`0 0 ${frame.width} ${frame.height}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
+            {/* Hover outline */}
+            {hoveredShape && (
+              <rect
+                x={Math.min(hoveredShape.x, hoveredShape.x + hoveredShape.width)}
+                y={Math.min(hoveredShape.y, hoveredShape.y + hoveredShape.height)}
+                width={Math.abs(hoveredShape.width)}
+                height={Math.abs(hoveredShape.height)}
+                fill="none"
+                stroke="#93c5fd"
+                strokeWidth={1.5 / scale}
+                style={{ pointerEvents: 'none' }}
+              />
+            )}
+
+            {/* Inline text editor */}
+            {editingShape && (
+              <TextEditor
+                shape={editingShape}
+                onFinishEditing={handleFinishTextEditing}
+                scale={scale}
+              />
+            )}
+
+            <SelectionOverlay editingTextId={editingTextId} />
+            <FrameSelectionOverlay />
+          </svg>
+        </div>
       </TransformComponent>
-      
-      {/* Debug info panel */}
+
       {showDebugInfo && <DebugInfo />}
-      
-      {/* Enhanced canvas controls - now inside TransformWrapper */}
       <CanvasControls />
     </>
   );

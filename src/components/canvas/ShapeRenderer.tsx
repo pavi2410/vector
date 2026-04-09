@@ -1,24 +1,17 @@
 import type { Shape } from '@/types/canvas';
-import { cn } from '@/lib/utils';
 
 interface ShapeRendererProps {
   shape: Shape;
-  isSelected: boolean;
-  isHovered?: boolean;
   isPreview?: boolean;
 }
 
-export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview = false }: ShapeRendererProps) {
+export function ShapeRenderer({ shape, isPreview = false }: ShapeRendererProps) {
   const commonProps = {
     fill: shape.fill || 'transparent',
     stroke: shape.stroke || '#000000',
     strokeWidth: shape.strokeWidth ?? 1,
     opacity: shape.opacity ?? 1,
-    className: cn(
-      isPreview && "pointer-events-none opacity-70",
-      isSelected && "stroke-blue-500",
-      isHovered && !isSelected && "stroke-blue-300 stroke-1"
-    )
+    style: isPreview ? { pointerEvents: 'none' as const, opacity: 0.7 } : undefined,
   };
 
   switch (shape.type) {
@@ -56,18 +49,17 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
         />
       );
 
-    case 'text':
+    case 'text': {
       const fontSize = shape.fontSize ?? 16;
       const fontFamily = shape.fontFamily || 'Inter, system-ui, sans-serif';
       const fontWeight = shape.fontWeight || 'normal';
       const fontStyle = shape.fontStyle || 'normal';
       const textAlign = shape.textAlign || 'start';
       const text = shape.text || 'Text';
-      
-      // Calculate text anchor based on alignment
+
       let textAnchor: 'start' | 'middle' | 'end' = 'start';
       let adjustedX = shape.x;
-      
+
       if (textAlign === 'middle') {
         textAnchor = 'middle';
         adjustedX = shape.x + shape.width / 2;
@@ -75,7 +67,7 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
         textAnchor = 'end';
         adjustedX = shape.x + shape.width;
       }
-      
+
       return (
         <text
           x={adjustedX}
@@ -92,6 +84,7 @@ export function ShapeRenderer({ shape, isSelected, isHovered = false, isPreview 
           {text}
         </text>
       );
+    }
 
     default:
       return null;
