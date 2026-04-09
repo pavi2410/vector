@@ -68,9 +68,11 @@ export function ExportDialog({ onClose }: ExportDialogProps) {
     } catch (error) {
       console.error('Export failed:', error);
       // TODO: Show error toast
-    } finally {
       setIsExporting(false);
+      return;
     }
+
+    setIsExporting(false);
   };
 
   const exportSVG = async () => {

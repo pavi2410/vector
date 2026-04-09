@@ -8,34 +8,37 @@ type EventMap = {
   'canvas:center': void;
 };
 
-class EventBus<T extends Record<string, any>> {
-  private listeners = new Map<keyof T, Function[]>();
+type EventArgs<T, K extends keyof T> = T[K] extends void ? [] : [T[K]];
+type EventHandler<T, K extends keyof T> = (...args: EventArgs<T, K>) => void;
 
-  emit<K extends keyof T>(event: K, ...args: T[K] extends void ? [] : [T[K]]) {
+class EventBus<T extends Record<string, unknown>> {
+  private listeners = new Map<keyof T, EventHandler<T, keyof T>[]>();
+
+  emit<K extends keyof T>(event: K, ...args: EventArgs<T, K>) {
     const handlers = this.listeners.get(event);
     if (!handlers) return;
     // Snapshot the handlers array so that on/off calls inside a handler
     // don't affect the current iteration.
     for (const handler of [...handlers]) {
       try {
-        handler(...(args as T[K] extends void ? [] : [T[K]]));
+        (handler as EventHandler<T, K>)(...args);
       } catch (err) {
         console.error(`[EventBus] Handler for "${String(event)}" threw:`, err);
       }
     }
   }
 
-  on<K extends keyof T>(event: K, handler: T[K] extends void ? () => void : (data: T[K]) => void) {
+  on<K extends keyof T>(event: K, handler: EventHandler<T, K>) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
-    this.listeners.get(event)!.push(handler);
+    this.listeners.get(event)!.push(handler as EventHandler<T, keyof T>);
   }
 
-  off<K extends keyof T>(event: K, handler: T[K] extends void ? () => void : (data: T[K]) => void) {
+  off<K extends keyof T>(event: K, handler: EventHandler<T, K>) {
     const handlers = this.listeners.get(event);
     if (handlers) {
-      const index = handlers.indexOf(handler);
+      const index = handlers.indexOf(handler as EventHandler<T, keyof T>);
       if (index > -1) handlers.splice(index, 1);
     }
   }
@@ -45,20 +48,16 @@ export const eventBus = new EventBus<EventMap>();
 
 export function useOnEvent<K extends keyof EventMap>(
   event: K, 
-  handler: EventMap[K] extends void ? () => void : (data: EventMap[K]) => void,
+  handler: EventHandler<EventMap, K>,
   deps: React.DependencyList = []
 ) {
-  // Keep a stable ref to the latest handler so we don't need to
-  // re-subscribe on every render when the handler identity changes.
-  const handlerRef = React.useRef(handler);
-  React.useLayoutEffect(() => {
-    handlerRef.current = handler;
+  const onEvent = React.useEffectEvent((...args: EventArgs<EventMap, K>) => {
+    handler(...args);
   });
 
   React.useEffect(() => {
-    const stable = (...args: any[]) => (handlerRef.current as any)(...args);
-    eventBus.on(event, stable as any);
-    return () => eventBus.off(event, stable as any);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const stable: EventHandler<EventMap, K> = (...args) => onEvent(...args);
+    eventBus.on(event, stable);
+    return () => eventBus.off(event, stable);
   }, [event, ...deps]);
 }

@@ -27,13 +27,16 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
   const currentProject = useStore(currentProjectStore);
   const [projectName, setProjectName] = useState(currentProject?.name || 'Untitled Project');
   const [isSaving, setIsSaving] = useState(false);
+  const currentProjectName = currentProject?.name;
+  const shouldUpdateProjectName =
+    currentProjectName !== undefined && projectName !== currentProjectName;
 
   const handleSave = async () => {
     setIsSaving(true);
     
     try {
       // Update project name if changed
-      if (currentProject && projectName !== currentProject.name) {
+      if (shouldUpdateProjectName) {
         updateProjectName(projectName);
       }
 
@@ -62,9 +65,11 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
     } catch (error) {
       console.error('Failed to save project:', error);
       // TODO: Show error toast
-    } finally {
       setIsSaving(false);
+      return;
     }
+
+    setIsSaving(false);
   };
 
   const handleSaveToLocalStorage = () => {
@@ -72,7 +77,7 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
     
     try {
       // Update project name if changed
-      if (currentProject && projectName !== currentProject.name) {
+      if (shouldUpdateProjectName) {
         updateProjectName(projectName);
       }
 
@@ -87,9 +92,11 @@ export function SaveProjectDialog({ onClose }: SaveProjectDialogProps) {
     } catch (error) {
       console.error('Failed to save project to localStorage:', error);
       // TODO: Show error toast
-    } finally {
       setIsSaving(false);
+      return;
     }
+
+    setIsSaving(false);
   };
 
   const handleClose = () => {

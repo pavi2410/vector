@@ -57,9 +57,11 @@ export function OpenProjectDialog({ onClose }: OpenProjectDialogProps) {
     } catch (error) {
       console.error('Failed to open project:', error);
       // TODO: Show error toast
-    } finally {
       setIsLoading(false);
+      return;
     }
+
+    setIsLoading(false);
   };
 
   const handleDeleteProject = (project: Project) => {
